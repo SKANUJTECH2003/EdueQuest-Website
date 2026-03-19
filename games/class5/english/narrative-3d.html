@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Narrative 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .quiz-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            padding: 40px;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .quiz-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: #999;
+            text-align: center;
+        }
+        
+        .question-box {
+            margin: 30px 0;
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f5f5f5;
+        }
+        
+        .option-btn.selected {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+        
+        .option-btn.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .option-btn.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+        }
+        
+        .feedback.correct {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .feedback.incorrect {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-next {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-next:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .game-over-modal.show {
+            display: flex;
+        }
+        
+        .game-over-content {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+        
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .final-score {
+            font-size: 3rem;
+            color: #4caf50;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">Narrative 3D</h1>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+            <p class="question-counter"><span id="currentQuestion">1</span> / <span id="totalQuestions">5</span></p>
+        </div>
+        
+        <div class="question-box">
+            <p class="question-text" id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-next" id="nextBtn" disabled onclick="nextQuestion()">Next ➜</button>
+        </div>
+        
+        <div class="score-display">Score: <span id="score">0</span>/<span id="maxScore">5</span></div>
+    </div>
+    
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="game-over-content">
+            <h2>🎉 Quiz Complete!</h2>
+            <div class="final-score" id="finalScore">0/10</div>
+            <p style="color: #666;">Great effort! Keep learning!</p>
+            <button class="btn btn-next" onclick="goHome()" style="width: 100%; margin-top: 20px;">Back to Games</button>
+        </div>
+    </div>
+    
+    <script>
+        const gameConfig = {"id": "c5e6", "name": "Narrative 3D", "desc": "Create narratives in 3D", "questions": [{"question": "What is 2 + 2?", "options": ["3", "4", "5", "6"], "correct": 1}, {"question": "Which is bigger, 5 or 7?", "options": ["5", "7", "Same", "Neither"], "correct": 1}, {"question": "How many colors are in a rainbow?", "options": ["5", "6", "7", "8"], "correct": 2}, {"question": "What comes after Z in the alphabet?", "options": ["A", "AA", "ZZ", "End"], "correct": 0}, {"question": "Which animal says 'Moo'?", "options": ["Dog", "Cat", "Cow", "Sheep"], "correct": 2}]};
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+        
+        function displayQuestion() {
+            const question = gameConfig.questions[currentIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentIndex + 1;
+            
+            const progress = ((currentIndex + 1) / gameConfig.questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            question.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(btn, idx === question.correct, question.correct, question.options);
+                container.appendChild(btn);
+            });
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('nextBtn').disabled = true;
+            answered = false;
+        }
+        
+        function selectAnswer(btn, isCorrect, correctIndex, options) {
+            if (answered) return;
+            answered = true;
+            
+            const allButtons = document.querySelectorAll('.option-btn');
+            allButtons.forEach((b, idx) => {
+                b.style.pointerEvents = 'none';
+                if (idx === correctIndex) {
+                    b.classList.add('correct');
+                }
+            });
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                document.getElementById('feedback').textContent = '✅ Correct!';
+                document.getElementById('feedback').className = 'feedback correct';
+                score++;
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById('feedback').textContent = '❌ Incorrect! Try again.';
+                document.getElementById('feedback').className = 'feedback incorrect';
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextBtn').disabled = false;
+        }
+        
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex >= gameConfig.questions.length) {
+                endQuiz();
+            } else {
+                displayQuestion();
+            }
+        }
+        
+        function endQuiz() {
+            localStorage.setItem('gameScore', score);
+            localStorage.setItem('gameCompleted', 'true');
+            localStorage.setItem('completedGameName', 'Narrative 3D');
+            localStorage.setItem('completedGameId', 'c5e6');
+            
+            document.getElementById('finalScore').textContent = score + '/' + gameConfig.questions.length;
+            document.getElementById('gameOverModal').classList.add('show');
+            
+            setTimeout(() => {
+                window.location.href = '/subjects.html';
+            }, 3000);
+        }
+        
+        function goHome() {
+            window.location.href = '/subjects.html';
+        }
+        
+        displayQuestion();
+    </script>
+</body>
+</html>

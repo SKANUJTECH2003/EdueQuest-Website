@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphabet Flash Cards</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+        
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 25px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .title { font-size: 2rem; color: #667eea; }
+        .stats { display: flex; gap: 20px; font-weight: 600; }
+        .stat { background: #f5f5f5; padding: 10px 20px; border-radius: 15px; }
+        .stat-label { font-size: 0.8rem; color: #999; }
+        .stat-value { font-size: 1.2rem; color: #667eea; }
+        
+        .progress-bar { height: 8px; background: #e0e0e0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: 0%; transition: width 0.3s; }
+        
+        .card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; padding: 60px 40px; margin: 30px 0; cursor: pointer; perspective: 1000px; /* enable 3D */ position: relative; transform-style: preserve-3d; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .card:hover { transform: scale(1.05); }
+        .card-face { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; backface-visibility: hidden; transition: transform 0.6s; }
+        .face-back { transform: rotateY(180deg); }
+        .card.flipped .face-front { transform: rotateY(180deg); }
+        .card.flipped .face-back { transform: rotateY(0deg); }
+        .letter { font-size: 5rem; font-weight: bold; margin: 20px 0; }
+        .word { font-size: 2rem; margin: 10px 0; }
+        .emoji { font-size: 4rem; }
+        
+        .buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+        button { padding: 12px 30px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-prev { background: #ff9800; color: white; }
+        .btn-prev:hover { background: #e68900; transform: translateY(-2px); }
+        .btn-next { background: #4caf50; color: white; }
+        .btn-next:hover { background: #45a049; transform: translateY(-2px); }
+        .btn-home { background: #f5f5f5; color: #333; }
+        .btn-home:hover { background: #e0e0e0; }
+        
+        .counter { color: #999; margin-top: 20px; font-size: 0.9rem; text-align: center; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 40px; border-radius: 25px; text-align: center; max-width: 600px; }
+        .modal h2 { font-size: 2.5rem; color: #667eea; margin-bottom: 20px; }
+        .modal-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 30px 0; }
+        .modal-stat { background: #f5f5f5; padding: 20px; border-radius: 15px; }
+        .modal-stat-label { color: #999; font-size: 0.9rem; }
+        .modal-stat-value { font-size: 1.8rem; color: #667eea; font-weight: bold; }
+        .modal-button { background: #4caf50; color: white; padding: 12px 40px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Alphabet Flash Cards</h1>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">⏱️ Time</div>
+                    <div class="stat-value"><span id="timer">0</span>s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">⭐ Score</div>
+                    <div class="stat-value"><span id="score">0</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <!-- card with 3D flip effect -->
+        <div class="card" id="card" onclick="flipCard()">
+            <div class="card-face face-front">
+                <div class="emoji" id="emoji">🔤</div>
+                <div class="letter" id="letter">?</div>
+            </div>
+            <div class="card-face face-back">
+                <div class="word" id="word">Word</div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevCard()">← Back</button>
+            <button class="btn-next" onclick="nextCard()">Next →</button>
+            <button class="btn-home" onclick="completeGame()">Finish Game</button>
+        </div>
+        
+        <div class="counter">
+            Card <span id="current">1</span> of <span id="total">5</span>
+        </div>
+    </div>
+    
+    <div class="modal" id="completeModal">
+        <div class="modal-content">
+            <h2>🎉 Great Job!</h2>
+            <p style="font-size: 1.1rem; color: #666; margin: 20px 0;">You completed the game!</p>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-label">Time Taken</div>
+                    <div class="modal-stat-value"><span id="finalTime">0</span>s</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-label">Items Learned</div>
+                    <div class="modal-stat-value" id="finalItems">5</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-label">Score</div>
+                    <div class="modal-stat-value"><span id="finalScore">100</span></div>
+                </div>
+            </div>
+            <button class="modal-button" onclick="goHome()">Back to Games</button>
+        </div>
+    </div>
+    
+    <script src="/progress-tracker.js"></script>
+    <script>
+        const items = [{"letter": "A", "word": "Apple", "emoji": "\ud83c\udf4e"}, {"letter": "B", "word": "Ball", "emoji": "\u26bd"}, {"letter": "C", "word": "Cat", "emoji": "\ud83d\udc31"}, {"letter": "D", "word": "Dog", "emoji": "\ud83d\udc15"}, {"letter": "E", "word": "Egg", "emoji": "\ud83e\udd5a"}];
+        let currentIndex = 0;
+        let gameStartTime;
+        let score = 0;
+        const gameId = 'c1e1';
+        
+        function initGame() {
+            gameStartTime = Date.now();
+            updateTimer();
+            displayCard();
+        }
+        
+        function updateTimer() {
+            setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+                document.getElementById('timer').textContent = elapsed;
+            }, 1000);
+        }
+
+        // simple audio helper using Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, duration = 0.1) {
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+        function playFlipSound() { playSound(440); }
+        function playNavigationSound() { playSound(550); }
+        function playSuccessSound() { playSound(880, 0.4); }
+
+        function flipCard() {
+            const cardEl = document.getElementById('card');
+            cardEl.classList.toggle('flipped');
+            playFlipSound();
+        }
+        
+        function displayCard() {
+            const item = items[currentIndex];
+            document.getElementById('letter').textContent = item.letter;
+            document.getElementById('word').textContent = item.word;
+            document.getElementById('emoji').textContent = item.emoji;
+            document.getElementById('current').textContent = currentIndex + 1;
+            document.getElementById('total').textContent = items.length;
+            document.getElementById('card').classList.remove('flipped');
+            
+            const progress = ((currentIndex + 1) / items.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Award points for viewing each card
+            if (currentIndex > 0) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+            }
+        }
+        
+        function nextCard() {
+            if (currentIndex < items.length - 1) {
+                currentIndex++;
+                displayCard();
+                playNavigationSound();
+            }
+        }
+        
+        function prevCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayCard();
+                playNavigationSound();
+            }
+        }
+        
+        function completeGame() {
+            const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+            const finalScore = Math.min(100, score + (Math.max(0, 30 - elapsed)));
+            
+            // audible success
+            playSuccessSound();
+            
+            // Save to localStorage (legacy behavior kept for backward compatibility)
+            const gameData = {
+                gameId: gameId,
+                gameTitle: 'Alphabet Flash Cards',
+                score: finalScore,
+                timeInSeconds: elapsed,
+                itemsLearned: items.length,
+                completedAt: new Date().toISOString()
+            };
+            
+            // store legacy values as before (these will also be picked up by ProgressTracker override)
+            localStorage.setItem('lastGameScore', finalScore);
+            localStorage.setItem('lastGameData', JSON.stringify(gameData));
+            let gamesHistory = JSON.parse(localStorage.getItem('gamesHistory') || '[]');
+            gamesHistory.push(gameData);
+            localStorage.setItem('gamesHistory', JSON.stringify(gamesHistory));
+            let totalScore = parseInt(localStorage.getItem('totalGameScore') || '0');
+            totalScore += finalScore;
+            localStorage.setItem('totalGameScore', totalScore);
+
+            // also record via ProgressTracker if available
+            if (typeof ProgressTracker !== 'undefined') {
+                ProgressTracker.recordGameCompletion(gameId, 'Alphabet Flash Cards', 'English', finalScore, 100);
+            }
+
+            // mark completed for subjects.html logic
+            localStorage.setItem('gameCompleted', 'true');
+            localStorage.setItem('completedGameName', 'Alphabet Flash Cards');
+            localStorage.setItem('completedGameId', gameId);
+            localStorage.setItem('gameScore', finalScore);
+            
+            // Show completion modal
+            document.getElementById('finalTime').textContent = elapsed;
+            document.getElementById('finalItems').textContent = items.length;
+            document.getElementById('finalScore').textContent = finalScore;
+            document.getElementById('completeModal').classList.add('active');
+        }
+        
+        function goHome_original() {
+            window.location.href = '/subjects.html';
+        }
+        
+        // Initialize game on load
+        initGame();
+
+        function goHome() {
+            // no external saveScore function; just redirect
+            window.location.href = '/subjects.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher/Parent Dashboard - EduQuest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #e8f0fe;
+            --bg-color: #f8f9fa;
+            --card-bg-light: #ffffff;
+            --text-color: #202124;
+            --text-color-secondary: #5f6368;
+            --border-color: #dadce0;
+            --shadow-color: rgba(60, 64, 67, 0.3);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #f0f4f8 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .navbar-menu a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-header p {
+            color: var(--text-color-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .view-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .view-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            color: white;
+        }
+        
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Students Grid */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .student-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(26, 115, 232, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        .student-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+        
+        .student-info h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .student-info p {
+            margin: 0.2rem 0;
+            color: var(--text-color-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .student-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(26, 115, 232, 0.3);
+        }
+        
+        /* Performance Overview */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .performance-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .performance-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .chart-container {
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .chart-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            height: 30px;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-height: 2px;
+        }
+        
+        .bar-label {
+            font-size: 0.8rem;
+            text-align: center;
+            color: var(--text-color-secondary);
+        }
+        
+        /* Subject Performance */
+        .subject-list {
+            list-style: none;
+        }
+        
+        .subject-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05) 0%, rgba(13, 71, 161, 0.05) 100%);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subject-name {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        
+        .performance-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .badge-excellent {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .badge-good {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .badge-average {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .badge-poor {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        /* Weak Areas Alert */
+        .alert {
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+        }
+        
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .alert-content p {
+            margin: 0;
+            color: var(--text-color-secondary);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-left: 4px solid #ef4444;
+        }
+        
+        /* Reports Section */
+        .reports-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .report-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .export-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-color-secondary);
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .students-grid,
+            .performance-grid,
+            .reports-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .navbar-menu {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            📚 EduQuest Teacher Portal
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">← Back to Home</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>👨‍🏫 Teacher/Parent Dashboard</h1>
+            <p>Monitor student progress and performance metrics</p>
+        </div>
+        
+        <!-- View Selector -->
+        <div class="view-selector">
+            <button class="view-btn active" onclick="switchView('overview')">📊 Overview</button>
+            <button class="view-btn" onclick="switchView('students')">👥 Students</button>
+            <button class="view-btn" onclick="switchView('analytics')">📈 Analytics</button>
+            <button class="view-btn" onclick="switchView('reports')">📋 Reports</button>
+        </div>
+        
+        <!-- Overview Section -->
+        <div id="overview" class="dashboard-section active">
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <h3>📊 Class Performance</h3>
+                    <div id="classPerformanceChart"></div>
+                </div>
+                
+                <div class="performance-card">
+                    <h3>⚠️ Weak Areas Alert</h3>
+                    <div id="weakAreasAlert"></div>
+                </div>
+            </div>
+            
+            <div class="performance-card">
+                <h3>🎯 Subject-wise Overview</h3>
+                <ul class="subject-list" id="subjectOverview"></ul>
+            </div>
+        </div>
+        
+        <!-- Students Section -->
+        <div id="students" class="dashboard-section">
+            <div class="students-grid" id="studentsGrid"></div>
+        </div>
+        
+        <!-- Analytics Section -->
+        <div id="analytics" class="dashboard-section">
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <h3>📚 Learning Activity</h3>
+                    <div id="activityChart"></div>
+                </div>
+                
+                <div class="performance-card">
+                    <h3>🏆 Top Performers</h3>
+                    <div id="topPerformers"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reports Section -->
+        <div id="reports" class="dashboard-section">
+            <div class="reports-container">
+                <div class="report-card">
+                    <div class="report-header">
+                        <span class="report-title">📊 Class Report</span>
+                        <button class="export-btn" onclick="exportReport('class')">Export PDF</button>
+                    </div>
+                    <div id="classReport"></div>
+                </div>
+                
+                <div class="report-card">
+                    <div class="report-header">
+                        <span class="report-title">📈 Performance Trends</span>
+                        <button class="export-btn" onclick="exportReport('trends')">Export PDF</button>
+                    </div>
+                    <div id="trendReport"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Detail Modal -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Student Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="studentDetailContent"></div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="progress-tracker.js"></script>
+    <script>
+        // Mock data - In production, this would come from backend
+        const mockStudents = [
+            { id: 1, name: 'Raj Kumar', class: '1', gamesPlayed: 15, avgScore: 78, achievements: 8 },
+            { id: 2, name: 'Priya Singh', class: '1', gamesPlayed: 22, avgScore: 92, achievements: 12 },
+            { id: 3, name: 'Arjun Patel', class: '2', gamesPlayed: 18, avgScore: 65, achievements: 5 },
+            { id: 4, name: 'Neha Sharma', class: '2', gamesPlayed: 25, avgScore: 88, achievements: 14 },
+            { id: 5, name: 'Vikram Singh', class: '1', gamesPlayed: 12, avgScore: 55, achievements: 3 }
+        ];
+        
+        const mockSubjectData = {
+            'Math': { avgScore: 78, students: 5, status: 'good' },
+            'English': { avgScore: 82, students: 5, status: 'excellent' },
+            'Hindi': { avgScore: 65, students: 5, status: 'average' },
+            'EVS': { avgScore: 72, students: 5, status: 'good' }
+        };
+        
+        // Switch between views
+        function switchView(viewName) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(viewName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the view
+            loadViewData(viewName);
+        }
+        
+        // Load data for each view
+        function loadViewData(viewName) {
+            switch(viewName) {
+                case 'overview':
+                    loadOverview();
+                    break;
+                case 'students':
+                    loadStudents();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
+        }
+        
+        // Load Overview
+        function loadOverview() {
+            // Class Performance Chart
+            const chartHTML = mockStudents.map(student => `
+                <div class="chart-bar">
+                    <div class="bar" style="height: ${student.avgScore}%; min-height: 50px;"></div>
+                    <div class="bar-label">${student.name.split(' ')[0]}: ${student.avgScore}%</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('classPerformanceChart').innerHTML = 
+                `<div class="chart-container">${chartHTML}</div>`;
+            
+            // Weak Areas Alert
+            const weakStudents = mockStudents.filter(s => s.avgScore < 70);
+            if (weakStudents.length > 0) {
+                const alertHTML = `
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <h4>${weakStudents.length} Students Need Attention</h4>
+                            <p>${weakStudents.map(s => s.name).join(', ')} are scoring below 70%. Consider extra support.</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('weakAreasAlert').innerHTML = alertHTML;
+            }
+            
+            // Subject Overview
+            const subjectHTML = Object.entries(mockSubjectData).map(([subject, data]) => {
+                const badgeClass = `badge-${data.status}`;
+                return `
+                    <li class="subject-list-item">
+                        <span class="subject-name">${subject}</span>
+                        <span class="performance-badge ${badgeClass}">${data.avgScore}% - ${data.status.toUpperCase()}</span>
+                    </li>
+                `;
+            }).join('');
+            
+            document.getElementById('subjectOverview').innerHTML = subjectHTML;
+        }
+        
+        // Load Students
+        function loadStudents() {
+            const studentCards = mockStudents.map(student => `
+                <div class="student-card" onclick="viewStudentDetails(${student.id})">
+                    <div class="student-header">
+                        <div class="student-avatar">${student.name.charAt(0)}</div>
+                        <div class="student-info">
+                            <h3>${student.name}</h3>
+                            <p>Class ${student.class}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-stats">
+                        <div class="stat">
+                            <div class="stat-number">${student.gamesPlayed}</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${student.avgScore}%</div>
+                            <div class="stat-label">Avg Score</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <span style="font-weight: 700; color: var(--primary-color);">${student.achievements} 🏆</span>
+                    </div>
+                    
+                    <button class="action-btn">View Details</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('studentsGrid').innerHTML = studentCards;
+        }
+        
+        // Load Analytics
+        function loadAnalytics() {
+            // Activity Chart
+            const activities = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const activityValues = [45, 52, 38, 65, 48, 72, 55];
+            
+            const activityChart = activityValues.map((value, index) => `
+                <div class="chart-bar">
+                    <div class="bar" style="height: ${(value/72)*100}%; min-height: 40px;"></div>
+                    <div class="bar-label">${activities[index]}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('activityChart').innerHTML = 
+                `<div class="chart-container">${activityChart}</div>`;
+            
+            // Top Performers
+            const topPerformers = [...mockStudents]
+                .sort((a, b) => b.avgScore - a.avgScore)
+                .slice(0, 3);
+            
+            const topHTML = topPerformers.map((student, index) => `
+                <div class="subject-list-item" style="margin-bottom: 1rem;">
+                    <span>${index + 1}. ${student.name}</span>
+                    <span class="performance-badge badge-excellent">${student.avgScore}%</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('topPerformers').innerHTML = topHTML;
+        }
+        
+        // Load Reports
+        function loadReports() {
+            const classReport = `
+                <p><strong>Total Students:</strong> ${mockStudents.length}</p>
+                <p><strong>Class Average:</strong> ${Math.round(mockStudents.reduce((a,b) => a + b.avgScore, 0) / mockStudents.length)}%</p>
+                <p><strong>Total Games Played:</strong> ${mockStudents.reduce((a,b) => a + b.gamesPlayed, 0)}</p>
+                <p><strong>Total Achievements:</strong> ${mockStudents.reduce((a,b) => a + b.achievements, 0)}</p>
+            `;
+            
+            document.getElementById('classReport').innerHTML = classReport;
+            
+            const trendReport = `
+                <p>📈 <strong>Positive Trend:</strong> Learning activity increased by 25% this week</p>
+                <p>🎯 <strong>Focus Areas:</strong> Hindi and Science need improvement</p>
+                <p>🏆 <strong>Top Class:</strong> Class 2 with average 86%</p>
+                <p>⚠️ <strong>Attention Needed:</strong> 2 students below target</p>
+            `;
+            
+            document.getElementById('trendReport').innerHTML = trendReport;
+        }
+        
+        // View Student Details
+        function viewStudentDetails(studentId) {
+            const student = mockStudents.find(s => s.id === studentId);
+            
+            const detailHTML = `
+                <div class="student-header" style="margin-bottom: 2rem;">
+                    <div class="student-avatar" style="width: 80px; height: 80px; font-size: 2rem;">${student.name.charAt(0)}</div>
+                    <div class="student-info">
+                        <h3>${student.name}</h3>
+                        <p>Class ${student.class}</p>
+                    </div>
+                </div>
+                
+                <div class="student-stats" style="margin-bottom: 2rem;">
+                    <div class="stat">
+                        <div class="stat-number">${student.gamesPlayed}</div>
+                        <div class="stat-label">Games Played</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">${student.avgScore}%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">${student.achievements}</div>
+                        <div class="stat-label">Achievements</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">${Math.round((student.gamesPlayed / 30) * 100)}%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(26, 115, 232, 0.1) 0%, rgba(13, 71, 161, 0.1) 100%); padding: 1.5rem; border-radius: 12px;">
+                    <h4 style="color: var(--primary-color); margin-top: 0;">Recommendations</h4>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>Focus on weak areas in Math</li>
+                        <li>Increase daily learning time</li>
+                        <li>Encourage participation in group games</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('studentDetailContent').innerHTML = detailHTML;
+            document.getElementById('studentModal').style.display = 'block';
+        }
+        
+        // Close Modal
+        function closeModal() {
+            document.getElementById('studentModal').style.display = 'none';
+        }
+        
+        // Export Report
+        function exportReport(type) {
+            alert(`Exporting ${type} report... (PDF functionality coming soon)`);
+        }
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Logging out...');
+            window.location.href = 'index.html';
+        });
+        
+        // Initialize dashboard
+        loadOverview();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Challenge</title>
+    <style>
+        /* --- CSS Variables for Theming (Added for dark mode support) --- */
+        :root {
+            --bg-color-light: #f7f9fc;
+            --card-bg-light: #ffffff;
+            --question-box-bg: #e8f0fe;
+            --text-color-light: #333;
+            --text-color-secondary: #666;
+            --primary-color: #1a73e8;
+            --option-bg: #f0f4f8;
+            --option-hover-bg: #d1e3f8;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-theme {
+            --bg-color-light: #121212;
+            --card-bg-light: #1e1e1e;
+            --question-box-bg: #3a3a3a;
+            --text-color-light: #f0f0f0;
+            --text-color-secondary: #b0b0b0;
+            --primary-color: #4da6ff;
+            --option-bg: #2c2c2c;
+            --option-hover-bg: #444444;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .quiz-container {
+            background-color: var(--card-bg-light);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 2px solid var(--text-color-secondary);
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+        .question-box {
+            min-height: 100px;
+            background-color: var(--question-box-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-color-light);
+            text-align: center;
+        }
+        .options-list {
+            display: grid;
+            gap: 1rem;
+            list-style: none;
+            padding: 0;
+        }
+        .option-item {
+            background-color: var(--option-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+            text-align: left;
+            color: var(--text-color-light);
+        }
+        .option-item:hover {
+            background-color: var(--option-hover-bg);
+            transform: translateY(-2px);
+        }
+        .option-item.correct {
+            background-color: #a8e6cf;
+            pointer-events: none;
+            color: #1e293b;
+        }
+        .option-item.incorrect {
+            background-color: #ff9999;
+            pointer-events: none;
+            color: #1e293b;
+        }
+        .next-button {
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .next-button:hover {
+            background-color: #45a049;
+        }
+        .feedback {
+            margin-top: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .end-game-buttons {
+            display: none;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .game-button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        #play-again-button {
+            background-color: #3498db;
+        }
+        #go-back-button {
+            background-color: #f08080;
+        }
+        #play-again-button:hover {
+            background-color: #2980b9;
+        }
+        #go-back-button:hover {
+            background-color: #cd5c5c;
+        }
+        
+        /* Adaptive Feedback Styling */
+        #adaptive-feedback {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.5;
+        }
+        #adaptive-feedback.low-score {
+            background-color: #fff3cd; /* Yellow for low score */
+            color: #856404;
+        }
+        #adaptive-feedback.high-score {
+            background-color: #d4edda; /* Green for high score */
+            color: #155724;
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="quiz-container">
+        <h1>Quiz Challenge</h1>
+        <div class="stats-bar">
+            <span>Question: <span id="question-number">1 / 10</span></span>
+            <span>Time: <span id="timer">01:00</span></span>
+        </div>
+        <div id="question-box" class="question-box"></div>
+        <ul id="options-list" class="options-list"></ul>
+        <p id="feedback-message" class="feedback"></p>
+        <button id="next-button" class="next-button" style="display:none;">Next Question</button>
+        <div id="results-section">
+             <div id="adaptive-feedback" style="display:none;"></div>
+             <div id="end-game-buttons" class="end-game-buttons">
+                <button id="play-again-button" class="game-button">Play Again</button>
+                <button id="go-back-button" class="game-button">Go Back to Subjects</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- THEME SWITCHING LOGIC (Applied on load) ---
+        const body = document.body;
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+        } else {
+            body.classList.remove('dark-theme');
+        }
+        // --- END THEME SWITCHING LOGIC ---
+
+        // --- URL PARAMETERS AND QUIZ DATA SETUP ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('quizId');
+        const subjectId = urlParams.get('subject'); // NEW: Capture the subject ID
+        
+        const quizData = {
+                // ========================================================================================================
+    //                                         CLASS 1 QUIZ DATA (10 Quizzes per Subject)
+    // ========================================================================================================
+
+    // --- ENGLISH (Class 1) ---
+            'c1e1': { // Alphabet & Phonics Quiz
+                name: "Alphabet & Phonics Quiz (Class 1)",
+                questions: [
+                    { question: "Which letter comes after E?", options: ["F", "D", "G", "H"], answer: "F" },
+                    { question: "What is the first letter of the alphabet?", options: ["B", "Z", "A", "C"], answer: "A" },
+                    { question: "Which letter is a vowel?", options: ["S", "T", "U", "R"], answer: "U" },
+                    { question: "How many letters are in the word 'CAT'?", options: ["2", "3", "4", "5"], answer: "3" },
+                    { question: "Which letter comes before M?", options: ["L", "N", "K", "O"], answer: "L" },
+                    { question: "What letter starts the word 'APPLE'?", options: ["B", "P", "L", "A"], answer: "A" },
+                    { question: "How many vowels are in the alphabet?", options: ["4", "5", "6", "7"], answer: "5" },
+                    { question: "What letter is between C and E?", options: ["F", "D", "G", "B"], answer: "D" },
+                    { question: "Which word starts with the sound 'buh'?", options: ["Sun", "Ball", "Cat", "Fish"], answer: "Ball" },
+                    { question: "Which sound does 'sh' make?", options: ["ss", "ch", "shh", "zz"], answer: "shh" }
+                ]
+            },
+            'c1e2': { // Rhyming Words Challenge (RHYME)
+                name: "Rhyming Words Challenge (Class 1)",
+                questions: [
+                    { question: "Which word rhymes with 'CAT'?", options: ["Dog", "Bat", "Sun", "Hat"], answer: "Bat" },
+                    { question: "Which word rhymes with 'SUN'?", options: ["Moon", "Run", "Star", "Fun"], answer: "Run" },
+                    { question: "Which word rhymes with 'BOX'?", options: ["Fox", "Car", "Tree", "Book"], answer: "Fox" },
+                    { question: "Which word rhymes with 'RED'?", options: ["Bed", "Blue", "Green", "White"], answer: "Bed" },
+                    { question: "Which word rhymes with 'BALL'?", options: ["Toy", "Call", "Wall", "All"], answer: "All" },
+                    { question: "Which word rhymes with 'CAR'?", options: ["Bus", "Star", "Far", "Bar"], answer: "Star" },
+                    { question: "Which word rhymes with 'MOON'?", options: ["Spoon", "June", "Sun", "None"], answer: "Spoon" },
+                    { question: "Which word rhymes with 'LIGHT'?", options: ["Day", "Bright", "Dark", "Fight"], answer: "Bright" },
+                    { question: "Which word rhymes with 'BIRD'?", options: ["Word", "Fly", "Feather", "Sing"], answer: "Word" },
+                    { question: "Which word rhymes with 'CUP'?", options: ["Top", "Up", "Down", "Lid"], answer: "Up" }
+                ]
+            },
+            'c1e3': { // Sight Words Quiz (SIGHT)
+                name: "Sight Words Quiz (Class 1)",
+                questions: [
+                    { question: "Which is the sight word for 'I'?", options: ["i", "I", "me", "my"], answer: "I" },
+                    { question: "The word 'is' is used for one or many things?", options: ["One", "Many", "Both", "None"], answer: "One" },
+                    { question: "Which of these is a sight word?", options: ["Table", "Apple", "The", "Jump"], answer: "The" },
+                    { question: "Complete the sentence: 'She ___ happy.'", options: ["are", "is", "am", "go"], answer: "is" },
+                    { question: "What sight word means 'not here'?", options: ["in", "on", "out", "up"], answer: "out" },
+                    { question: "The word 'and' is used to join things. True or False?", options: ["True", "False", "Maybe", "Don't know"], answer: "True" },
+                    { question: "Which word means 'to see'?", options: ["look", "listen", "touch", "smell",], answer: "look" },
+                    { question: "Select the correct word: 'A ___ car.'", options: ["big", "run", "eat", "sleep"], answer: "big" },
+                    { question: "The word 'we' means more than one person. True or False?", options: ["True", "False", "Maybe", "Don't know"], answer: "True" },
+                    { question: "Which of these is a common sight word?", options: ["Elephant", "School", "Can", "Teacher"], answer: "Can" }
+                ]
+            },
+            'c1e4': { // Naming Words (NOUNS)
+                name: "Naming Words (Nouns) Quiz (Class 1)",
+                questions: [
+                    { question: "Which word is a Naming Word (Noun)?", options: ["Run", "Happy", "Dog", "Quickly"], answer: "Dog" },
+                    { question: "Which is the name of a Place?", options: ["Eat", "Sleep", "Park", "Tall"], answer: "Park" },
+                    { question: "Find the Noun: 'I have a big ball.'", options: ["I", "have", "big", "ball"], answer: "ball" },
+                    { question: "The word 'Teacher' is a:", options: ["Verb", "Noun", "Adjective", "Action"], answer: "Noun" },
+                    { question: "Which word names a Thing?", options: ["Jump", "Book", "See", "Blue"], answer: "Book" },
+                    { question: "Which is the name of a Person?", options: ["Tree", "Sing", "Mother", "Loud"], answer: "Mother" },
+                    { question: "Is 'Chair' a Noun? (Yes/No)", options: ["Yes", "No", "Maybe", "Only if it moves"], answer: "Yes" },
+                    { question: "Find the Naming Word: 'We play in the garden.'", options: ["We", "play", "in", "garden"], answer: "garden" },
+                    { question: "Which names an Animal?", options: ["Table", "Car", "Lion", "Water"], answer: "Lion" },
+                    { question: "The word 'Friend' is the name of a:", options: ["Place", "Action", "Person", "Thing"], answer: "Person" }
+                ]
+            },
+            'c1e5': { // Doing Words (VERBS)
+                name: "Doing Words (Verbs) Quiz (Class 1)",
+                questions: [
+                    { question: "Which word is a Doing Word (Verb)?", options: ["Apple", "Jump", "Yellow", "School"], answer: "Jump" },
+                    { question: "Find the action word: 'Birds sing sweetly.'", options: ["Birds", "sing", "sweetly", "None"], answer: "sing" },
+                    { question: "Which word shows an Action?", options: ["Cat", "Sleep", "Box", "Green"], answer: "Sleep" },
+                    { question: "The word 'Eat' is a:", options: ["Noun", "Verb", "Place", "Thing"], answer: "Verb" },
+                    { question: "Complete the sentence: 'The baby will ___.'", options: ["table", "cry", "happy", "big"], answer: "cry" },
+                    { question: "Which is a Doing Word?", options: ["House", "Run", "Milk", "Soft"], answer: "Run" },
+                    { question: "Find the Verb: 'My father drives a car.'", options: ["My", "father", "drives", "car"], answer: "drives" },
+                    { question: "Which word describes an Action?", options: ["Book", "Read", "Tree", "Smooth"], answer: "Read" },
+                    { question: "What is the action word in 'She dances well'?", options: ["She", "dances", "well", "None"], answer: "dances" },
+                    { question: "The word 'Fly' is a:", options: ["Place", "Thing", "Action", "Person"], answer: "Action" }
+                ]
+            },
+            'c1e6': { // Describing Words (ADJECTIVES)
+                name: "Describing Words (Adjectives) Quiz (Class 1)",
+                questions: [
+                    { question: "Which word is a Describing Word (Adjective)?", options: ["Walk", "Happy", "Book", "Quickly"], answer: "Happy" },
+                    { question: "Find the describing word: 'A **small** bird sang.'", options: ["A", "small", "bird", "sang"], answer: "small" },
+                    { question: "Which word describes 'Water'?", options: ["Jump", "Cold", "Eat", "Table"], answer: "Cold" },
+                    { question: "The word 'Blue' describes a:", options: ["Action", "Thing", "Place", "Quality"], answer: "Quality" },
+                    { question: "Complete the sentence: 'The sun is very ___.'", options: ["run", "hot", "sleep", "toy"], answer: "hot" },
+                    { question: "Which is a Describing Word?", options: ["Dog", "Big", "Chair", "Sing"], answer: "Big" },
+                    { question: "Find the Adjective: 'She has **long** hair.'", options: ["She", "has", "long", "hair"], answer: "long" },
+                    { question: "Which word can describe a 'Flower'?", options: ["Smell", "Beautiful", "Quickly", "Talk"], answer: "Beautiful" },
+                    { question: "Is 'Loud' a Describing Word? (Yes/No)", options: ["Yes", "No", "Maybe", "Only for animals"], answer: "Yes" },
+                    { question: "The word 'Five' (number) is a:", options: ["Action", "Adjective", "Noun", "Place"], answer: "Adjective" }
+                ]
+            },
+            'c1e7': { // Opposites (ANTONYMS)
+                name: "Opposites (Antonyms) Quiz (Class 1)",
+                questions: [
+                    { question: "What is the opposite of 'DAY'?", options: ["Light", "Sun", "Night", "Morning"], answer: "Night" },
+                    { question: "What is the opposite of 'UP'?", options: ["High", "Down", "Over", "Jump"], answer: "Down" },
+                    { question: "The opposite of 'BIG' is:", options: ["Large", "Small", "Tall", "Fat"], answer: "Small" },
+                    { question: "What is the opposite of 'HOT'?", options: ["Warm", "Cold", "Fire", "Spicy"], answer: "Cold" },
+                    { question: "The opposite of 'IN' is:", options: ["Out", "Under", "On", "Above"], answer: "Out" },
+                    { question: "The opposite of 'HAPPY' is:", options: ["Sad", "Glad", "Smile", "Fun"], answer: "Sad" },
+                    { question: "The opposite of 'OPEN' is:", options: ["Shut", "Start", "Go", "Move"], answer: "Shut" },
+                    { question: "What is the opposite of 'FAST'?", options: ["Quick", "Slow", "Run", "Walk"], answer: "Slow" },
+                    { question: "The opposite of 'NEW' is:", options: ["Old", "Fresh", "Used", "Start"], answer: "Old" },
+                    { question: "The opposite of 'TALL' is:", options: ["Big", "Short", "High", "Long"], answer: "Short" }
+                ]
+            },
+            'c1e8': { // Articles (A/An)
+                name: "Articles (A/An) Quiz (Class 1)",
+                questions: [
+                    { question: "Choose the correct article: '___ cat'", options: ["A", "An", "The", "None"], answer: "A" },
+                    { question: "Choose the correct article: '___ elephant'", options: ["A", "An", "The", "None"], answer: "An" },
+                    { question: "Choose the correct article: '___ ice cream'", options: ["A", "An", "The", "None"], answer: "An" },
+                    { question: "Choose the correct article: '___ house'", options: ["A", "An", "The", "None"], answer: "A" },
+                    { question: "Choose the correct article: '___ orange'", options: ["A", "An", "The", "None"], answer: "An" },
+                    { question: "Choose the correct article: '___ ball'", options: ["A", "An", "The", "None"], answer: "A" },
+                    { question: "Choose the correct article: '___ umbrella'", options: ["A", "An", "The", "None"], answer: "An" },
+                    { question: "Choose the correct article: '___ pen'", options: ["A", "An", "The", "None"], answer: "A" },
+                    { question: "Choose the correct article: '___ apple'", options: ["A", "An", "The", "None"], answer: "An" },
+                    { question: "Choose the correct article: '___ toy'", options: ["A", "An", "The", "None"], answer: "A" }
+                ]
+            },
+            'c1e9': { // Sentence Structure Basics
+                name: "Sentence Structure Basics (Class 1)",
+                questions: [
+                    { question: "Which part names the person/thing doing the action?", options: ["Verb", "Subject", "Object", "Adjective"], answer: "Subject" },
+                    { question: "Which word starts a sentence?", options: ["Verb", "Capital Letter", "Small Letter", "Question Mark"], answer: "Capital Letter" },
+                    { question: "A sentence ends with a: (Example)", options: ["Comma", "Full Stop (.)", "Semicolon", "Colon"], answer: "Full Stop (.)" },
+                    { question: "Is 'Run fast' a complete sentence?", options: ["Yes", "No", "Maybe", "Only if spoken loudly"], answer: "No" },
+                    { question: "The action part of a sentence is the:", options: ["Subject", "Object", "Verb", "Noun"], answer: "Verb" },
+                    { question: "Which word needs a capital letter: 'my book is fun'", options: ["my", "book", "is", "fun"], answer: "my" },
+                    { question: "Does a sentence need a Noun or Verb?", options: ["Only Noun", "Only Verb", "Both", "Neither"], answer: "Both" },
+                    { question: "What makes a sentence a question?", options: ["A comma", "A full stop", "A question mark (?)", "A capital letter"], answer: "A question mark (?)" },
+                    { question: "The sentence 'Birds fly' has two words. True or False?", options: ["True", "False", "Cannot tell", "Maybe"], answer: "True" },
+                    { question: "Identify the subject: 'The dog barked loudly.'", options: ["The", "dog", "barked", "loudly"], answer: "dog" }
+                ]
+            },
+            'c1e10': { // Punctuation Basics
+                name: "Punctuation Basics Quiz (Class 1)",
+                questions: [
+                    { question: "Which mark ends a simple statement?", options: ["?", "!", ".", ","], answer: "." },
+                    { question: "Which mark ends a question?", options: ["?", "!", ".", ","], answer: "?" },
+                    { question: "Which mark shows excitement?", options: ["?", "!", ".", ","], answer: "!" },
+                    { question: "Correct: 'i am happy'", options: ["i am happy!", "I am happy.", "I am happy?", "i am happy."], answer: "I am happy." },
+                    { question: "What is placed between items in a list?", options: [".", "!", ",", "?"], answer: "," },
+                    { question: "Which word should be capitalized: 'ram and sita'", options: ["ram", "and", "sita", "Both Ram and Sita"], answer: "Both Ram and Sita" },
+                    { question: "What mark is missing: 'I like red blue and green'", options: [".", "!", ",", "?"], answer: "," },
+                    { question: "The letter 'I' (meaning myself) is always:", options: ["Small", "Capital", "It depends", "Always 'i'"], answer: "Capital" },
+                    { question: "Correct: 'look a big car'", options: ["Look! a big car.", "Look, a big car.", "Look a big car.", "Look! A big car!"], answer: "Look! A big car!" },
+                    { question: "The full stop is used for a:", options: ["Question", "Shout", "Statement", "List"], answer: "Statement" }
+                ]
+            },
+            
+            // --- MATHS (Class 1) ---
+            'c1m1': { // Number Counting (1-100)
+                name: "Number Counting (1-100) (Class 1)",
+                questions: [
+                    { question: "What is 5 + 3?", options: ["7", "8", "9", "10"], answer: "8" },
+                    { question: "What number comes after 9?", options: ["8", "10", "11", "12"], answer: "10" },
+                    { question: "What is 10 - 4?", options: ["5", "6", "7", "8"], answer: "6" },
+                    { question: "Which is the smallest number: 12, 5, 20?", options: ["12", "5", "20", "They are equal"], answer: "5" },
+                    { question: "Count forward from 18. What is the next number?", options: ["19", "17", "20", "21"], answer: "19" },
+                    { question: "How many tens are in the number 30?", options: ["1", "2", "3", "4"], answer: "3" },
+                    { question: "What is 1 + 1 + 1?", options: ["2", "3", "4", "5"], answer: "3" },
+                    { question: "Which number is between 15 and 17?", options: ["14", "16", "18", "19"], answer: "16" },
+                    { question: "What is 7 minus 2?", options: ["4", "5", "6", "7"], answer: "5" },
+                    { question: "What is the sum of 6 and 4?", options: ["9", "10", "11", "12"], answer: "10" }
+                ]
+            },
+            'c1m2': { // Basic Addition & Subtraction
+                name: "Basic Addition & Subtraction (Class 1)",
+                questions: [
+                    { question: "What is 4 + 4?", options: ["7", "8", "9", "10"], answer: "8" },
+                    { question: "If you have 5 candies and eat 3, how many are left?", options: ["1", "2", "3", "4"], answer: "2" },
+                    { question: "Find the missing number: 6 + ___ = 10", options: ["3", "4", "5", "6"], answer: "4" },
+                    { question: "Which is greater: 10 + 2 or 15 - 1?", options: ["10 + 2", "15 - 1", "They are equal", "Cannot say"], answer: "15 - 1" },
+                    { question: "A shop has 7 red balls and 3 blue balls. How many balls in total?", options: ["9", "10", "11", "12"], answer: "10" },
+                    { question: "What is 9 - 9?", options: ["1", "0", "9", "18"], answer: "0" },
+                    { question: "Add 1 to 14.", options: ["13", "14", "15", "16"], answer: "15" },
+                    { question: "Subtract 5 from 8.", options: ["2", "3", "4", "5"], answer: "3" },
+                    { question: "What is 2 + 3 + 4?", options: ["7", "8", "9", "10"], answer: "9" },
+                    { question: "What is 10 - 5 - 5?", options: ["0", "5", "10", "15"], answer: "0" }
+                ]
+            },
+            'c1m3': { // Shape Identification Quiz
+                name: "Shape Identification Quiz (Class 1)",
+                questions: [
+                    { question: "What shape has 3 sides?", options: ["Square", "Circle", "Triangle", "Rectangle"], answer: "Triangle" },
+                    { question: "Which shape is round?", options: ["Square", "Circle", "Triangle", "Star"], answer: "Circle" },
+                    { question: "What shape has 4 equal sides?", options: ["Rectangle", "Square", "Triangle", "Oval"], answer: "Square" },
+                    { question: "A door is usually what shape?", options: ["Triangle", "Circle", "Rectangle", "Square"], answer: "Rectangle" },
+                    { question: "Which shape has no corners?", options: ["Circle", "Square", "Triangle", "Hexagon"], answer: "Circle" },
+                    { question: "What shape is a slice of pizza?", options: ["Square", "Circle", "Triangle", "Oval"], answer: "Triangle" },
+                    { question: "How many sides does a rectangle have?", options: ["2", "3", "4", "5"], answer: "4" },
+                    { question: "A coin is what shape?", options: ["Circle", "Square", "Oval", "Star"], answer: "Circle" },
+                    { question: "Which shape is a 3D ball (sphere) like?", options: ["Circle", "Square", "Triangle", "Cube"], answer: "Circle" },
+                    { question: "What shape is a television screen?", options: ["Circle", "Triangle", "Rectangle", "Square"], answer: "Rectangle" }
+                ]
+            },
+            'c1m4': { // Comparing Numbers
+                name: "Comparing Numbers (Greater/Smaller) (Class 1)",
+                questions: [
+                    { question: "Which number is greater: 15 or 5?", options: ["15", "5", "Equal", "Cannot tell"], answer: "15" },
+                    { question: "Which number is smaller: 9 or 19?", options: ["9", "19", "Equal", "Cannot tell"], answer: "9" },
+                    { question: "Fill the blank: 7 ___ 17 (Greater than/Smaller than)", options: ["Greater than", "Smaller than", "Equal to", "None"], answer: "Smaller than" },
+                    { question: "Which number is greater: 21 or 12?", options: ["21", "12", "Equal", "Cannot tell"], answer: "21" },
+                    { question: "Which number is smaller: 10 or 8?", options: ["10", "8", "Equal", "Cannot tell"], answer: "8" },
+                    { question: "Is 10 + 5 equal to 15? (Yes/No)", options: ["Yes", "No", "Maybe", "Only sometimes"], answer: "Yes" },
+                    { question: "The number 10 is the sum of 5 and ___.", options: ["3", "4", "5", "6"], answer: "5" },
+                    { question: "Which is the largest number: 4, 14, 2?", options: ["4", "14", "2", "All equal"], answer: "14" },
+                    { question: "Which is the smallest number: 1, 10, 20?", options: ["1", "10", "20", "All equal"], answer: "1" },
+                    { question: "Which is the smallest number: 6+1 or 10-2?", options: ["6+1", "10-2", "They are equal", "Cannot say"], answer: "6+1" }
+                ]
+            },
+            'c1m5': { // Tens and Ones
+                name: "Tens and Ones (Place Value) (Class 1)",
+                questions: [
+                    { question: "In the number 13, how many 'Ones' are there?", options: ["1", "3", "10", "0"], answer: "3" },
+                    { question: "In the number 25, what digit is in the 'Tens' place?", options: ["2", "5", "0", "1"], answer: "2" },
+                    { question: "What number is made of 1 Ten and 7 Ones?", options: ["71", "17", "70", "10"], answer: "17" },
+                    { question: "How many ones are in 1 Ten?", options: ["1", "5", "10", "0"], answer: "10" },
+                    { question: "What is the place value of 4 in 49?", options: ["Ones", "Tens", "Hundreds", "Thousands"], answer: "Tens" },
+                    { question: "The number 50 has 5 Tens and ___ Ones.", options: ["0", "5", "10", "50"], answer: "0" },
+                    { question: "The number 19 is 1 Ten and ___ Ones.", options: ["1", "9", "0", "10"], answer: "9" },
+                    { question: "What is 2 Tens and 3 Ones?", options: ["23", "32", "5", "20"], answer: "23" },
+                    { question: "The number 8 is just 8 Ones. True or False?", options: ["True", "False", "Maybe", "Only in summer"], answer: "True" },
+                    { question: "In the number 30, what is the value of the digit '3'?", options: ["3", "30", "300", "3000"], answer: "30" }
+                ]
+            },
+            'c1m6': { // Missing Numbers (Sequencing)
+                name: "Missing Numbers (Sequencing) (Class 1)",
+                questions: [
+                    { question: "What number is missing: 1, 2, __, 4, 5?", options: ["3", "6", "0", "7"], answer: "3" },
+                    { question: "What number is missing: 10, __, 30, 40?", options: ["15", "20", "25", "35"], answer: "20" },
+                    { question: "What number comes before 10?", options: ["8", "9", "11", "0"], answer: "9" },
+                    { question: "What number comes after 19?", options: ["18", "20", "21", "10"], answer: "20" },
+                    { question: "Count backwards: 5, 4, 3, __, 1.", options: ["0", "2", "6", "10"], answer: "2" },
+                    { question: "The next number in the series 1, 3, 5, is:", options: ["6", "7", "8", "9"], answer: "7" },
+                    { question: "What is the number missing in 2, 4, __, 8?", options: ["5", "6", "7", "9"], answer: "6" },
+                    { question: "If you skip count by 5, what comes after 5?", options: ["6", "10", "15", "50"], answer: "10" },
+                    { question: "What number comes between 49 and 51?", options: ["48", "50", "52", "60"], answer: "50" },
+                    { question: "The number before 31 is:", options: ["30", "32", "40", "29"], answer: "30" }
+                ]
+            },
+            'c1m7': { // Money (Basic Concept)
+                name: "Money (Basic Concept) Quiz (Class 1)",
+                questions: [
+                    { question: "Which coin is bigger than a ₹ 1 coin?", options: ["₹ 5 coin", "₹ 1 coin", "50 paisa coin", "None"], answer: "₹ 5 coin" },
+                    { question: "How many ₹ 1 coins make ₹ 2?", options: ["1", "2", "3", "4"], answer: "2" },
+                    { question: "If a pencil costs ₹ 3, and you have ₹ 5, how much change do you get back?", options: ["₹ 1", "₹ 2", "₹ 3", "₹ 5"], answer: "₹ 2" },
+                    { question: "Which is a note (paper money)?", options: ["₹ 2 coin", "₹ 10 note", "₹ 5 coin", "50 paisa coin"], answer: "₹ 10 note" },
+                    { question: "If you buy two items of ₹ 5 each, how much is the total?", options: ["₹ 5", "₹ 10", "₹ 15", "₹ 20"], answer: "₹ 10" },
+                    { question: "Which is the lowest value coin?", options: ["₹ 5", "₹ 1", "50 paisa", "₹ 10"], answer: "50 paisa" },
+                    { question: "We use money to buy things. True or False?", options: ["True", "False", "Maybe", "Only sometimes"], answer: "True" },
+                    { question: "A ₹ 5 coin and two ₹ 1 coins make a total of:", options: ["₹ 6", "₹ 7", "₹ 8", "₹ 9"], answer: "₹ 7" },
+                    { question: "Is a ₹ 20 note paper or metal?", options: ["Paper", "Metal", "Plastic", "Both"], answer: "Paper" },
+                    { question: "Which is worth more: ₹ 10 or ₹ 5?", options: ["₹ 10", "₹ 5", "They are equal", "Cannot say"], answer: "₹ 10" }
+                ]
+            },
+            'c1m8': { // Measurement (Length)
+                name: "Measurement (Length) Quiz (Class 1)",
+                questions: [
+                    { question: "Which is usually used to measure the length of a pencil?", options: ["Weight", "Handspan", "Litre", "Kilogram"], answer: "Handspan" },
+                    { question: "Which is longer: your hand or your finger?", options: ["Hand", "Finger", "Equal", "Cannot tell"], answer: "Hand" },
+                    { question: "Which is taller: a child or an adult?", options: ["Child", "Adult", "Equal", "Cannot tell"], answer: "Adult" },
+                    { question: "We measure length using ___.", options: ["Hands/Feet", "Cups", "Clocks", "Coins"], answer: "Hands/Feet" },
+                    { question: "The length of a room can be measured using your:", options: ["Fingers", "Steps", "Hair", "Nose"], answer: "Steps" },
+                    { question: "The term 'long' refers to:", options: ["Weight", "Time", "Length", "Taste"], answer: "Length" },
+                    { question: "Which animal is usually shorter?", options: ["Giraffe", "Elephant", "Dog", "Horse"], answer: "Dog" },
+                    { question: "Which is shorter: a snake or an earthworm?", options: ["Snake", "Earthworm", "Equal", "Cannot tell"], answer: "Earthworm" },
+                    { question: "We use a measuring tape to measure:", options: ["Weight", "Length", "Volume", "Sound"], answer: "Length" },
+                    { question: "Which is heavier: a feather or a book?", options: ["Feather", "Book", "Equal", "Cannot tell"], answer: "Book" }
+                ]
+            },
+            'c1m9': { // Time (Day and Night)
+                name: "Time (Day and Night) Quiz (Class 1)",
+                questions: [
+                    { question: "When does the sun rise?", options: ["Morning", "Afternoon", "Evening", "Night"], answer: "Morning" },
+                    { question: "When do you usually go to sleep?", options: ["Morning", "Noon", "Afternoon", "Night"], answer: "Night" },
+                    { question: "Which comes first: Morning or Evening?", options: ["Morning", "Evening", "Both", "They are same"], answer: "Morning" },
+                    { question: "How many hours are in one day?", options: ["12", "24", "60", "30"], answer: "24" },
+                    { question: "What do you see in the sky at night?", options: ["Sun", "Moon and Stars", "Rainbow", "Clouds"], answer: "Moon and Stars" },
+                    { question: "When do you have lunch?", options: ["Morning", "Noon/Afternoon", "Evening", "Night"], answer: "Noon/Afternoon" },
+                    { question: "A week has how many days?", options: ["5", "7", "10", "12"], answer: "7" },
+                    { question: "Which activity takes the least time?", options: ["Sleeping", "Eating an apple", "Watching a movie", "Playing football"], answer: "Eating an apple" },
+                    { question: "The time between sunrise and sunset is called:", options: ["Night", "Day", "Midnight", "Evening"], answer: "Day" },
+                    { question: "What is the day after Monday?", options: ["Sunday", "Tuesday", "Wednesday", "Saturday"], answer: "Tuesday" }
+                ]
+            },
+            'c1m10': { // Data Handling (Sorting/Counting)
+                name: "Data Handling (Sorting/Counting) (Class 1)",
+                questions: [
+                    { question: "If you have 3 red pencils and 2 blue pencils, how many pencils in total?", options: ["3", "5", "2", "6"], answer: "5" },
+                    { question: "Sorting things means putting them in ___.", options: ["A big box", "A line", "Groups", "Your pocket"], answer: "Groups" },
+                    { question: "If you group toys by color, you are using which skill?", options: ["Addition", "Measurement", "Data Handling", "Drawing"], answer: "Data Handling" },
+                    { question: "If 4 kids like apples and 3 kids like bananas, which fruit is more popular?", options: ["Apples", "Bananas", "Equal", "Cannot tell"], answer: "Apples" },
+                    { question: "We can sort objects by size, color, or ___.", options: ["Name", "Shape", "Time", "Money"], answer: "Shape" },
+                    { question: "Counting helps us to collect:", options: ["Stories", "Data", "Games", "Friends"], answer: "Data" },
+                    { question: "If you list all your red toys, you are collecting data by:", options: ["Size", "Shape", "Color", "Weight"], answer: "Color" },
+                    { question: "A group of things that are the same is called a:", options: ["Pile", "Set", "Mess", "Box"], answer: "Set" },
+                    { question: "If 2 children are wearing red, and 5 are wearing blue, how many are wearing colors other than red?", options: ["2", "5", "7", "3"], answer: "5" },
+                    { question: "Which step comes first: Count or Group?", options: ["Count", "Group", "Both at same time", "Neither"], answer: "Count" }
+                ]
+            },
+
+            // --- EVS (Class 1) ---
+            'c1v1': { // My Body & Family Quiz
+                name: "My Body & Family Quiz (Class 1)",
+                questions: [
+                    { question: "How many eyes do you have?", options: ["1", "2", "3", "4"], answer: "2" },
+                    { question: "Which body part helps you walk?", options: ["Hands", "Ears", "Legs", "Nose"], answer: "Legs" },
+                    { question: "Which sense do you use to smell a flower?", options: ["Sight", "Smell", "Hearing", "Taste"], answer: "Smell" },
+                    { question: "Who is your mother's husband?", options: ["Brother", "Father", "Uncle", "Grandfather"], answer: "Father" },
+                    { question: "Which part of the body helps you taste food?", options: ["Nose", "Tongue", "Eyes", "Skin"], answer: "Tongue" },
+                    { question: "Who is your father's mother?", options: ["Mother", "Grandmother", "Aunt", "Sister"], answer: "Grandmother" },
+                    { question: "How many fingers do you have in one hand?", options: ["4", "5", "6", "10"], answer: "5" },
+                    { question: "What do you wear on your feet?", options: ["Hat", "Shirt", "Shoes", "Gloves"], answer: "Shoes" },
+                    { question: "Which animal says 'Meow'?", options: ["Dog", "Cat", "Cow", "Duck"], answer: "Cat" },
+                    { question: "What do you call the house you live in?", options: ["School", "Park", "Home", "Shop"], answer: "Home" }
+                ]
+            },
+            'c1v2': { // Needs of Living Things
+                name: "Needs of Living Things (Class 1)",
+                questions: [
+                    { question: "Which of these is a living thing?", options: ["A rock", "A plant", "A car", "A book"], answer: "A plant" },
+                    { question: "What do living things need to breathe?", options: ["Water", "Air", "Food", "Shelter"], answer: "Air" },
+                    { question: "Do non-living things need food?", options: ["Yes", "No", "Sometimes", "Only toys"], answer: "No" },
+                    { question: "Which of these can grow?", options: ["A chair", "A glass", "A bird", "A table"], answer: "A bird" },
+                    { question: "What do plants need to make their food?", options: ["Sugar", "Salt", "Sunlight", "Meat"], answer: "Sunlight" },
+                    { question: "Which animal eats grass?", options: ["Lion", "Tiger", "Cow", "Snake"], answer: "Cow" },
+                    { question: "What is the main source of water for us?", options: ["Rain", "River", "Ocean", "Tap"], answer: "Rain" },
+                    { question: "We wear clothes to protect us from:", options: ["Toys", "Weather", "Food", "Books"], answer: "Weather" },
+                    { question: "Where does a bird live?", options: ["Den", "Nest", "Hole", "Barn"], answer: "Nest" },
+                    { question: "Which food item gives us energy to play?", options: ["Chips", "Vegetables", "Sweets", "All of these"], answer: "Vegetables" }
+                ]
+            },
+            'c1v3': { // Food We Eat
+                name: "Food We Eat Quiz (Class 1)",
+                questions: [
+                    { question: "Which food gives us energy to work and play?", options: ["Milk", "Bread", "Water", "Salad"], answer: "Bread" },
+                    { question: "Which of these is a fruit?", options: ["Potato", "Carrot", "Apple", "Onion"], answer: "Apple" },
+                    { question: "We get eggs from which animal?", options: ["Cow", "Hen", "Fish", "Dog"], answer: "Hen" },
+                    { question: "Which meal do you eat in the morning?", options: ["Lunch", "Dinner", "Breakfast", "Snack"], answer: "Breakfast" },
+                    { question: "Which food keeps our bones strong?", options: ["Candy", "Soda", "Milk", "Chips"], answer: "Milk" },
+                    { question: "Is water a food item? (Yes/No)", options: ["Yes", "No", "Sometimes", "Only for plants"], answer: "No" },
+                    { question: "Food that helps us grow is rich in ___.", options: ["Fat", "Sugar", "Protein", "Water"], answer: "Protein" },
+                    { question: "Which is a vegetarian food item?", options: ["Chicken", "Fish", "Rice", "Meat"], answer: "Rice" },
+                    { question: "We should eat food that is:", options: ["Stale", "Dirty", "Fresh", "Expired"], answer: "Fresh" },
+                    { question: "Which of these is usually cooked before eating?", options: ["Carrot", "Mango", "Rice", "Banana"], answer: "Rice" }
+                ]
+            },
+            'c1v4': { // Air, Water, and Weather
+                name: "Air, Water, and Weather (Class 1)",
+                questions: [
+                    { question: "We need ___ to breathe.", options: ["Water", "Air", "Sand", "Fire"], answer: "Air" },
+                    { question: "Rain is a form of:", options: ["Food", "Water", "Air", "Heat"], answer: "Water" },
+                    { question: "Which weather is very hot?", options: ["Rainy", "Cold", "Windy", "Summer"], answer: "Summer" },
+                    { question: "When is the day short and the night long?", options: ["Summer", "Winter", "Rainy", "Spring"], answer: "Winter" },
+                    { question: "What covers most of the Earth's surface?", options: ["Land", "Water", "Plants", "Buildings"], answer: "Water" },
+                    { question: "Which color is the sky usually on a sunny day?", options: ["Green", "Blue", "Red", "Black"], answer: "Blue" },
+                    { question: "What is the air in motion called?", options: ["Smoke", "Cloud", "Wind", "Dust"], answer: "Wind" },
+                    { question: "We should drink ___ water.", options: ["Dirty", "Boiled/Clean", "Salty", "Hot"], answer: "Boiled/Clean" },
+                    { question: "What do we wear in the rainy season?", options: ["Woollen clothes", "T-shirts", "Raincoat", "Gloves"], answer: "Raincoat" },
+                    { question: "We cannot see air. True or False?", options: ["True", "False", "Maybe", "Only at night"], answer: "True" }
+                ]
+            },
+            'c1v5': { // Plants Around Us
+                name: "Plants Around Us Quiz (Class 1)",
+                questions: [
+                    { question: "Which part of a plant is often colorful?", options: ["Root", "Stem", "Leaf", "Flower"], answer: "Flower" },
+                    { question: "Which part of the plant grows underground?", options: ["Fruit", "Flower", "Stem", "Root"], answer: "Root" },
+                    { question: "Plants give us ___ to breathe.", options: ["Water", "Oxygen", "Food", "Soil"], answer: "Oxygen" },
+                    { question: "Trees are: (size)", options: ["Small", "Big and Strong", "Tiny", "Weak"], answer: "Big and Strong" },
+                    { question: "Which plant is short and has soft stems?", options: ["Tree", "Shrub", "Herb", "Creeper"], answer: "Herb" },
+                    { question: "What is the green part of a plant called?", options: ["Stem", "Leaf", "Root", "Flower"], answer: "Leaf" },
+                    { question: "Which of these is used to make furniture?", options: ["Flower", "Leaf", "Wood (from stem)", "Root"], answer: "Wood (from stem)" },
+                    { question: "We get fruits and vegetables from ___.", options: ["Animals", "Plants", "Rocks", "Water"], answer: "Plants" },
+                    { question: "Plants need sunlight to grow. True or False?", options: ["True", "False", "Only at night", "Only in winter"], answer: "True" },
+                    { question: "Which plant needs support to climb?", options: ["Tree", "Shrub", "Climber", "Herb"], answer: "Climber" }
+                ]
+            },
+            'c1v6': { // Animals Around Us
+                name: "Animals Around Us Quiz (Class 1)",
+                questions: [
+                    { question: "Which animal gives us milk?", options: ["Dog", "Cat", "Cow", "Tiger"], answer: "Cow" },
+                    { question: "Which animal barks?", options: ["Cat", "Dog", "Sheep", "Hen"], answer: "Dog" },
+                    { question: "Where does a lion live?", options: ["Nest", "Hole", "Den", "House"], answer: "Den" },
+                    { question: "Which animal is used for riding and carrying loads?", options: ["Fish", "Rabbit", "Horse", "Sparrow"], answer: "Horse" },
+                    { question: "Which animal is a pet?", options: ["Lion", "Elephant", "Cat", "Zebra"], answer: "Cat" },
+                    { question: "What is a baby hen called?", options: ["Pup", "Kitten", "Chick", "Calf"], answer: "Chick" },
+                    { question: "Animals that live with us in our houses are called ___ animals.", options: ["Wild", "Domestic", "Water", "Zoo"], answer: "Domestic" },
+                    { question: "Which animal has stripes (black and white lines)?", options: ["Cow", "Elephant", "Zebra", "Dog"], answer: "Zebra" },
+                    { question: "Which animal lives in water?", options: ["Monkey", "Fish", "Goat", "Tiger"], answer: "Fish" },
+                    { question: "Which animal says 'Moo'?", options: ["Dog", "Cow", "Duck", "Cat"], answer: "Cow" }
+                ]
+            },
+            'c1v7': { // Our Helpers
+                name: "Our Helpers Quiz (Class 1)",
+                questions: [
+                    { question: "Who teaches you in school?", options: ["Doctor", "Police", "Teacher", "Farmer"], answer: "Teacher" },
+                    { question: "Who treats you when you are sick?", options: ["Tailor", "Doctor", "Postman", "Barber"], answer: "Doctor" },
+                    { question: "Who cuts your hair?", options: ["Cobbler", "Barber", "Pilot", "Gardener"], answer: "Barber" },
+                    { question: "Who makes furniture from wood?", options: ["Plumber", "Carpenter", "Electrician", "Shopkeeper"], answer: "Carpenter" },
+                    { question: "Who grows food crops for us?", options: ["Soldier", "Farmer", "Sweeper", "Chef"], answer: "Farmer" },
+                    { question: "Who wears a uniform to maintain law and order?", options: ["Teacher", "Police", "Baker", "Driver"], answer: "Police" },
+                    { question: "Who mends your shoes?", options: ["Tailor", "Cobbler", "Postman", "Carpenter"], answer: "Cobbler" },
+                    { question: "Who delivers letters to your home?", options: ["Milkman", "Grocer", "Postman", "Teacher"], answer: "Postman" },
+                    { question: "Who builds houses for us?", options: ["Pilot", "Engineer", "Mason", "Driver"], answer: "Mason" },
+                    { question: "Who sews our clothes?", options: ["Barber", "Tailor", "Doctor", "Farmer"], answer: "Tailor" }
+                ]
+            },
+            'c1v8': { // Places in Our Neighbourhood
+                name: "Places in Our Neighbourhood (Class 1)",
+                questions: [
+                    { question: "Where do you go to study?", options: ["Market", "Park", "School", "Hospital"], answer: "School" },
+                    { question: "Where do you go to buy vegetables?", options: ["Police Station", "Market", "School", "Post Office"], answer: "Market" },
+                    { question: "Where do you go when you are hurt?", options: ["Park", "Library", "Hospital", "Temple"], answer: "Hospital" },
+                    { question: "Where do you go to play games outside?", options: ["School", "Park", "Bank", "Post Office"], answer: "Park" },
+                    { question: "Where can you buy stamps and send letters?", options: ["Market", "Hospital", "Post Office", "Fire Station"], answer: "Post Office" },
+                    { question: "A police station is important for:", options: ["Buying food", "Playing", "Safety", "Studying"], answer: "Safety" },
+                    { question: "Where is a library usually found?", options: ["Park", "Market", "School/College", "Zoo"], answer: "School/College" },
+                    { question: "A neighbourhood is a place where people ___.", options: ["Fight", "Work and live together", "Only sleep", "Only drive"], answer: "Work and live together" },
+                    { question: "Which place is used by a Fireman?", options: ["Hospital", "Fire Station", "School", "Zoo"], answer: "Fire Station" },
+                    { question: "The place where money is kept safe is called a:", options: ["Shop", "Bank", "Market", "Temple"], answer: "Bank" }
+                ]
+            },
+            'c1v9': { // Safety Rules
+                name: "Safety Rules Quiz (Class 1)",
+                questions: [
+                    { question: "Should you talk to strangers? (Yes/No)", options: ["Yes", "No", "Only if they give candy", "Only if they look friendly"], answer: "No" },
+                    { question: "Which light means 'Stop' for traffic?", options: ["Green", "Yellow", "Red", "Blue"], answer: "Red" },
+                    { question: "Should you play with sharp objects like blades?", options: ["Yes", "No", "Only with adult supervision", "It's fun"], answer: "No" },
+                    { question: "Where should you cross the road?", options: ["Anywhere", "Near a shop", "At the Zebra Crossing", "Running"], answer: "At the Zebra Crossing" },
+                    { question: "Should you open the door for a stranger when home alone?", options: ["Yes", "No", "Ask their name", "Open a little"], answer: "No" },
+                    { question: "Which light means 'Go' for traffic?", options: ["Green", "Yellow", "Red", "Orange"], answer: "Green" },
+                    { question: "Should you touch electric switches with wet hands?", options: ["Yes", "No", "Sometimes", "It's safe"], answer: "No" },
+                    { question: "If you get lost, whom should you ask for help?", options: ["A stranger", "A police officer or teacher", "Nobody", "Run away"], answer: "A police officer or teacher" },
+                    { question: "The best way to travel on a moving school bus is:", options: ["Standing up", "Sitting quietly", "Shouting", "Putting your head out"], answer: "Sitting quietly" },
+                    { question: "Should you jump on a sofa?", options: ["Yes", "No, it's dangerous", "Only if it's big", "Only when adults are watching"], answer: "No, it's dangerous" }
+                ]
+            },
+            'c1v10': { // Festivals and Celebrations
+                name: "Festivals and Celebrations (Class 1)",
+                questions: [
+                    { question: "Which is a festival of lights?", options: ["Holi", "Diwali", "Christmas", "Eid"], answer: "Diwali" },
+                    { question: "Holi is a festival of:", options: ["Lights", "Colours", "Sweets", "Gifts"], answer: "Colours" },
+                    { question: "Which festival celebrates the birth of Jesus Christ?", options: ["Diwali", "Eid", "Christmas", "Holi"], answer: "Christmas" },
+                    { question: "On which festival do people fly kites?", options: ["Diwali", "Makar Sankranti", "Holi", "Eid"], answer: "Makar Sankranti" },
+                    { question: "The national festival celebrated on August 15th is:", options: ["Republic Day", "Independence Day", "Gandhi Jayanti", "Holi"], answer: "Independence Day" },
+                    { question: "We eat a special sweet dish called 'Sevaiyan' on:", options: ["Diwali", "Holi", "Eid", "Christmas"], answer: "Eid" },
+                    { question: "On Republic Day, we celebrate the making of India's:", options: ["Freedom", "Constitution", "Army", "Food"], answer: "Constitution" },
+                    { question: "Which festival is celebrated by Hindus, Sikhs, and Jains?", options: ["Eid", "Christmas", "Diwali", "None"], answer: "Diwali" },
+                    { question: "Which festival is celebrated by lighting a Christmas Tree?", options: ["Holi", "Diwali", "Christmas", "Lohri"], answer: "Christmas" },
+                    { question: "Gandhi Jayanti is celebrated on:", options: ["Jan 26", "Aug 15", "Oct 2", "Nov 14"], answer: "Oct 2" }
+                ]
+            },
+
+            // --- HINDI (Class 1) ---
+            'c1h1': { // वर्णमाला ज्ञान (स्वर)
+                name: "वर्णमाला ज्ञान (स्वर) (कक्षा 1)",
+                questions: [
+                    { question: "हिन्दी वर्णमाला में पहला स्वर कौन सा है?", options: ["आ", "अ", "इ", "ई"], answer: "अ" },
+                    { question: "'ईख' (Sugarcane) किस स्वर से शुरू होता है?", options: ["अ", "आ", "इ", "ई"], answer: "ई" },
+                    { question: "अक्षर 'अ' के बाद कौन सा स्वर आता है?", options: ["इ", "ई", "आ", "उ"], answer: "आ" },
+                    { question: "कौन सा स्वर 'ओखली' (Mortar) शब्द में आता है?", options: ["ऐ", "ओ", "औ", "अं"], answer: "ओ" },
+                    { question: "कुल कितने स्वर होते हैं? (मानक संख्या)", options: ["10", "11", "12", "13"], answer: "11" },
+                    { question: "'ऋ' से कौन सा शब्द बनता है?", options: ["ईख", "आम", "ऋषि", "अंगूर"], answer: "ऋषि" },
+                    { question: "अक्षर 'ए' के बाद कौन सा स्वर आता है?", options: ["ई", "ओ", "ऐ", "अं"], answer: "ऐ" },
+                    { question: "'अंगूर' (Grapes) में कौन सा अनुस्वार आता है?", options: ["अं", "अः", "आं", "अ"], answer: "अं" },
+                    { question: "कौन सा स्वर 'ऊन' (Wool) शब्द में आता है?", options: ["उ", "ऊ", "ओ", "औ"], answer: "ऊ" },
+                    { question: "वर्णमाला में 'अं' और 'अः' क्या कहलाते हैं?", options: ["व्यंजन", "स्वर", "अयोगवाह", "मात्रा"], answer: "अयोगवाह" }
+                ]
+            },
+            'c1h2': { // वर्णमाला ज्ञान (व्यंजन)
+                name: "वर्णमाला ज्ञान (व्यंजन) (कक्षा 1)",
+                questions: [
+                    { question: "'क' के बाद कौन सा व्यंजन आता है?", options: ["ग", "ख", "घ", "च"], answer: "ख" },
+                    { question: "'टमाटर' (Tomato) का पहला अक्षर क्या है?", options: ["त", "ट", "प", "क"], answer: "ट" },
+                    { question: "'प' वर्ग का चौथा व्यंजन कौन सा है?", options: ["फ", "ब", "भ", "म"], answer: "भ" },
+                    { question: "अक्षर 'ज' के बाद कौन सा व्यंजन आता है?", options: ["झ", "ट", "ड", "ञ"], answer: "झ" },
+                    { question: "'य, र, ल, व' को क्या कहते हैं?", options: ["स्पर्श व्यंजन", "ऊष्म व्यंजन", "अंतःस्थ व्यंजन", "संयुक्त व्यंजन"], answer: "अंतःस्थ व्यंजन" },
+                    { question: "कौन सा अक्षर 'हल्के' आवाज़ वाला है (ऊष्म व्यंजन)?", options: ["क", "च", "श", "प"], answer: "श" },
+                    { question: "'क्ष, त्र, ज्ञ' क्या कहलाते हैं?", options: ["स्वर", "व्यंजन", "संयुक्त व्यंजन", "मात्रा"], answer: "संयुक्त व्यंजन" },
+                    { question: "'घ' से कौन सा शब्द शुरू होता है?", options: ["घर", "चम्मच", "नल", "पतंग"], answer: "घर" },
+                    { question: "'मछली' (Fish) किस व्यंजन से शुरू होती है?", options: ["न", "म", "ल", "प"], answer: "म" },
+                    { question: "'त्र' किन दो व्यंजनों से मिलकर बना है?", options: ["त् + र", "क + श", "ज + ञ", "श + र"], answer: "त् + र" }
+                ]
+            },
+            'c1h3': { // मात्राओं का अभ्यास
+                name: "मात्राओं का अभ्यास (कक्षा 1)",
+                questions: [
+                    { question: "'किताब' (Book) शब्द में कौन सी मात्रा है?", options: ["ि (छोटी इ)", "ी (बड़ी ई)", "ु (छोटा उ)", "ू (बड़ा ऊ)"], answer: "ि (छोटी इ)" },
+                    { question: "'आम' (Mango) शब्द में किस स्वर की मात्रा है?", options: ["अ", "आ", "इ", "ई"], answer: "आ" },
+                    { question: "'सूरज' (Sun) शब्द में कौन सी मात्रा है?", options: ["ि", "ी", "ु", "ू"], answer: "ू" },
+                    { question: "अक्षर 'म' पर 'ए' की मात्रा लगाने पर क्या बनेगा?", options: ["मी", "मा", "मू", "मे"], answer: "मे" },
+                    { question: "'कोयल' (Cuckoo) शब्द में कौन सी मात्रा है?", options: ["ो (ओ)", "ौ (औ)", "ा (आ)", "ु (उ)"], answer: "ो (ओ)" },
+                    { question: "'र' पर 'उ' की मात्रा कैसे लगाई जाती है?", options: ["रु", "रू", "रे", "रो"], answer: "रु" },
+                    { question: "कौन सा शब्द 'औ' की मात्रा से बना है?", options: ["केला", "कोन", "कौआ", "कमर"], answer: "कौआ" },
+                    { question: "'घोड़ा' (Horse) में 'ो' की मात्रा किस अक्षर पर है?", options: ["घ", "ड़", "ा", "ढ"], answer: "घ" },
+                    { question: "'ब' + 'ा' + 'त' से कौन सा शब्द बनेगा?", options: ["बित", "बात", "बुत", "बेत"], answer: "बात" },
+                    { question: "अक्षर 'क' पर कोई मात्रा नहीं है। इसे क्या कहते हैं?", options: ["मात्रा रहित", "स्वर रहित", "हलंत", "केवल व्यंजन"], answer: "मात्रा रहित" }
+                ]
+            },
+            'c1h4': { // दो और तीन अक्षरों वाले शब्द
+                name: "दो और तीन अक्षरों वाले शब्द (कक्षा 1)",
+                questions: [
+                    { question: "कौन सा शब्द दो अक्षरों से बना है?", options: ["कमल", "घर", "किताब", "लड़का"], answer: "घर" },
+                    { question: "तीन अक्षरों वाला शब्द चुनें:", options: ["बस", "जल", "नमक", "फल"], answer: "नमक" },
+                    { question: "अक्षरों को जोड़कर शब्द बनाओ: न + ल", options: ["नल", "पल", "चल", "मल"], answer: "नल" },
+                    { question: "कौन सा शब्द 'म, ह, ल' अक्षरों से बनेगा?", options: ["हलम", "मलह", "महल", "लहम"], answer: "महल" },
+                    { question: "शब्द 'कलम' में कितने अक्षर हैं?", options: ["2", "3", "4", "5"], answer: "3" },
+                    { question: "कौन सा शब्द 'क, प, ल' अक्षरों से नहीं बन सकता?", options: ["कल", "पलक", "कपल", "कलयुग"], answer: "कलयुग" },
+                    { question: "शब्द 'बस' में पहला अक्षर क्या है?", options: ["स", "ब", "क", "ल"], answer: "ब" },
+                    { question: "कौन सा शब्द तीन अक्षरों से बना है?", options: ["आम", "कान", "शहर", "खेल"], answer: "शहर" },
+                    { question: "शब्द 'गरम' का दूसरा अक्षर क्या है?", options: ["ग", "र", "म", "न"], answer: "र" },
+                    { question: "शब्द 'हट' का अर्थ होता है: (Action)", options: ["चलो", "रुको", "दौड़ो", "हटो"], answer: "हटो" }
+                ]
+            },
+            'c1h5': { // लिंग पहचानो (Gender)
+                name: "लिंग पहचानो (कक्षा 1)",
+                questions: [
+                    { question: "'लड़का' (Boy) का स्त्रीलिंग (Feminine) क्या होगा?", options: ["पुरुष", "बच्चा", "लड़की", "बालक"], answer: "लड़की" },
+                    { question: "'माता' (Mother) का पुलिंग (Masculine) क्या होगा?", options: ["भाई", "पिता", "चाचा", "मामा"], answer: "पिता" },
+                    { question: "निम्न में से स्त्रीलिंग शब्द चुनें:", options: ["राजा", "घोड़ा", "रानी", "मोर"], answer: "रानी" },
+                    { question: "'पिताजी' (Father) कौन सा लिंग है?", options: ["पुलिंग", "स्त्रीलिंग", "नपुंसक लिंग", "दोनों"], answer: "पुलिंग" },
+                    { question: "'बहन' (Sister) का पुलिंग क्या होगा?", options: ["भाई", "बेटी", "माँ", "चाची"], answer: "भाई" },
+                    { question: "'मोर' (Peacock) का स्त्रीलिंग क्या होगा?", options: ["मोरी", "मोरनी", "मोरा", "मोर"], answer: "मोरनी" },
+                    { question: "शब्द 'कमरा' (Room) कौन सा लिंग है?", options: ["पुलिंग", "स्त्रीलिंग", "दोनों", "कोई नहीं"], answer: "पुलिंग" },
+                    { question: "निम्न में से पुलिंग शब्द चुनें:", options: ["कुर्सी", "किताब", "नदी", "हाथी"], answer: "हाथी" },
+                    { question: "'मामा' का स्त्रीलिंग क्या है?", options: ["मामी", "मौसी", "चाची", "ताई"], answer: "मामी" },
+                    { question: "किस शब्द का लिंग हमेशा 'पुलिंग' रहता है?", options: ["नदी", "पहाड़", "किताब", "भाषा"], answer: "पहाड़" }
+                ]
+            },
+            'c1h6': { // वचन बदलो (Number - Singular/Plural)
+                name: "वचन बदलो (कक्षा 1)",
+                questions: [
+                    { question: "'तारा' (Star) का बहुवचन (Plural) क्या होगा?", options: ["तारों", "तारे", "ताराएँ", "तार"], answer: "तारे" },
+                    { question: "'किताब' (Book) का बहुवचन क्या होगा?", options: ["किताबों", "किताबें", "किताबिएँ", "किताब"], answer: "किताबें" },
+                    { question: "'लड़का' का बहुवचन क्या होगा?", options: ["लड़कों", "लड़कियाँ", "लड़के", "लड़का"], answer: "लड़के" },
+                    { question: "निम्न में से एकवचन (Singular) शब्द चुनें:", options: ["कपड़े", "कुर्सियाँ", "कमरा", "आँखें"], answer: "कमरा" },
+                    { question: "'बिल्ली' (Cat) का बहुवचन क्या है?", options: ["बिल्लियाँ", "बिल्ले", "बिल्लीयाँ", "बिल्ली"], answer: "बिल्लियाँ" },
+                    { question: "'कुर्सी' का बहुवचन क्या होगा?", options: ["कुर्सियाँ", "कुर्सि", "कुर्सियों", "कुर्सी"], answer: "कुर्सियाँ" },
+                    { question: "'पंखा' (Fan) का बहुवचन क्या होगा?", options: ["पंखे", "पंखों", "पंखाएँ", "पंखा"], answer: "पंखे" },
+                    { question: "शब्द 'माला' का बहुवचन क्या है?", options: ["माले", "मालाएँ", "मालों", "माला"], answer: "मालाएँ" },
+                    { question: "बहुवचन शब्द चुनें:", options: ["पेड़", "फल", "पत्ते", "घर"], answer: "पत्ते" },
+                    { question: "'एक' (One) का बहुवचन क्या होता है?", options: ["दो", "अनेक", "कई", "ढेर"], answer: "अनेक" }
+                ]
+            },
+            'c1h7': { // विपरीतार्थक शब्द (Opposites)
+                name: "विपरीतार्थक शब्द (Opposites) (कक्षा 1)",
+                questions: [
+                    { question: "'रात' (Night) का विपरीत शब्द क्या है?", options: ["शाम", "दिन", "अंधेरा", "सवेरा"], answer: "दिन" },
+                    { question: "'अंदर' (Inside) का विपरीत शब्द क्या है?", options: ["ऊपर", "नीचे", "बाहर", "दूर"], answer: "बाहर" },
+                    { question: "'बड़ा' (Big) का विपरीत शब्द क्या है?", options: ["छोटा", "विशाल", "लम्बा", "ऊँचा"], answer: "छोटा" },
+                    { question: "'गर्म' (Hot) का विपरीत शब्द क्या है?", options: ["तेज़", "ठंडा", "हल्का", "मीठा"], answer: "ठंडा" },
+                    { question: "'आगे' (Forward) का विपरीत शब्द क्या है?", options: ["पीछे", "पास", "यहाँ", "ऊपर"], answer: "पीछे" },
+                    { question: "'ऊपर' (Up) का विपरीत शब्द क्या है?", options: ["नीचे", "दाएँ", "बाएँ", "पास"], answer: "नीचे" },
+                    { question: "'सही' (Right) का विपरीत शब्द क्या है?", options: ["अच्छा", "गलत", "सच", "झूठ"], answer: "गलत" },
+                    { question: "'अच्छा' (Good) का विपरीत शब्द क्या है?", options: ["बुरा", "बहुत", "कम", "ख़ुश"], answer: "बुरा" },
+                    { question: "'सुख' (Happiness) का विपरीत शब्द क्या है?", options: ["हँसी", "दुःख", "शांत", "खुशी"], answer: "दुःख" },
+                    { question: "'सुबह' (Morning) का विपरीत शब्द क्या है?", options: ["सवेरा", "शाम", "रात", "दोपहर"], answer: "शाम" }
+                ]
+            },
+            'c1h8': { // शरीर के अंग (Body Parts)
+                name: "शरीर के अंग (कक्षा 1)",
+                questions: [
+                    { question: "हम किससे देखते हैं?", options: ["कान", "नाक", "आँख", "हाथ"], answer: "आँख" },
+                    { question: "हम किससे सुनते हैं?", options: ["हाथ", "पैर", "कान", "जीभ"], answer: "कान" },
+                    { question: "हम किससे चलते हैं?", options: ["हाथ", "पैर", "पेट", "सिर"], answer: "पैर" },
+                    { question: "हम किससे भोजन खाते हैं?", options: ["जीभ", "दाँत (और मुँह)", "कान", "नाक"], answer: "दाँत (और मुँह)" },
+                    { question: "कौन सा अंग सूंघने में मदद करता है?", options: ["आँख", "नाक", "जीभ", "त्वचा"], answer: "नाक" },
+                    { question: "आपके कितने हाथ हैं?", options: ["एक", "दो", "तीन", "चार"], answer: "दो" },
+                    { question: "शरीर का कौन सा अंग सबसे ऊपर होता है?", options: ["हाथ", "पैर", "पेट", "सिर"], answer: "सिर" },
+                    { question: "हम किससे स्वाद लेते हैं?", options: ["कान", "जीभ", "नाक", "आँख"], answer: "जीभ" },
+                    { question: "किस अंग से हम चीजों को छूते और पकड़ते हैं?", options: ["पैर", "हाथ", "पेट", "जीभ"], answer: "हाथ" },
+                    { question: "हमारे शरीर का सबसे मुलायम अंग कौन सा है?", options: ["दाँत", "हड्डी", "त्वचा (Skin)", "नाखून"], answer: "त्वचा (Skin)" }
+                ]
+            },
+            'c1h9': { // रंगों के नाम
+                name: "रंगों के नाम (कक्षा 1)",
+                questions: [
+                    { question: "आसमान का रंग कैसा होता है?", options: ["लाल", "पीला", "नीला", "हरा"], answer: "नीला" },
+                    { question: "सूर्यमुखी (Sunflower) का रंग कैसा होता है?", options: ["नीला", "पीला", "लाल", "सफेद"], answer: "पीला" },
+                    { question: "खून का रंग कैसा होता है?", options: ["सफेद", "हरा", "लाल", "काला"], answer: "लाल" },
+                    { question: "घास (Grass) का रंग कैसा होता है?", options: ["सफेद", "हरा", "नीला", "पीला"], answer: "हरा" },
+                    { question: "दूध (Milk) का रंग कैसा होता है?", options: ["काला", "सफेद", "लाल", "हरा"], answer: "सफेद" },
+                    { question: "कागज़ (Paper) का रंग कैसा हो सकता है?", options: ["काला", "नीला", "सफेद", "पीला"], answer: "सफेद" },
+                    { question: "मिर्च (Chilli) का रंग कैसा होता है?", options: ["पीला", "लाल और हरा", "नीला", "सफेद"], answer: "लाल और हरा" },
+                    { question: "किस रंग को 'अंधेरा' भी कहते हैं?", options: ["सफेद", "पीला", "लाल", "काला"], answer: "काला" },
+                    { question: "संतरे (Orange) का रंग क्या होता है?", options: ["लाल", "पीला", "नारंगी", "हरा"], answer: "नारंगी" },
+                    { question: "इंद्रधनुष (Rainbow) में कितने रंग होते हैं?", options: ["5", "6", "7", "8"], answer: "7" }
+                ]
+            },
+            'c1h10': { // फलों और सब्जियों के नाम
+                name: "फलों और सब्जियों के नाम (कक्षा 1)",
+                questions: [
+                    { question: "कौन सा मीठा होता है?", options: ["भिंडी", "टमाटर", "केला", "आलू"], answer: "केला" },
+                    { question: "किसमें बीज (Seeds) होते हैं?", options: ["गाजर", "सेब", "पत्तागोभी", "अदरक"], answer: "सेब" },
+                    { question: "कौन सी सब्ज़ी ज़मीन के नीचे उगती है?", options: ["बैंगन", "गोभी", "मूली", "लौकी"], answer: "मूली" },
+                    { question: "किस फल को फलों का राजा कहा जाता है?", options: ["केला", "सेब", "आम", "अंगूर"], answer: "आम" },
+                    { question: "किस सब्ज़ी को 'आँसू लाने वाली' सब्ज़ी कहते हैं?", options: ["गाजर", "प्याज", "टमाटर", "खीरा"], answer: "प्याज" },
+                    { question: "कौन सा फल खट्टा और मीठा दोनों हो सकता है?", options: ["केला", "संतरा", "आम", "पपीता"], answer: "संतरा" },
+                    { question: "किस सब्ज़ी का रंग हरा होता है?", options: ["आलू", "टमाटर", "पालक", "प्याज"], answer: "पालक" },
+                    { question: "फल खाने से हमें क्या मिलती है?", options: ["नींद", "बीमारी", "ताकत (Energy)", "डर"], answer: "ताकत (Energy)" },
+                    { question: "कौन सी सब्ज़ी लाल होती है?", options: ["गाजर", "आलू", "बैंगन", "करेला"], answer: "गाजर" },
+                    { question: "पानी में उगने वाला फल कौन सा है?", options: ["आम", "सेब", "तरबूज", "केला"], answer: "तरबूज" }
+                ]
+            },
+            // ---------------------- CLASS 2 ----------------------
+            'c2e1': { // Nouns & Verbs Quiz
+                name: "Nouns & Verbs Quiz (Class 2)",
+                questions: [
+                    { question: "Which word is a Noun (name of a person, place, or thing)?", options: ["Run", "Happy", "Chair", "Quickly"], answer: "Chair" },
+                    { question: "Which word is a Verb (an action word)?", options: ["Table", "Sing", "Blue", "Slow"], answer: "Sing" },
+                    { question: "Identify the Noun in: 'The boy is playing.'", options: ["The", "boy", "is", "playing"], answer: "boy" },
+                    { question: "Identify the Verb in: 'The dog barks loudly.'", options: ["The", "dog", "barks", "loudly"], answer: "barks" },
+                    { question: "Which is the name of a place?", options: ["Eat", "Sleep", "School", "Tall"], answer: "School" },
+                    { question: "Which is the name of an action?", options: ["Book", "Read", "Tree", "Smooth"], answer: "Read" },
+                    { question: "The word 'Teacher' is a:", options: ["Verb", "Noun", "Adjective", "Adverb"], answer: "Noun" },
+                    { question: "The word 'Jump' is a:", options: ["Noun", "Verb", "Adjective", "Adverb"], answer: "Verb" },
+                    { question: "Find the Noun: 'A big red ball.'", options: ["A", "big", "red", "ball"], answer: "ball" },
+                    { question: "Find the Verb: 'We walk slowly.'", options: ["We", "walk", "slowly", "None"], answer: "walk" }
+                ]
+            },
+            'c2e2': { // Tense Basics
+                name: "Tense Basics (Class 2)",
+                questions: [
+                    { question: "Which tense shows an action that is happening NOW?", options: ["Past", "Present", "Future", "None"], answer: "Present" },
+                    { question: "Complete the sentence (Past Tense): 'Yesterday, I ___ a movie.'", options: ["see", "saw", "will see", "seeing"], answer: "saw" },
+                    { question: "Complete the sentence (Future Tense): 'Tomorrow, I ___ to the park.'", options: ["go", "went", "will go", "going"], answer: "will go" },
+                    { question: "The sentence 'He eats an apple' is in:", options: ["Past Tense", "Present Tense", "Future Tense", "None"], answer: "Present Tense" },
+                    { question: "The word 'Yesterday' refers to which tense?", options: ["Past", "Present", "Future", "None"], answer: "Past" },
+                    { question: "The word 'Tomorrow' refers to which tense?", options: ["Past", "Present", "Future", "None"], answer: "Future" },
+                    { question: "What is the past tense of 'run'?", options: ["running", "ran", "runs", "will run"], answer: "ran" },
+                    { question: "What is the present tense of 'slept'?", options: ["sleep", "sleeping", "will sleep", "slept"], answer: "sleep" },
+                    { question: "Change to Past Tense: 'I play with toys.'", options: ["I will play", "I played", "I playing", "I am playing"], answer: "I played" },
+                    { question: "Change to Future Tense: 'She sings a song.'", options: ["She sang", "She will sing", "She is singing", "She sings"], answer: "She will sing" }
+                ]
+            },
+            'c2m1': { // Two-Digit Arithmetic
+                name: "Two-Digit Arithmetic (Class 2)",
+                questions: [
+                    { question: "What is 15 + 12?", options: ["25", "27", "29", "30"], answer: "27" },
+                    { question: "Subtract 10 from 35.", options: ["15", "20", "25", "30"], answer: "25" },
+                    { question: "Find the missing number: 40 + ___ = 60", options: ["10", "20", "30", "40"], answer: "20" },
+                    { question: "Which is greater: 50 + 5 or 60 - 4?", options: ["50 + 5", "60 - 4", "They are equal", "Cannot say"], answer: "60 - 4" },
+                    { question: "What is 2 x 3?", options: ["5", "6", "7", "8"], answer: "6" },
+                    { question: "If a pencil costs ₹ 5, how much will 4 pencils cost?", options: ["₹ 15", "₹ 20", "₹ 25", "₹ 30"], answer: "₹ 20" },
+                    { question: "What is 10 + 10 + 10 + 10?", options: ["30", "40", "50", "60"], answer: "40" },
+                    { question: "What is 80 - 20?", options: ["50", "60", "70", "80"], answer: "60" },
+                    { question: "In the number 75, what digit is in the tens place?", options: ["7", "5", "0", "1"], answer: "7" },
+                    { question: "What is the result of 25 + 25?", options: ["40", "50", "60", "75"], answer: "50" }
+                ]
+            },
+            'c2m2': { // Time & Calendar Quiz
+                name: "Time & Calendar Quiz (Class 2)",
+                questions: [
+                    { question: "How many minutes are in one hour?", options: ["30", "60", "90", "100"], answer: "60" },
+                    { question: "How many days are in a week?", options: ["5", "7", "10", "12"], answer: "7" },
+                    { question: "The short hand on a clock tells us the:", options: ["Minutes", "Hours", "Seconds", "Date"], answer: "Hours" },
+                    { question: "Which month comes after January?", options: ["March", "February", "December", "April"], answer: "February" },
+                    { question: "If it is 3 o'clock now, what time will it be in one hour?", options: ["4 o'clock", "2 o'clock", "3:30", "5 o'clock"], answer: "4 o'clock" },
+                    { question: "How many months are in a year?", options: ["10", "11", "12", "13"], answer: "12" },
+                    { question: "Which is the last day of the school week?", options: ["Sunday", "Monday", "Friday", "Saturday"], answer: "Friday" },
+                    { question: "How many seconds are in one minute?", options: ["30", "60", "90", "100"], answer: "60" },
+                    { question: "Which season is the hottest?", options: ["Winter", "Summer", "Autumn", "Spring"], answer: "Summer" },
+                    { question: "A quarter past 5 is:", options: ["5:30", "5:15", "5:45", "6:00"], answer: "5:15" }
+                ]
+            },
+            'c2v1': { // Plants and Animals Quiz
+                name: "Plants and Animals Quiz (Class 2)",
+                questions: [
+                    { question: "Which part of a plant is usually underground?", options: ["Leaf", "Flower", "Stem", "Root"], answer: "Root" },
+                    { question: "Which of these is a wild animal?", options: ["Cow", "Dog", "Lion", "Cat"], answer: "Lion" },
+                    { question: "What do bees make?", options: ["Milk", "Honey", "Water", "Bread"], answer: "Honey" },
+                    { question: "Which animal gives us wool?", options: ["Cow", "Hen", "Sheep", "Goat"], answer: "Sheep" },
+                    { question: "What is a baby dog called?", options: ["Kitten", "Calf", "Pup", "Kid"], answer: "Pup" },
+                    { question: "Which of these is a vegetable?", options: ["Apple", "Banana", "Carrot", "Mango"], answer: "Carrot" },
+                    { question: "Which animal lives in a nest?", options: ["Fish", "Bird", "Tiger", "Rabbit"], answer: "Bird" },
+                    { question: "Which of these is a non-living thing?", options: ["Tree", "Human", "Stone", "Butterfly"], answer: "Stone" },
+                    { question: "What do most plants produce for us to eat?", options: ["Soil", "Wood", "Fruit", "Air"], answer: "Fruit" },
+                    { question: "Which animal is known as the 'ship of the desert'?", options: ["Horse", "Camel", "Elephant", "Zebra"], answer: "Camel" }
+                ]
+            },
+            'c2v2': { // Food and Water Sources
+                name: "Food and Water Sources (Class 2)",
+                questions: [
+                    { question: "Which is a source of energy for the Earth?", options: ["Moon", "Stars", "Sun", "Wind"], answer: "Sun" },
+                    { question: "We get milk from:", options: ["Hen", "Cow", "Dog", "Fish"], answer: "Cow" },
+                    { question: "Which food item is a source of protein?", options: ["Bread", "Rice", "Egg", "Butter"], answer: "Egg" },
+                    { question: "Water that we drink comes from:", options: ["Ocean", "Rain", "Lake", "All of these"], answer: "All of these" },
+                    { question: "What food group does rice belong to?", options: ["Fruits", "Vegetables", "Grains", "Dairy"], answer: "Grains" },
+                    { question: "We should boil water before drinking it. True or False?", options: ["True", "False", "Maybe", "Only sometimes"], answer: "True" },
+                    { question: "Which of these is a fruit?", options: ["Potato", "Carrot", "Apple", "Onion"], answer: "Apple" },
+                    { question: "Which food keeps our bones strong?", options: ["Chips", "Milk", "Soda", "Sweets"], answer: "Milk" },
+                    { question: "What is H2O commonly known as?", options: ["Salt", "Water", "Sugar", "Air"], answer: "Water" },
+                    { question: "Which meal is eaten in the morning?", options: ["Lunch", "Dinner", "Breakfast", "Snack"], answer: "Breakfast" }
+                ]
+            },
+            'c2h1': { // लिंग और वचन पहचानो
+                name: "लिंग और वचन पहचानो (कक्षा 2)",
+                questions: [
+                    { question: "'लड़का' का स्त्रीलिंग क्या होगा?", options: ["लड़की", "बालक", "पुरुष", "स्त्री"], answer: "लड़की" },
+                    { question: "'किताब' का बहुवचन क्या होगा?", options: ["किताबें", "किताबो", "किताबों", "किताब"], answer: "किताबें" },
+                    { question: "'माता' का पुलिंग क्या होगा?", options: ["भाई", "पिता", "चाचा", "मामा"], answer: "पिता" },
+                    { question: "'तारा' का बहुवचन क्या होगा?", options: ["तारे", "तारों", "ताराएँ", "तार"], answer: "तारे" },
+                    { question: "निम्न में से स्त्रीलिंग शब्द चुनें:", options: ["राजा", "घोड़ा", "रानी", "मोर"], answer: "रानी" },
+                    { question: "निम्न में से एकवचन शब्द चुनें:", options: ["कपड़े", "कुर्सियाँ", "कमरा", "आँखें"], answer: "कमरा" },
+                    { question: "'माली' का स्त्रीलिंग क्या है?", options: ["मालिन", "मालिनी", "मालीनी", "माली"], answer: "मालिन" },
+                    { question: "'कमरा' (Room) कौन सा लिंग है?", options: ["पुलिंग", "स्त्रीलिंग", "नपुंसक लिंग", "कोई नहीं"], answer: "पुलिंग" },
+                    { question: "'बिल्ली' का बहुवचन क्या है?", options: ["बिल्ला", "बिल्लियाँ", "बिल्लीयाँ", "बिल्ली"], answer: "बिल्लियाँ" },
+                    { question: "सही लिंग परिवर्तन चुनें: 'शेर'", options: ["शेरनी", "शेरिनी", "शेरा", "शेरी"], answer: "शेरनी" }
+                ]
+            },
+            'c2h2': { // कहानी लेखन अभ्यास
+                name: "कहानी लेखन अभ्यास (कक्षा 2)",
+                questions: [
+                    { question: "कहानी में कौन कौन से तत्व होते हैं?", options: ["केवल पात्र", "पात्र और घटनाएँ", "केवल चित्र", "केवल अंत"], answer: "पात्र और घटनाएँ" },
+                    { question: "कहानी का मुख्य विचार क्या कहलाता है?", options: ["शीर्षक", "पात्र", "घटना", "उपदेश"], answer: "उपदेश" },
+                    { question: "कहानी हमेशा किस काल (Tense) में लिखी जाती है?", options: ["वर्तमान काल", "भूतकाल", "भविष्य काल", "कोई भी"], answer: "भूतकाल" },
+                    { question: "कहानी की शुरुआत में क्या परिचय दिया जाता है?", options: ["अंत", "शीर्षक", "पात्र और स्थान", "उपदेश"], answer: "पात्र और स्थान" },
+                    { question: "कहानी का अंत हमेशा कैसा होना चाहिए?", options: ["दुःखद", "रोमांचक", "सीख देने वाला", "अधूरा"], answer: "सीख देने वाला" },
+                    { question: "कहानी के पात्र (Characters) कौन हो सकते हैं?", options: ["मनुष्य", "जानवर", "दोनों", "कोई नहीं"], answer: "दोनों" },
+                    { question: "कहानी में सबसे रोचक हिस्सा कौन सा होता है?", options: ["शुरुआत", "मध्य (संघर्ष)", "अंत", "शीर्षक"], answer: "मध्य (संघर्ष)" },
+                    { question: "कहानी लिखने के लिए सबसे पहले क्या तय करना ज़रूरी है?", options: ["शब्द सीमा", "उपदेश", "शीर्षक", "पात्र"], answer: "पात्र" },
+                    { question: "एक अच्छी कहानी का मुख्य उद्देश्य क्या होता है?", options: ["चित्र बनाना", "मनोरंजन करना", "गणित सिखाना", "केवल पढ़ना"], answer: "मनोरंजन करना" },
+                    { question: "किस शब्द का उपयोग कहानी के अंत में किया जाता है?", options: ["और", "लेकिन", "इसलिए", "समाप्त"], answer: "समाप्त" }
+                ]
+            },
+            // ---------------------- CLASS 3 ----------------------
+            'c3e1': { // Pronouns and Adjectives
+                name: "Pronouns and Adjectives (Class 3)",
+                questions: [
+                    { question: "Which word is a Pronoun (used instead of a Noun)?", options: ["Jump", "She", "Big", "Quickly"], answer: "She" },
+                    { question: "Which word is an Adjective (describes a Noun)?", options: ["Run", "Happy", "Chair", "Quickly"], answer: "Happy" },
+                    { question: "Identify the Adjective in: 'The tall man smiled.'", options: ["The", "tall", "man", "smiled"], answer: "tall" },
+                    { question: "Identify the Pronoun in: 'He is my brother.'", options: ["He", "is", "my", "brother"], answer: "He" },
+                    { question: "Complete the sentence with a Pronoun: '___ are students.'", options: ["I", "You", "They", "He"], answer: "They" },
+                    { question: "Which word describes the noun 'Flower'?", options: ["Smell", "Beautiful", "Quickly", "Talk"], answer: "Beautiful" },
+                    { question: "Find the Adjective: 'A small brown house.'", options: ["A", "small", "house", "brown"], answer: "small" },
+                    { question: "The word 'Our' is a type of:", options: ["Noun", "Verb", "Pronoun", "Adverb"], answer: "Pronoun" },
+                    { question: "Which word can describe a 'Mountain'?", options: ["Soft", "High", "Loud", "Sweet"], answer: "High" },
+                    { question: "Change the Noun 'Ria' to a Pronoun.", options: ["He", "It", "She", "They"], answer: "She" }
+                ]
+            },
+            'c3e2': { // Punctuation Mastery
+                name: "Punctuation Mastery (Class 3)",
+                questions: [
+                    { question: "Which punctuation mark ends a simple statement?", options: ["?", "!", ".", ","], answer: "." },
+                    { question: "Which punctuation mark is used at the end of a question?", options: ["?", "!", ".", ","], answer: "?" },
+                    { question: "Which punctuation mark shows strong feeling or surprise?", options: ["?", "!", ".", ","], answer: "!" },
+                    { question: "What is the correct punctuation for: 'Wow what a big dog'", options: ["Wow. what a big dog!", "Wow, what a big dog!", "Wow! what a big dog!", "Wow! what a big dog."], answer: "Wow! what a big dog." },
+                    { question: "Which words should be capitalized in a sentence?", options: ["All words", "Nouns only", "First word and names", "Verbs only"], answer: "First word and names" },
+                    { question: "Punctuate correctly: 'i like apples bananas and grapes'", options: ["I like apples, bananas, and grapes.", "I like apples bananas, and grapes.", "I like apples bananas and grapes.", "I like apples bananas and grapes!"], answer: "I like apples, bananas, and grapes." },
+                    { question: "The punctuation mark ' used for showing possession is called:", options: ["Comma", "Full stop", "Apostrophe", "Question mark"], answer: "Apostrophe" },
+                    { question: "Correct the sentence: 'where are you going'", options: ["Where are you going.", "Where are you going?", "where are you going!", "where are you going."], answer: "Where are you going?" },
+                    { question: "Which punctuation mark separates items in a list?", options: [":", ";", ",", "."], answer: "," },
+                    { question: "What should be capitalized in the phrase 'the indian ocean'?", options: ["the", "indian", "ocean", "Both 'indian' and 'ocean'"], answer: "Both 'indian' and 'ocean'"},
+                ]
+            },
+            'c3m1': { // Multiplication Tables Quiz
+                name: "Multiplication Tables Quiz (Class 3)",
+                questions: [
+                    { question: "What is 7 multiplied by 3?", options: ["18", "21", "24", "28"], answer: "21" },
+                    { question: "What is 8 times 4?", options: ["28", "32", "36", "40"], answer: "32" },
+                    { question: "Find the product of 9 and 5.", options: ["40", "45", "50", "55"], answer: "45" },
+                    { question: "What is 6 x 6?", options: ["30", "36", "42", "48"], answer: "36" },
+                    { question: "If a box has 10 pencils, how many pencils in 3 boxes?", options: ["20", "30", "40", "50"], answer: "30" },
+                    { question: "What is 11 x 2?", options: ["21", "22", "23", "24"], answer: "22" },
+                    { question: "Find the value of 5 x 0.", options: ["5", "1", "0", "10"], answer: "0" },
+                    { question: "Divide 15 by 5.", options: ["2", "3", "4", "5"], answer: "3" },
+                    { question: "How many legs do 4 chairs have in total?", options: ["12", "16", "20", "24"], answer: "16" },
+                    { question: "What is 100 divided by 10?", options: ["5", "10", "20", "50"], answer: "10" }
+                ]
+            },
+            'c3m2': { // Simple Fractions Quiz
+                name: "Simple Fractions Quiz (Class 3)",
+                questions: [
+                    { question: "What is the fraction for half?", options: ["1/4", "1/2", "3/4", "1/3"], answer: "1/2" },
+                    { question: "In the fraction 2/5, what is the Numerator?", options: ["2", "5", "7", "2/5"], answer: "2" },
+                    { question: "In the fraction 3/4, what is the Denominator?", options: ["3", "4", "7", "3/4"], answer: "4" },
+                    { question: "Which is bigger: 1/4 or 3/4?", options: ["1/4", "3/4", "They are equal", "Cannot say"], answer: "3/4" },
+                    { question: "A pizza is cut into 8 equal slices. If you eat 2 slices, what fraction did you eat?", options: ["1/4", "2/8", "1/8", "2/4"], answer: "2/8" },
+                    { question: "How many quarters (1/4) make a whole (1)?", options: ["2", "3", "4", "5"], answer: "4" },
+                    { question: "Add the fractions: 1/3 + 1/3", options: ["1/6", "2/3", "2/6", "1/9"], answer: "2/3" },
+                    { question: "Which fraction is equal to a whole pizza?", options: ["1/2", "2/2", "3/4", "1/3"], answer: "2/2" },
+                    { question: "If you divide 10 apples equally among 5 friends, what fraction does each get?", options: ["1/10", "1/5", "2/5", "2/10"], answer: "2/10" },
+                    { question: "What is the simplest form of 2/4?", options: ["1/2", "1/4", "2/2", "3/4"], answer: "1/2" }
+                ]
+            },
+            'c3s1': { // Matter and States Quiz
+                name: "Matter and States Quiz (Class 3)",
+                questions: [
+                    { question: "Anything that has mass and takes up space is called:", options: ["Energy", "Matter", "Light", "Air"], answer: "Matter" },
+                    { question: "Which of these is a solid?", options: ["Water", "Air", "Ice", "Steam"], answer: "Ice" },
+                    { question: "Which state of matter takes the shape of its container and has a fixed volume?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: "Liquid" },
+                    { question: "Which state of matter does not have a fixed shape or fixed volume?", options: ["Solid", "Liquid", "Gas", "Water"], answer: "Gas" },
+                    { question: "When ice melts, it turns into:", options: ["Gas", "Solid", "Liquid", "Plasma"], answer: "Liquid" },
+                    { question: "The air we breathe is in which state of matter?", options: ["Solid", "Liquid", "Gas", "Vapor"], answer: "Gas" },
+                    { question: "Which process turns liquid water into ice?", options: ["Melting", "Boiling", "Freezing", "Evaporation"], answer: "Freezing" },
+                    { question: "The substance that exists naturally in all three states (solid, liquid, gas) is:", options: ["Oil", "Milk", "Water", "Wood"], answer: "Water" },
+                    { question: "Which of these is a liquid?", options: ["Rock", "Milk", "Oxygen", "Book"], answer: "Milk" },
+                    { question: "When water boils, the steam (vapor) is in which state?", options: ["Solid", "Liquid", "Gas", "Vapor"], answer: "Gas" }
+                ]
+            },
+            'c3s2': { // Our Environment Quiz
+                name: "Our Environment Quiz (Class 3)",
+                questions: [
+                    { question: "The blanket of air that surrounds the Earth is called:", options: ["Hydrosphere", "Atmosphere", "Lithosphere", "Biosphere"], answer: "Atmosphere" },
+                    { question: "Which part of a plant makes food?", options: ["Root", "Stem", "Leaf", "Flower"], answer: "Leaf" },
+                    { question: "Animals that eat only plants are called:", options: ["Carnivores", "Omnivores", "Herbivores", "Predators"], answer: "Herbivores" },
+                    { question: "Which layer of soil is best for growing plants?", options: ["Topsoil", "Subsoil", "Bedrock", "Clay"], answer: "Topsoil" },
+                    { question: "What is the main source of light and heat for the Earth?", options: ["Moon", "Stars", "Sun", "Volcanoes"], answer: "Sun" },
+                    { question: "The process of a caterpillar changing into a butterfly is called:", options: ["Reproduction", "Germination", "Metamorphosis", "Ecology"], answer: "Metamorphosis" },
+                    { question: "Which of these causes air pollution?", options: ["Planting trees", "Burning fossil fuels", "Recycling", "Saving water"], answer: "Burning fossil fuels" },
+                    { question: "What is the largest planet in our solar system?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: "Jupiter" },
+                    { question: "Which animal is a primary source of oxygen?", options: ["Human", "Plant", "Dog", "Fish"], answer: "Plant" },
+                    { question: "We should conserve water because:", options: ["It is expensive", "It is limited", "It is salty", "It is unlimited"], answer: "It is limited" }
+                ]
+            },
+            'c3ss1': { // Local Community Quiz
+                name: "Local Community Quiz (Class 3)",
+                questions: [
+                    { question: "The head of a Village Panchayat is called:", options: ["MLA", "Sarpanch", "Mayor", "Councillor"], answer: "Sarpanch" },
+                    { question: "Which of these is a public service?", options: ["Mobile phone", "Private Car", "Public Library", "Toy"], answer: "Public Library" },
+                    { question: "What is a group of people living together in a place called?", options: ["City", "Community", "State", "Country"], answer: "Community" },
+                    { question: "Who maintains law and order in a town?", options: ["Teacher", "Doctor", "Police", "Farmer"], answer: "Police" },
+                    { question: "The person who treats sick people is called a:", options: ["Engineer", "Pilot", "Doctor", "Tailor"], answer: "Doctor" },
+                    { question: "What is the importance of a post office in a community?", options: ["Selling groceries", "Delivering letters", "Building roads", "Treating illness"], answer: "Delivering letters" },
+                    { question: "What is the national animal of India?", options: ["Elephant", "Lion", "Tiger", "Peacock"], answer: "Tiger" },
+                    { question: "What is the national flower of India?", options: ["Rose", "Lotus", "Sunflower", "Marigold"], answer: "Lotus" },
+                    { question: "Which of these is a clean energy source?", options: ["Coal", "Petrol", "Solar Power", "Gas"], answer: "Solar Power" },
+                    { question: "Who is responsible for collecting waste from our houses?", options: ["Plumber", "Sweeper", "Electrician", "Postman"], answer: "Sweeper" }
+                ]
+            },
+            'c3ss2': { // Early Man History
+                name: "Early Man History (Class 3)",
+                questions: [
+                    { question: "Early humans were mainly interested in:", options: ["Writing books", "Farming", "Hunting and Gathering", "Building houses"], answer: "Hunting and Gathering" },
+                    { question: "The most important discovery for early humans was:", options: ["The Wheel", "Fire", "Farming", "Clothes"], answer: "Fire" },
+                    { question: "Early humans used tools made of:", options: ["Plastic", "Metal", "Stone", "Wood"], answer: "Stone" },
+                    { question: "Where did early humans mostly live?", options: ["Houses", "Caves and Trees", "Cities", "Boats"], answer: "Caves and Trees" },
+                    { question: "The practice of growing crops is called:", options: ["Hunting", "Farming", "Cooking", "Weaving"], answer: "Farming" },
+                    { question: "The invention of the wheel helped early humans with:", options: ["Cooking food", "Making fire", "Transporting things", "Wearing clothes"], answer: "Transporting things" },
+                    { question: "Early humans painted pictures on:", options: ["Books", "Cave walls", "Paper", "Clothes"], answer: "Cave walls" },
+                    { question: "What did early humans wear for clothing?", options: ["Silk", "Cotton", "Animal skins and leaves", "Wool"], answer: "Animal skins and leaves" },
+                    { question: "The 'Stone Age' is named after:", options: ["The houses built", "The tools used", "The food eaten", "The animals hunted"], answer: "The tools used" },
+                    { question: "What happened when early man started farming?", options: ["They moved more", "They settled in one place", "They ate less", "They slept more"], answer: "They settled in one place" }
+                ]
+            },
+            'c3h1': { // पर्यायवाची और विलोम
+                name: "पर्यायवाची और विलोम (कक्षा 3)",
+                questions: [
+                    { question: "'सूरज' का पर्यायवाची शब्द क्या है?", options: ["चाँद", "दिनकर", "रात", "तारा"], answer: "दिनकर" },
+                    { question: "'रात' का विलोम शब्द क्या है?", options: ["शाम", "दिन", "सवेरा", "अंधेरा"], answer: "दिन" },
+                    { question: "'पानी' का एक और नाम (पर्यायवाची) क्या है?", options: ["जल", "आग", "हवा", "मिट्टी"], answer: "जल" },
+                    { question: "'अंदर' का विलोम शब्द क्या है?", options: ["बाहर", "ऊपर", "नीचे", "दूर"], answer: "बाहर" },
+                    { question: "'मित्र' का पर्यायवाची शब्द क्या है?", options: ["शत्रु", "दोस्त", "भाई", "पिता"], answer: "दोस्त" },
+                    { question: "'सच' का विलोम शब्द क्या है?", options: ["झूठ", "सही", "सत्य", "बात"], answer: "झूठ" },
+                    { question: "'आग' का पर्यायवाची शब्द क्या है?", options: ["वायु", "अग्नि", " जल", "धरती"], answer: "अग्नि" },
+                    { question: "'आगे' का विलोम शब्द क्या है?", options: ["पीछे", "ऊपर", "नीचे", "पास"], answer: "पीछे" },
+                    { question: "'धरती' का पर्यायवाची शब्द क्या है?", options: ["आकाश", "ज़मीन", "पहाड़", "नदी"], answer: "ज़मीन" },
+                    { question: "'बड़ा' का विलोम शब्द क्या है?", options: ["छोटा", "विशाल", "लम्बा", "ऊँचा"], answer: "छोटा" }
+                ]
+            },
+            'c3h2': { // संज्ञा और सर्वनाम
+                name: "संज्ञा और सर्वनाम (कक्षा 3)",
+                questions: [
+                    { question: "संज्ञा (Noun) किसे कहते हैं?", options: ["नाम को", "क्रिया को", "विशेषता को", "संबंध को"], answer: "नाम को" },
+                    { question: "'मोहन खेल रहा है'। इस वाक्य में संज्ञा शब्द क्या है?", options: ["मोहन", "खेल रहा है", "है", "रहा है"], answer: "मोहन" },
+                    { question: "सर्वनाम (Pronoun) किसे कहते हैं?", options: ["क्रिया के बदले", "संज्ञा के बदले", "विशेषता के बदले", "संबंध के बदले"], answer: "संज्ञा के बदले" },
+                    { question: "निम्न में से सर्वनाम शब्द चुनें:", options: ["पेड़", "वह", "जाना", "सुंदर"], answer: "वह" },
+                    { question: "'दिल्ली' (Delhi) कौन सी संज्ञा है?", options: ["जातिवाचक", "व्यक्तिवाचक", "भाववाचक", "समूहवाचक"], answer: "व्यक्तिवाचक" },
+                    { question: "संज्ञा के कितने भेद होते हैं?", options: ["दो", "तीन", "चार", "पाँच"], answer: "पाँच" },
+                    { question: "सर्वनाम के कितने भेद होते हैं?", options: ["चार", "पाँच", "छह", "सात"], answer: "छह" },
+                    { question: "'क्रिकेट' (Cricket) कौन सी संज्ञा है?", options: ["जातिवाचक", "व्यक्तिवाचक", "भाववाचक", "द्रव्यवाचक"], answer: "जातिवाचक" },
+                    { question: "सही सर्वनाम चुनें: '___ घर जाओ।'", options: ["राम", "तुम", "पेड़", "खाना"], answer: "तुम" },
+                    { question: "'बुढ़ापा' (Old Age) कौन सी संज्ञा है?", options: ["जातिवाचक", "व्यक्तिवाचक", "भाववाचक", "समूहवाचक"], answer: "भाववाचक" }
+                ]
+            },
+            // ---------------------- CLASS 4 ----------------------
+            'c4e1': { // Prepositions and Conjunctions
+                name: "Prepositions and Conjunctions (Class 4)",
+                questions: [
+                    { question: "Complete the sentence with a Preposition: 'The book is ___ the table.'", options: ["and", "but", "on", "or"], answer: "on" },
+                    { question: "The word 'and' is a:", options: ["Preposition", "Conjunction", "Adverb", "Interjection"], answer: "Conjunction" },
+                    { question: "Complete the sentence with a Conjunction: 'I like tea ___ coffee.'", options: ["in", "on", "or", "under"], answer: "or" },
+                    { question: "Identify the Preposition in: 'He ran around the park.'", options: ["He", "ran", "around", "park"], answer: "around" },
+                    { question: "A Conjunction is a word that:", options: ["Shows action", "Describes a place", "Joins words/sentences", "Shows possession"], answer: "Joins words/sentences" },
+                    { question: "Which of these is a Preposition?", options: ["Jump", "But", "Above", "Quick"], answer: "Above" },
+                    { question: "Complete the sentence: 'She is standing ___ the tree.'", options: ["and", "behind", "but", "so"], answer: "behind" },
+                    { question: "Which is a Conjunction?", options: ["To", "Near", "Because", "With"], answer: "Because" },
+                    { question: "The Preposition 'under' tells us about:", options: ["Time", "Place", "Action", "Feeling"], answer: "Place" },
+                    { question: "What does the Conjunction 'but' show?", options: ["Addition", "Contrast", "Choice", "Result"], answer: "Contrast" }
+                ]
+            },
+            'c4e2': { // Active/Passive Voice Intro
+                name: "Active/Passive Voice Intro (Class 4)",
+                questions: [
+                    { question: "In Active Voice, the focus is on the:", options: ["Object", "Verb", "Action", "Subject (Doer)"], answer: "Subject (Doer)" },
+                    { question: "Identify the Active Voice sentence:", options: ["The ball was thrown by the boy.", "The boy threw the ball.", "The ball is thrown.", "The boy is hit."], answer: "The boy threw the ball." },
+                    { question: "In Passive Voice, the focus is on the:", options: ["Object (Receiver)", "Subject", "Action", "Time"], answer: "Object (Receiver)" },
+                    { question: "Identify the Passive Voice sentence:", options: ["The girl ate the cake.", "The cake was eaten by the girl.", "The girl will eat.", "The cake is yummy."], answer: "The cake was eaten by the girl." },
+                    { question: "Active Voice is usually used for:", options: ["Formal writing", "Everyday speech", "Scientific papers", "Unknown doers"], answer: "Everyday speech" },
+                    { question: "To change to Passive Voice, you must use the word:", options: ["always", "never", "by", "from"], answer: "by" },
+                    { question: "Which sentence is Active?", options: ["The letter was written.", "The dog chased the cat.", "The glass was broken.", "A song is sung."], answer: "The dog chased the cat." },
+                    { question: "Change 'Ravi reads a book' to Passive Voice.", options: ["A book reads Ravi.", "A book is read by Ravi.", "Ravi is read a book.", "A book reads."], answer: "A book is read by Ravi." },
+                    { question: "Which sentence is Passive?", options: ["She drives the car.", "The car is driven by her.", "She drives fast.", "The car drives."], answer: "The car is driven by her." },
+                    { question: "The word 'by' in Passive Voice shows:", options: ["The object", "The time", "The doer of the action", "The place"], answer: "The doer of the action" }
+                ]
+            },
+            'c4m1': { // Perimeter and Area
+                name: "Perimeter and Area (Class 4)",
+                questions: [
+                    { question: "The total length of the boundary of a shape is called its:", options: ["Area", "Volume", "Perimeter", "Dimension"], answer: "Perimeter" },
+                    { question: "The space occupied by a flat shape is called its:", options: ["Perimeter", "Area", "Volume", "Length"], answer: "Area" },
+                    { question: "What is the Perimeter of a square with side length 5 cm?", options: ["10 cm", "20 cm", "25 cm", "5 cm"], answer: "20 cm" },
+                    { question: "What is the Area of a rectangle with Length 4 cm and Breadth 2 cm?", options: ["6 cm²", "8 cm²", "12 cm²", "16 cm²"], answer: "8 cm²" },
+                    { question: "The unit of Area is always in:", options: ["cm", "cm² (Square units)", "cm³ (Cubic units)", "None"], answer: "cm² (Square units)" },
+                    { question: "If the perimeter of a park is 100 meters, you need to walk this distance to walk ___ the park.", options: ["Inside", "Around", "Through", "Over"], answer: "Around" },
+                    { question: "If the area of a square is 9 cm², what is the length of its side?", options: ["1 cm", "3 cm", "9 cm", "18 cm"], answer: "3 cm" },
+                    { question: "Area is measured by multiplying:", options: ["Side x Side", "Length x Breadth", "Perimeter x 2", "Length + Breadth"], answer: "Length x Breadth" },
+                    { question: "Which shape has a perimeter of 12 cm if its sides are 4 cm, 3 cm, and 5 cm?", options: ["Square", "Rectangle", "Triangle", "Circle"], answer: "Triangle" },
+                    { question: "The floor of a room is covered by:", options: ["Perimeter", "Area", "Volume", "Length"], answer: "Area" }
+                ]
+            },
+            'c4m2': { // Data Handling Basics
+                name: "Data Handling Basics (Class 4)",
+                questions: [
+                    { question: "A collection of facts, such as numbers, words, or measurements, is called:", options: ["Data", "Graph", "Chart", "Information"], answer: "Data" },
+                    { question: "Which type of chart uses pictures to represent data?", options: ["Bar Graph", "Line Graph", "Pictograph", "Pie Chart"], answer: "Pictograph" },
+                    { question: "If 5 students like apples and 3 like bananas, what is the total data set size?", options: ["2", "5", "8", "3"], answer: "8" },
+                    { question: "A chart that uses rectangular bars to show data is called a:", options: ["Pictograph", "Line Graph", "Bar Graph", "Tally Chart"], answer: "Bar Graph" },
+                    { question: "Which mark represents the number 5 in a tally chart?", options: ["IIII", "IIII/", "////", "////|"], answer: "////|" },
+                    { question: "If the data is {2, 5, 2, 8, 5, 2}, which number appears most often (Mode)?", options: ["8", "5", "2", "All equal"], answer: "2" },
+                    { question: "Arranging data from smallest to largest is called:", options: ["Descending Order", "Alphabetical Order", "Ascending Order", "Grouping"], answer: "Ascending Order" },
+                    { question: "What is the purpose of Data Handling?", options: ["To confuse people", "To make data understandable", "To hide information", "To write stories"], answer: "To make data understandable" },
+                    { question: "The title of a graph tells us:", options: ["The colors used", "The shape of bars", "What the graph is about", "The names of students"], answer: "What the graph is about" },
+                    { question: "In a tally chart, each vertical line represents:", options: ["2", "5", "1", "10"], answer: "1" }
+                ]
+            },
+            'c4s1': { // Light, Sound, and Force
+                name: "Light, Sound, and Force (Class 4)",
+                questions: [
+                    { question: "The primary source of natural light on Earth is:", options: ["Moon", "Star", "Sun", "Bulb"], answer: "Sun" },
+                    { question: "Which of these allows light to pass through completely?", options: ["Opaque object", "Translucent object", "Transparent object", "None"], answer: "Transparent object" },
+                    { question: "The push or pull applied to an object is called:", options: ["Energy", "Sound", "Force", "Weight"], answer: "Force" },
+                    { question: "Sound is produced by:", options: ["Vibrations", "Light", "Shadow", "Stillness"], answer: "Vibrations" },
+                    { question: "Which color absorbs the most light and heat?", options: ["White", "Yellow", "Black", "Green"], answer: "Black" },
+                    { question: "The force that pulls everything towards the center of the Earth is called:", options: ["Muscular force", "Friction", "Gravitational force", "Magnetic force"], answer: "Gravitational force" },
+                    { question: "What is the dark patch formed when an opaque object blocks light?", options: ["Reflection", "Refraction", "Shadow", "Light ray"], answer: "Shadow" },
+                    { question: "Sound travels fastest through:", options: ["Air", "Water", "Solid (like iron)", "Vacuum"], answer: "Solid (like iron)" },
+                    { question: "Which of these is a non-contact force?", options: ["Pushing a cart", "Hitting a ball", "Magnetic force", "Kicking a stone"], answer: "Magnetic force" },
+                    { question: "The force that slows down or stops a moving object is:", options: ["Gravitation", "Friction", "Tension", "Push"], answer: "Friction" }
+                ]
+            },
+            'c4s2': { // Ecosystem and Food Chain
+                name: "Ecosystem and Food Chain (Class 4)",
+                questions: [
+                    { question: "A community of living and non-living things interacting in an area is called an:", options: ["Community", "Ecosystem", "Habitat", "Population"], answer: "Ecosystem" },
+                    { question: "Organisms that make their own food (like plants) are called:", options: ["Consumers", "Producers", "Decomposers", "Carnivores"], answer: "Producers" },
+                    { question: "What is the primary source of energy in a food chain?", options: ["Plants", "Water", "Sun", "Animals"], answer: "Sun" },
+                    { question: "Animals that eat only plants are called:", options: ["Carnivores", "Omnivores", "Herbivores", "Predators"], answer: "Herbivores" },
+                    { question: "Animals that eat both plants and other animals are called:", options: ["Carnivores", "Omnivores", "Herbivores", "Decomposers"], answer: "Omnivores" },
+                    { question: "The living part of an ecosystem is called:", options: ["Abiotic", "Biotic", "Atmosphere", "Lithosphere"], answer: "Biotic" },
+                    { question: "Which of these is a decomposer?", options: ["Grass", "Tiger", "Fungus/Mushroom", "Cow"], answer: "Fungus/Mushroom" },
+                    { question: "In the food chain: Grass -> Deer -> Lion, the Deer is a:", options: ["Producer", "Primary Consumer", "Secondary Consumer", "Decomposer"], answer: "Primary Consumer" },
+                    { question: "A desert is an example of a/an:", options: ["Habitat", "Ecosystem", "Biome", "All of these"], answer: "All of these" },
+                    { question: "Which non-living component is essential for plants to grow?", options: ["Air", "Water", "Soil", "All of these"], answer: "All of these" }
+                ]
+            },
+            'c4ss1': { // Indian Geography Quiz
+                name: "Indian Geography Quiz (Class 4)",
+                questions: [
+                    { question: "What is the capital of India?", options: ["Mumbai", "Kolkata", "New Delhi", "Chennai"], answer: "New Delhi" },
+                    { question: "Which mountain range is located in the North of India?", options: ["Andes", "Rockies", "Himalayas", "Alps"], answer: "Himalayas" },
+                    { question: "The largest state (by area) in India is:", options: ["Maharashtra", "Uttar Pradesh", "Rajasthan", "Madhya Pradesh"], answer: "Rajasthan" },
+                    { question: "The southern part of India is surrounded by:", options: ["Mountains", "Deserts", "Oceans/Seas", "Rivers"], answer: "Oceans/Seas" },
+                    { question: "Which river is often called the 'Ganga of the South'?", options: ["Yamuna", "Godavari", "Brahmaputra", "Indus"], answer: "Godavari" },
+                    { question: "How many states are there in India (as of the current general knowledge)?", options: ["25", "28", "29", "30"], answer: "28" },
+                    { question: "The largest desert in India is the:", options: ["Gobi", "Sahara", "Thar", "Kalahari"], answer: "Thar" },
+                    { question: "Which Indian city is known as the 'Pink City'?", options: ["Jodhpur", "Udaipur", "Jaipur", "Mysore"], answer: "Jaipur" },
+                    { question: "What is the name of the narrowest part of India's coastal plain?", options: ["Coromandel", "Konkan", "Malabar", "None"], answer: "Malabar" },
+                    { question: "Which Indian island group is located in the Arabian Sea?", options: ["Andaman & Nicobar", "Lakshadweep", "Sri Lanka", "Maldives"], answer: "Lakshadweep" }
+                ]
+            },
+            'c4ss2': { // Indian Freedom Struggle
+                name: "Indian Freedom Struggle (Class 4)",
+                questions: [
+                    { question: "In which year did India gain independence?", options: ["1945", "1947", "1950", "1952"], answer: "1947" },
+                    { question: "Who is known as the 'Father of the Nation' in India?", options: ["Subhas Chandra Bose", "Mahatma Gandhi", "Bhagat Singh", "Dr. B. R. Ambedkar"], answer: "Mahatma Gandhi" },
+                    { question: "Who led the Salt March (Dandi March)?", options: ["Jawaharlal Nehru", "Sardar Patel", "Mahatma Gandhi", "Lal Bahadur Shastri"], answer: "Mahatma Gandhi" },
+                    { question: "Which foreign country ruled over India before independence?", options: ["France", "Portugal", "Britain", "Germany"], answer: "Britain" },
+                    { question: "The slogan 'Give me blood and I shall give you freedom' was given by:", options: ["Bhagat Singh", "Mahatma Gandhi", "Subhas Chandra Bose", "Lal Bahadur Shastri"], answer: "Subhas Chandra Bose" },
+                    { question: "The day India became a Republic is celebrated on:", options: ["Jan 26", "Aug 15", "Oct 2", "Nov 14"], answer: "Jan 26" },
+                    { question: "Who was the first Prime Minister of India?", options: ["Sardar Patel", "Rajendra Prasad", "Jawaharlal Nehru", "Indira Gandhi"], answer: "Jawaharlal Nehru" },
+                    { question: "The movement started by Gandhiji for Indian farmers was called:", options: ["Quit India", "Civil Disobedience", "Champaran Satyagraha", "Non-Cooperation"], answer: "Champaran Satyagraha" },
+                    { question: "Who is known for giving the slogan 'Do or Die'?", options: ["Bhagat Singh", "Jawaharlal Nehru", "Mahatma Gandhi", "Lal Bahadur Shastri"], answer: "Mahatma Gandhi" },
+                    { question: "The famous leader who was against the partition of India was:", options: ["Jawaharlal Nehru", "Sardar Vallabhbhai Patel", "B. R. Ambedkar", "All of them"], answer: "All of them" }
+                ]
+            },
+            'c4h1': { // कारक और काल का ज्ञान
+                name: "कारक और काल का ज्ञान (कक्षा 4)",
+                questions: [
+                    { question: "कारक (Case) किसे कहते हैं?", options: ["संज्ञा/सर्वनाम का क्रिया से संबंध", "क्रिया का समय", "संज्ञा का नाम", "विशेषण का काम"], answer: "संज्ञा/सर्वनाम का क्रिया से संबंध" },
+                    { question: "'राम ने रावण को मारा'। इसमें 'ने' कौन सा कारक है?", options: ["कर्म", "करण", "कर्ता", "अपादान"], answer: "कर्ता" },
+                    { question: "क्रिया का होना या करना बताने वाले समय को क्या कहते हैं?", options: ["कारक", "काल", "वचन", "लिंग"], answer: "काल" },
+                    { question: "'मैं कल दिल्ली जाऊँगा'। यह किस काल का वाक्य है?", options: ["भूतकाल", "वर्तमान काल", "भविष्य काल", "अतीत काल"], answer: "भविष्य काल" },
+                    { question: "'मां चाकू से फल काट रही है'। इसमें 'से' कौन सा कारक है?", options: ["करण", "अपादान", "संबंध", "अधिकरण"], answer: "करण" },
+                    { question: "'बच्चे गेंद से खेल रहे थे'। यह किस काल का वाक्य है?", options: ["वर्तमान काल", "भूतकाल", "भविष्य काल", "कोई नहीं"], answer: "भूतकाल" },
+                    { question: "'पिताजी कमरे में बैठे हैं'। इसमें 'में' कौन सा कारक है?", options: ["संप्रदान", "अपादान", "संबंध", "अधिकरण"], answer: "अधिकरण" },
+                    { question: "वर्तमान काल का उदाहरण चुनें:", options: ["वह खा रहा था", "वह खा रहा होगा", "वह खा रहा है", "वह खाएगा"], answer: "वह खा रहा है" },
+                    { question: "कारक के कितने भेद होते हैं?", options: ["सात", "आठ", "नौ", "दस"], answer: "आठ" },
+                    { question: "किस कारक का चिन्ह 'के लिए' है?", options: ["करण", "संप्रदान", "अपादान", "संबंध"], answer: "संप्रदान" }
+                ]
+            },
+            'c4h2': { // अशुद्धि शोधन
+                name: "अशुद्धि शोधन (कक्षा 4)",
+                questions: [
+                    { question: "निम्न में से शुद्ध शब्द चुनें:", options: ["अशीर्वाद", "आसीर्वाद", "आशीर्वाद", "असीर्वाद"], answer: "आशीर्वाद" },
+                    { question: "शुद्ध वर्तनी वाला शब्द चुनें:", options: ["परीणाम", "परिनाम", "परिणाम", "पैरनाम"], answer: "परिणाम" },
+                    { question: "वाक्य का शुद्ध रूप चुनें: 'बच्चे को काटकर फल खिलाओ।'", options: ["फल काटकर बच्चे को खिलाओ।", "बच्चे को खिलाओ फल काटकर।", "काटकर बच्चे को फल खिलाओ।", "बच्चे और फल काटो खिलाओ।"], answer: "फल काटकर बच्चे को खिलाओ।" },
+                    { question: "शुद्ध शब्द चुनें:", options: ["शबद", "सबद", "शब्द", "शब्द्"], answer: "शब्द" },
+                    { question: "वाक्य शुद्ध करें: 'मैं मेरा काम करूँगा।'", options: ["मैं हम काम करूँगा।", "मैं अपना काम करूँगा।", "मेरा काम करूँगा मैं।", "मैं काम करूँगा मेरा।"], answer: "मैं अपना काम करूँगा।" },
+                    { question: "शुद्ध वर्तनी चुनें:", options: ["कवीता", "कविता", "कवित्ता", "कविटा"], answer: "कविता" },
+                    { question: "वाक्य शुद्ध करें: 'यह एक बहुत अच्छा घर है।'", options: ["यह बहुत अच्छा घर है।", "यह एक अच्छा घर है।", "यह बहुत अच्छा एक घर है।", "यह एक बहुत अच्छा एक घर है।"], answer: "यह बहुत अच्छा घर है।" },
+                    { question: "शुद्ध शब्द चुनें:", options: ["पक्षी", "पक्शी", "पक्ष्ी", "पच्छी"], answer: "पक्षी" },
+                    { question: "वाक्य शुद्ध करें: 'तुम्हारे को कहाँ जाना है?'", options: ["तुम कहाँ जाना है?", "तुम्हें कहाँ जाना है?", "तुमको कहाँ जाना है?", "तुम्हारा कहाँ जाना है?"], answer: "तुम्हें कहाँ जाना है?" },
+                    { question: "शुद्ध वर्तनी चुनें:", options: ["परिक्षा", "परीक्षा", "परीकशा", "परीक्ष्या"], answer: "परीक्षा" }
+                ]
+            },
+            // ---------------------- CLASS 5 ----------------------
+            'c5e1': { // Figure of Speech & Idioms
+                name: "Figure of Speech & Idioms (Class 5)",
+                questions: [
+                    { question: "Which Figure of Speech uses 'like' or 'as' to compare two things?", options: ["Metaphor", "Simile", "Personification", "Hyperbole"], answer: "Simile" },
+                    { question: "The phrase 'The world is a stage' is an example of:", options: ["Simile", "Metaphor", "Personification", "Hyperbole"], answer: "Metaphor" },
+                    { question: "What does the idiom 'To bite the bullet' mean?", options: ["To eat fast", "To face a difficult situation with courage", "To run away", "To lose a battle"], answer: "To face a difficult situation with courage" },
+                    { question: "What does the idiom 'Break a leg' mean?", options: ["To hurt oneself", "Good luck", "To run fast", "To fall down"], answer: "Good luck" },
+                    { question: "Giving human qualities to non-human things (e.g., 'The wind whispered') is called:", options: ["Simile", "Metaphor", "Personification", "Alliteration"], answer: "Personification" },
+                    { question: "Which Figure of Speech repeats the same sound at the beginning of words (e.g., 'She sells seashells')?", options: ["Hyperbole", "Simile", "Alliteration", "Metaphor"], answer: "Alliteration" },
+                    { question: "The phrase 'She is as busy as a bee' is a:", options: ["Metaphor", "Simile", "Personification", "Idiom"], answer: "Simile" },
+                    { question: "What does the idiom 'A piece of cake' mean?", options: ["Something delicious", "Something difficult", "Something very easy", "Something sweet"], answer: "Something very easy" },
+                    { question: "An exaggeration (e.g., 'I've told you a million times') is a:", options: ["Metaphor", "Simile", "Hyperbole", "Personification"], answer: "Hyperbole" },
+                    { question: "What does the idiom 'Under the weather' mean?", options: ["Feeling sick", "Standing in the rain", "Very happy", "Feeling cold"], answer: "Feeling sick" }
+                ]
+            },
+            'c5e2': { // Advanced Comprehension
+                name: "Advanced Comprehension (Class 5)",
+                questions: [
+                    { question: "The main idea of a paragraph is usually found in the:", options: ["Last sentence", "Middle sentence", "Topic sentence", "Picture"], answer: "Topic sentence" },
+                    { question: "To understand a story, you must be able to identify the:", options: ["Setting", "Characters", "Plot", "All of these"], answer: "All of these" },
+                    { question: "Inferring means:", options: ["Stating a fact", "Guessing the meaning", "Finding the stated idea", "Reading the title"], answer: "Guessing the meaning" },
+                    { question: "The 'setting' of a story tells you:", options: ["What happens", "Who is in the story", "When and where it happens", "The moral lesson"], answer: "When and where it happens" },
+                    { question: "Which type of writing tells a story?", options: ["Expository", "Persuasive", "Narrative", "Descriptive"], answer: "Narrative" },
+                    { question: "The sequence of events in a story is called the:", options: ["Theme", "Plot", "Climax", "Resolution"], answer: "Plot" },
+                    { question: "If the author is trying to convince you of something, the purpose is:", options: ["To inform", "To entertain", "To persuade", "To describe"], answer: "To persuade" },
+                    { question: "A synonym is a word that means:", options: ["The opposite", "The same", "Something new", "A mistake"], answer: "The same" },
+                    { question: "When you read between the lines, you are:", options: ["Skimming", "Scanning", "Inferring", "Predicting"], answer: "Inferring" },
+                    { question: "The central message or lesson of a story is the:", options: ["Plot", "Setting", "Theme", "Conflict"], answer: "Theme" }
+                ]
+            },
+            'c5m1': { // Percentage and Ratio
+                name: "Percentage and Ratio (Class 5)",
+                questions: [
+                    { question: "What does 'Percentage' mean?", options: ["Per 10", "Per 100", "Per 1000", "Per whole"], answer: "Per 100" },
+                    { question: "Convert 50% into a fraction.", options: ["1/4", "1/2", "3/4", "1/10"], answer: "1/2" },
+                    { question: "What is the ratio of 2 apples to 4 bananas?", options: ["2:4", "1:2", "4:2", "2:1"], answer: "1:2" },
+                    { question: "If a class has 20 boys and 30 girls, what is the total percentage of boys?", options: ["40%", "50%", "60%", "20%"], answer: "40%" },
+                    { question: "In a ratio, the order of numbers is:", options: ["Not important", "Always smallest first", "Very important", "Always divisible"], answer: "Very important" },
+                    { question: "What is 10% of 100?", options: ["1", "5", "10", "20"], answer: "10" },
+                    { question: "The ratio 3:1 is the same as:", options: ["3/1", "1/3", "3:3", "1:1"], answer: "3/1" },
+                    { question: "If you scored 90 out of 100, what is your percentage?", options: ["9%", "10%", "90%", "190%"], answer: "90%" },
+                    { question: "Which is a valid representation of a ratio?", options: ["3+5", "3-5", "3:5", "3*5"], answer: "3:5" },
+                    { question: "The percentage symbol is:", options: ["%", "$", "#", "@"], answer: "%" }
+                ]
+            },
+            'c5m2': { // Volume and Capacity
+                name: "Volume and Capacity (Class 5)",
+                questions: [
+                    { question: "The amount of space an object occupies is called:", options: ["Area", "Perimeter", "Volume", "Weight"], answer: "Volume" },
+                    { question: "The maximum amount a container can hold is called its:", options: ["Volume", "Capacity", "Area", "Length"], answer: "Capacity" },
+                    { question: "Volume is measured in:", options: ["Square units", "Cubic units", "Linear units", "None"], answer: "Cubic units" },
+                    { question: "Capacity is typically measured in (for liquids):", options: ["Grams", "Meters", "Litres/Millilitres", "Kilograms"], answer: "Litres/Millilitres" },
+                    { question: "What is the Volume of a cube with side length 2 cm?", options: ["4 cm³", "8 cm³", "6 cm³", "2 cm³"], answer: "8 cm³" },
+                    { question: "How many millilitres (ml) are in 1 Litre (L)?", options: ["10", "100", "1000", "10000"], answer: "1000" },
+                    { question: "The formula for the Volume of a Cuboid is:", options: ["L x B", "L + B + H", "L x B x H", "L x 2"], answer: "L x B x H" },
+                    { question: "Which of these objects has Volume?", options: ["Paper", "Shadow", "Brick", "All of them"], answer: "Brick" },
+                    { question: "If a jug holds 500 ml of water, this is its:", options: ["Volume", "Capacity", "Area", "Weight"], answer: "Capacity" },
+                    { question: "If you pour 200 ml of water into a 500 ml glass, the water's space occupied is its:", options: ["Capacity", "Volume", "Area", "Weight"], answer: "Volume" }
+                ]
+            },
+            'c5s1': { // Solar System and Space
+                name: "Solar System and Space (Class 5)",
+                questions: [
+                    { question: "Which is the largest planet in our solar system?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: "Jupiter" },
+                    { question: "Which planet is known as the 'Red Planet'?", options: ["Venus", "Mars", "Jupiter", "Earth"], answer: "Mars" },
+                    { question: "The Earth revolves around the Sun. True or False?", options: ["True", "False", "Only sometimes", "Cannot say"], answer: "True" },
+                    { question: "A large, hot ball of gas that produces its own light is called a:", options: ["Planet", "Moon", "Star", "Comet"], answer: "Star" },
+                    { question: "The imaginary line that the Earth rotates on is called its:", options: ["Orbit", "Equator", "Axis", "Latitude"], answer: "Axis" },
+                    { question: "How many days does the Earth take to complete one revolution around the Sun?", options: ["24 hours", "30 days", "365 days", "1000 days"], answer: "365 days" },
+                    { question: "What is the natural satellite of the Earth?", options: ["Mars", "Jupiter", "Moon", "Sun"], answer: "Moon" },
+                    { question: "Which Indian satellite was the first to orbit Mars?", options: ["Chandrayaan", "Aryabhata", "Mangalyaan", "Bhaskara"], answer: "Mangalyaan" },
+                    { question: "A path of a planet around the Sun is called its:", options: ["Axis", "Orbit", "Cycle", "Rotation"], answer: "Orbit" },
+                    { question: "Which planet is closest to the Sun?", options: ["Earth", "Venus", "Mercury", "Mars"], answer: "Mercury" }
+                ]
+            },
+            'c5s2': { // Human Diseases and Prevention
+                name: "Human Diseases and Prevention (Class 5)",
+                questions: [
+                    { question: "A disease caused by poor nutrition is:", options: ["Infectious", "Deficiency", "Non-communicable", "Viral"], answer: "Deficiency" },
+                    { question: "Diseases that spread from one person to another are called:", options: ["Communicable", "Deficiency", "Chronic", "Hereditary"], answer: "Communicable" },
+                    { question: "Which disease is caused by a lack of Vitamin C?", options: ["Rickets", "Night blindness", "Scurvy", "Anaemia"], answer: "Scurvy" },
+                    { question: "Malaria is spread by:", options: ["Contaminated food", "Coughing", "Mosquitoes", "Sharing clothes"], answer: "Mosquitoes" },
+                    { question: "Washing hands regularly helps prevent the spread of:", options: ["Deficiency diseases", "Communicable diseases", "Air pollution", "Headache"], answer: "Communicable diseases" },
+                    { question: "Which component of food protects us from diseases?", options: ["Carbohydrates", "Fats", "Vitamins and Minerals", "Protein"], answer: "Vitamins and Minerals" },
+                    { question: "Tuberculosis (TB) is a disease that affects the:", options: ["Heart", "Lungs", "Kidneys", "Stomach"], answer: "Lungs" },
+                    { question: "The best way to prevent the common cold is:", options: ["Eating more fat", "Sleeping less", "Washing hands often", "Drinking cold water"], answer: "Washing hands often" },
+                    { question: "A small dose of killed or weakened germs given to build immunity is called a/an:", options: ["Antibiotic", "Vaccine", "Tonic", "Painkiller"], answer: "Vaccine" },
+                    { question: "Which deficiency causes Night Blindness?", options: ["Vitamin C", "Vitamin A", "Vitamin D", "Iron"], answer: "Vitamin A" }
+                ]
+            },
+            'c5ss1': { // The UN and Global Issues
+                name: "The UN and Global Issues (Class 5)",
+                questions: [
+                    { question: "What does 'UN' stand for?", options: ["United Nations", "Universal Network", "Union of Nations", "Unit Numbers"], answer: "United Nations" },
+                    { question: "The main goal of the United Nations is to maintain:", options: ["Economic growth", "World peace and security", "Cultural exchange", "Space research"], answer: "World peace and security" },
+                    { question: "The official symbol of the UN is a map of the world surrounded by:", options: ["Olive branches", "Palm leaves", "Oak leaves", "Lotus flowers"], answer: "Olive branches" },
+                    { question: "Which of these is a major global issue the UN addresses?", options: ["Sports scores", "Poverty and hunger", "Fashion trends", "Local traffic"], answer: "Poverty and hunger" },
+                    { question: "The main headquarters of the UN is located in:", options: ["London", "Paris", "Geneva", "New York"], answer: "New York" },
+                    { question: "When is United Nations Day celebrated?", options: ["1st January", "24th October", "15th August", "5th June"], answer: "24th October" },
+                    { question: "The term 'Globalization' means:", options: ["Local farming", "Connecting the world economically/culturally", "Building big houses", "Traveling to the Moon"], answer: "Connecting the world economically/culturally" },
+                    { question: "A 'Refugee' is a person who:", options: ["Travels for fun", "Has to leave their country due to war or danger", "Works abroad", "Studies in another country"], answer: "Has to leave their country due to war or danger" },
+                    { question: "The UN body that works for children's rights is:", options: ["UNESCO", "WHO", "UNICEF", "IMF"], answer: "UNICEF" },
+                    { question: "Climate change is a global issue caused by:", options: ["Less rain", "Increased greenhouse gases", "More trees", "Less pollution"], answer: "Increased greenhouse gases" }
+                ]
+            },
+            'c5ss2': { // Constitutional Values
+                name: "Constitutional Values (Class 5)",
+                questions: [
+                    { question: "A 'Constitution' is a set of:", options: ["Stories", "Rules and laws", "Songs", "Pictures"], answer: "Rules and laws" },
+                    { question: "The term 'Democracy' means rule by the:", options: ["King", "Army", "People", "Priests"], answer: "People" },
+                    { question: "In a democracy, citizens have the right to:", options: ["Vote for leaders", "Break rules", "Ban all books", "Stop others from speaking"], answer: "Vote for leaders" },
+                    { question: "The Indian Constitution was adopted on:", options: ["Aug 15, 1947", "Jan 26, 1950", "Oct 2, 1947", "Nov 26, 1949"], answer: "Jan 26, 1950" },
+                    { question: "The idea that all people are treated equally is called:", options: ["Justice", "Liberty", "Equality", "Fraternity"], answer: "Equality" },
+                    { question: "The right to express your opinions freely is called:", options: ["Right to Sleep", "Right to Vote", "Liberty", "Equality"], answer: "Liberty" },
+                    { question: "The person known as the Chief Architect of the Indian Constitution is:", options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Dr. B. R. Ambedkar", "Sardar Patel"], answer: "Dr. B. R. Ambedkar" },
+                    { question: "A country that has no official state religion is called:", options: ["Theocracy", "Monarchy", "Secular", "Republic"], answer: "Secular" },
+                    { question: "What is the minimum voting age in India?", options: ["16", "18", "21", "25"], answer: "18" },
+                    { question: "The principle of 'Fraternity' means:", options: ["Brotherhood and common feeling", "Fighting", "Making money", "Traveling"], answer: "Brotherhood and common feeling" }
+                ]
+            },
+            'c5h1': { // रस और अलंकार
+                name: "रस और अलंकार (कक्षा 5)",
+                questions: [
+                    { question: "कविता पढ़ने या सुनने से जो आनंद मिलता है, उसे क्या कहते हैं?", options: ["अलंकार", "रस", "छंद", "भाव"], answer: "रस" },
+                    { question: "वीर रस का स्थायी भाव (मूल भावना) क्या है?", options: ["शोक", "हँसी", "उत्साह", "भय"], answer: "उत्साह" },
+                    { question: "जब उपमेय (जिसकी तुलना हो) को ही उपमान (जिससे तुलना हो) मान लिया जाता है, वह कौन सा अलंकार है?", options: ["उपमा", "रूपक", "उत्प्रेक्षा", "अनुप्रास"], answer: "रूपक" },
+                    { question: "'चारु चंद्र की चंचल किरणें' में कौन सा अलंकार है?", options: ["उपमा", "श्लेष", "अनुप्रास", "यमक"], answer: "अनुप्रास" },
+                    { question: "श्रृंगार रस का स्थायी भाव क्या है?", options: ["रति (प्रेम)", "क्रोध", "विस्मय", "निर्वेद"], answer: "रति (प्रेम)" },
+                    { question: "अलंकार किसे कहते हैं?", options: ["कविता का अर्थ", "कविता की शोभा बढ़ाने वाले तत्व", "कविता का नाम", "कविता का छंद"], answer: "कविता की शोभा बढ़ाने वाले तत्व" },
+                    { question: "'हाथ जोड़कर बालक बोला' - इस वाक्य में कौन सा रस हो सकता है?", options: ["वीर रस", "हास्य रस", "शांत रस", "करुण रस"], answer: "शांत रस" },
+                    { question: "'मुख चंद्रमा के समान सुंदर है' - यह कौन सा अलंकार है?", options: ["रूपक", "उपमा", "उत्प्रेक्षा", "यमक"], answer: "उपमा" },
+                    { question: "विभत्स रस (घृणा) का स्थायी भाव क्या है?", options: ["भय", "क्रोध", "जुगुप्सा", "शांत"], answer: "जुगुप्सा" },
+                    { question: "जब एक शब्द दो या दो से अधिक बार आता है और हर बार उसका अर्थ अलग होता है, तो वह कौन सा अलंकार है?", options: ["श्लेष", "उपमा", "अनुप्रास", "यमक"], answer: "यमक" }
+                ]
+            },
+            'c5h2': { // निबंध और पत्र लेखन
+                name: "निबंध और पत्र लेखन (कक्षा 5)",
+                questions: [
+                    { question: "निबंध (Essay) के मुख्य कितने भाग होते हैं?", options: ["दो", "तीन", "चार", "पाँच"], answer: "तीन" },
+                    { question: "निबंध के किस भाग में विषय का परिचय दिया जाता है?", options: ["उपसंहार", "मध्य भाग", "प्रस्तावना", "निष्कर्ष"], answer: "प्रस्तावना" },
+                    { question: "पत्र (Letter) लेखन कितने प्रकार का होता है?", options: ["एक", "दो", "तीन", "चार"], answer: "दो" },
+                    { question: "अपने प्रधानाचार्य को लिखा गया पत्र किस प्रकार का पत्र है?", options: ["अनौपचारिक", "औपचारिक", "व्यक्तिगत", "सामाजिक"], answer: "औपचारिक" },
+                    { question: "अपने मित्र को लिखा गया पत्र किस प्रकार का पत्र है?", options: ["औपचारिक", "अनौपचारिक", "सरकारी", "व्यावसायिक"], answer: "अनौपचारिक" },
+                    { question: "निबंध का मध्य भाग (Body) क्या बताता है?", options: ["विषय की समाप्ति", "विषय का विस्तार", "विषय का नाम", "पत्र का पता"], answer: "विषय का विस्तार" },
+                    { question: "अनौपचारिक पत्र में शुरुआत में क्या लिखा जाता है?", options: ["सेवा में", "प्रिय मित्र", "विषय", "महोदय"], answer: "प्रिय मित्र" },
+                    { question: "औपचारिक पत्र में क्या लिखना सबसे ज़रूरी है?", options: ["हाल चाल", "विषय", "जन्मदिन की बधाई", "कविता"], answer: "विषय" },
+                    { question: "निबंध के अंत में क्या लिखा जाता है?", options: ["प्रस्तावना", "उपसंहार", "शीर्षक", "मध्य भाग"], answer: "उपसंहार" },
+                    { question: "औपचारिक पत्र का प्रयोग किसके लिए किया जाता है?", options: ["परिवार", "सरकारी/कार्यालय", "मित्र", "पड़ोसी"], answer: "सरकारी/कार्यालय" }
+                ]
+            }
+        };
+
+        const currentQuiz = quizData[quizId];
+        const PASS_THRESHOLD_PERCENTAGE = 70; // 70% adaptive threshold
+        
+        if (!currentQuiz) {
+            document.querySelector('.quiz-container').innerHTML = '<h1>Quiz not found!</h1><div class="end-game-buttons" style="display:flex;"><button id="go-back-button" class="game-button">Go Back</button></div>';
+            document.getElementById('go-back-button').addEventListener('click', () => { window.location.href = 'subjects.html'; });
+        } else {
+            document.title = currentQuiz.name;
+            document.querySelector('h1').textContent = currentQuiz.name;
+        }
+
+        const questionBox = document.getElementById('question-box');
+        const optionsList = document.getElementById('options-list');
+        const nextButton = document.getElementById('next-button');
+        const questionNumberDisplay = document.getElementById('question-number');
+        const timerDisplay = document.getElementById('timer');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const endGameButtons = document.getElementById('end-game-buttons');
+        const playAgainButton = document.getElementById('play-again-button');
+        const goBackButton = document.getElementById('go-back-button');
+        const adaptiveFeedback = document.getElementById('adaptive-feedback');
+
+        let currentQuestionIndex = 0;
+        let score = 0; // Score is number of correct answers (out of 10)
+        let timer;
+        let timeLeft = 60; 
+        
+        // Update total question display
+        if(currentQuiz) {
+            questionNumberDisplay.textContent = `${currentQuestionIndex + 1} / ${currentQuiz.questions.length}`;
+        }
+
+        function startTimer() {
+            clearInterval(timer); 
+            timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= currentQuiz.questions.length) {
+                endQuiz();
+                return;
+            }
+            const questionData = currentQuiz.questions[currentQuestionIndex];
+            questionNumberDisplay.textContent = `${currentQuestionIndex + 1} / ${currentQuiz.questions.length}`;
+            questionBox.textContent = questionData.question;
+            optionsList.innerHTML = '';
+            questionData.options.forEach(option => {
+                const li = document.createElement('li');
+                li.classList.add('option-item');
+                li.textContent = option;
+                li.addEventListener('click', () => checkAnswer(option, questionData.answer));
+                optionsList.appendChild(li);
+            });
+            nextButton.style.display = 'none';
+            feedbackMessage.textContent = '';
+        }
+
+        function checkAnswer(selectedOption, correctAnswer) {
+            // Disable further clicks
+            optionsList.querySelectorAll('.option-item').forEach(li => {
+                li.style.pointerEvents = 'none';
+                if (li.textContent === correctAnswer) {
+                    li.classList.add('correct');
+                } else if (li.textContent === selectedOption) {
+                    li.classList.add('incorrect');
+                }
+            });
+            
+            // Score is based on correct answers (max 10 points per quiz)
+            if (selectedOption === correctAnswer) {
+                score += 1; 
+                feedbackMessage.textContent = 'Correct! 🎉';
+            } else {
+                feedbackMessage.textContent = `Incorrect. The correct answer was: ${correctAnswer}`;
+            }
+            
+            nextButton.style.display = 'block';
+        }
+
+        function logActivity(name, points) {
+            let recentActivities = JSON.parse(localStorage.getItem('recentActivities')) || [];
+            recentActivities.push({ name, points, timestamp: new Date() }); 
+            localStorage.setItem('recentActivities', JSON.stringify(recentActivities));
+        }
+
+        async function endQuiz() {
+            clearInterval(timer);
+            const totalQuestions = currentQuiz.questions.length;
+            const percentage = (score / totalQuestions) * 100;
+            const pointsToAward = score * 10; // 10 points per correct answer
+            const userEmail = localStorage.getItem("userEmail");
+
+            questionBox.textContent = 'Quiz Over!';
+            optionsList.innerHTML = '';
+            nextButton.style.display = 'none';
+            endGameButtons.style.display = 'flex';
+            
+            // --- ADAPTIVE LOGIC ---
+            adaptiveFeedback.style.display = 'block';
+            
+            if (percentage >= PASS_THRESHOLD_PERCENTAGE) {
+                adaptiveFeedback.classList.add('high-score');
+                adaptiveFeedback.classList.remove('low-score');
+                
+                adaptiveFeedback.innerHTML = `
+                    **Congratulations!** You scored **${score}/${totalQuestions}** (${percentage.toFixed(0)}%)! 🎉
+                    <br>You are ready for the next level challenge!
+                `;
+                 // Update Play Again button for high score
+                playAgainButton.textContent = 'Go to Next Challenge';
+                playAgainButton.onclick = () => { window.location.href = 'quiz.html'; }; // Go back to challenge list
+                
+            } else {
+                adaptiveFeedback.classList.add('low-score');
+                adaptiveFeedback.classList.remove('high-score');
+                
+                adaptiveFeedback.innerHTML = `
+                    You scored **${score}/${totalQuestions}** (${percentage.toFixed(0)}%). 🙁
+                    <br>It looks like you need a little more practice. Try playing again!
+                `;
+                // Keep Play Again button for low score
+                playAgainButton.textContent = 'Practice Again (Same Quiz)';
+                playAgainButton.onclick = () => { 
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    timeLeft = 60;
+                    initializeQuiz();
+                    adaptiveFeedback.style.display = 'none';
+                };
+            }
+            
+            feedbackMessage.textContent = `Total Points Earned: ${pointsToAward} Coins!`;
+            // --- END ADAPTIVE LOGIC ---
+
+            // --- SCORE UPDATE LOGIC (Updated to include subjectId) ---
+            try {
+                const response = await fetch('/api/update-score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+                    },
+                    body: JSON.stringify({ 
+                        email: userEmail, 
+                        points: pointsToAward,
+                        subject: subjectId // NEW: Send the subject ID for subject leaderboard!
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('totalScore', data.newScore);
+                    logActivity(currentQuiz.name, pointsToAward);
+
+                    // Also log the quiz completion for Dashboard's completed Quizzes section
+                    let completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes')) || [];
+                    if (!completedQuizzes.includes(quizId)) {
+                         completedQuizzes.push(quizId);
+                         localStorage.setItem('completedQuizzes', JSON.stringify(completedQuizzes));
+                    }
+                } else {
+                    console.error('Failed to update server score.');
+                }
+            } catch (error) {
+                console.error('Error updating score:', error);
+            }
+            
+            // Save quiz score to localStorage (for dashboard processing on next page load)
+            localStorage.setItem('quizCompleted', 'true');
+            localStorage.setItem('quizScore', pointsToAward); 
+            localStorage.setItem('completedQuizName', currentQuiz.name);
+        }
+        
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            loadQuestion();
+        });
+
+        playAgainButton.addEventListener('click', () => {
+            // Adaptive logic handles this now, default click listener remains for safety/fallbacks.
+        });
+        
+        goBackButton.addEventListener('click', () => {
+            window.location.href = 'subjects.html';
+        });
+
+        function initializeQuiz() {
+            if (currentQuiz) {
+                loadQuestion();
+                startTimer();
+                endGameButtons.style.display = 'none';
+                document.querySelector('h1').textContent = currentQuiz.name; // Reset header title
+            }
+        }
+        
+        window.onload = initializeQuiz;
+    </script>
+</body>
+</html>

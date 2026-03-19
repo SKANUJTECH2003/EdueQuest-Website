@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EduQuest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --secondary: #e8f0fe;
+            --accent: #FFC107;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #d32f2f;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #202124;
+            --muted: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        body.dark-theme {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #e8eaed;
+            --muted: #9aa0a6;
+            --border: #3c4043;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), #2d5ae8);
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            gap: 0.8rem;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .admin-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: var(--card);
+            box-shadow: var(--shadow);
+            overflow-y: auto;
+            z-index: 90;
+        }
+
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-menu a, .sidebar-menu button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active,
+        .sidebar-menu button:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+            padding-left: 1.2rem;
+        }
+
+        .sidebar-menu i {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .page-subtitle {
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-left h3 {
+            font-size: 0.9rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-card-change {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .stat-card-icon {
+            font-size: 2.5rem;
+            opacity: 0.2;
+        }
+
+        .stat-card.primary .stat-card-icon { color: var(--primary); }
+        .stat-card.success .stat-card-icon { color: var(--success); }
+        .stat-card.warning .stat-card-icon { color: var(--warning); }
+        .stat-card.danger .stat-card-icon { color: var(--danger); }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        tr:hover {
+            background: var(--secondary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(211, 47, 47, 0.1);
+            color: var(--danger);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1556b8;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--card);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-crown"></i>
+            EduQuest Admin
+            <span class="admin-badge">ADMIN</span>
+        </div>
+        <div class="header-right">
+            <div class="admin-user">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.9rem; font-weight: 600;">Administrator</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8;">admin@eduquest.com</div>
+                </div>
+            </div>
+            <button class="logout-btn" id="adminLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="#" data-tab="dashboard" class="menu-item active">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" data-tab="users" class="menu-item">
+                <i class="fas fa-users"></i> User Management
+            </a>
+            <a href="#" data-tab="content" class="menu-item">
+                <i class="fas fa-book"></i> Content Moderation
+            </a>
+            <a href="#" data-tab="rewards" class="menu-item">
+                <i class="fas fa-coins"></i> Rewards Management
+            </a>
+            <a href="#" data-tab="analytics" class="menu-item">
+                <i class="fas fa-chart-pie"></i> Analytics
+            </a>
+            <a href="#" data-tab="settings" class="menu-item">
+                <i class="fas fa-cog"></i> Admin Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h1 class="page-title">📊 Dashboard</h1>
+            <p class="page-subtitle">Welcome back, Administrator. Here's your system overview.</p>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-card-left">
+                        <h3>Total Users</h3>
+                        <div class="stat-card-value">2,847</div>
+                        <div class="stat-card-change">↑ 12% from last month</div>
+                    </div>
+                    <div class="stat-card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-card-left">
+                        <h3>Active Sessions</h3>
+                        <div class="stat-card-value">456</div>
+                        <div class="stat-card-change">↑ 8% increase</div>
+                    </div>
+                    <div class="stat-card-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-card-left">
+                        <h3>Total Coins Distributed</h3>
+                        <div class="stat-card-value">52.5M</div>
+                        <div class="stat-card-change">↑ 5% this week</div>
+                    </div>
+                    <div class="stat-card-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-card-left">
+                        <h3>Pending Issues</h3>
+                        <div class="stat-card-value">12</div>
+                        <div class="stat-card-change">3 critical</div>
+                    </div>
+                    <div class="stat-card-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3 class="card-title">Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button class="btn btn-primary">🔔 Send Notification</button>
+                    <button class="btn btn-primary">📊 Export Reports</button>
+                    <button class="btn btn-primary">⚙️ System Maintenance</button>
+                    <button class="btn btn-primary">🆘 View Logs</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users" class="tab-content">
+            <h1 class="page-title">👥 User Management</h1>
+            <p class="page-subtitle">Manage all registered users and their accounts</p>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 class="card-title">Active Users</h3>
+                    <button class="btn btn-primary btn-sm">+ Add User</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#001</td>
+                                <td>Rajesh Kumar</td>
+                                <td>rajesh@example.com</td>
+                                <td>Jan 15, 2025</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td><button class="btn btn-sm btn-danger">Ban</button></td>
+                            </tr>
+                            <tr>
+                                <td>#002</td>
+                                <td>Priya Singh</td>
+                                <td>priya@example.com</td>
+                                <td>Jan 20, 2025</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td><button class="btn btn-sm btn-danger">Ban</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Tab -->
+        <div id="content" class="tab-content">
+            <h1 class="page-title">📚 Content Moderation</h1>
+            <p class="page-subtitle">Review and manage user-generated content</p>
+
+            <div class="card">
+                <h3 class="card-title">Flagged Content</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Content ID</th>
+                                <th>Type</th>
+                                <th>Reported By</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#C001</td>
+                                <td>Quiz Response</td>
+                                <td>User #045</td>
+                                <td>Inappropriate Language</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>#C002</td>
+                                <td>Forum Post</td>
+                                <td>User #123</td>
+                                <td>Spam</td>
+                                <td><span class="badge badge-danger">Blocked</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rewards Tab -->
+        <div id="rewards" class="tab-content">
+            <h1 class="page-title">🎁 Rewards Management</h1>
+            <p class="page-subtitle">Manage coin distribution and reward systems</p>
+
+            <div class="card">
+                <h3 class="card-title">Bulk Coin Distribution</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div>
+                        <div class="form-group">
+                            <label>Select Users</label>
+                            <select>
+                                <option>All Active Users</option>
+                                <option>Class 1 Only</option>
+                                <option>Class 2 Only</option>
+                                <option>Top 10 Users</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Coins to Distribute</label>
+                            <input type="number" placeholder="Enter number of coins" value="1000">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;">💰 Distribute Coins</button>
+                    </div>
+                    <div>
+                        <div style="background: var(--secondary); padding: 1rem; border-radius: 8px;">
+                            <p><strong>Total Users:</strong> 2,847</p>
+                            <p><strong>Coins per User:</strong> 1,000</p>
+                            <p><strong>Total Coins:</strong> 2,847,000</p>
+                            <p><strong>Status:</strong> Ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <h1 class="page-title">📈 Analytics</h1>
+            <p class="page-subtitle">Platform performance and user insights</p>
+
+            <div class="card">
+                <h3 class="card-title">Top Quizzes</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Quiz Name</th>
+                                <th>Attempts</th>
+                                <th>Avg Score</th>
+                                <th>Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Math 101</td>
+                                <td>1,245</td>
+                                <td>78.5%</td>
+                                <td><span class="badge badge-success">92%</span></td>
+                            </tr>
+                            <tr>
+                                <td>English Grammar</td>
+                                <td>987</td>
+                                <td>72.3%</td>
+                                <td><span class="badge badge-success">85%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <h1 class="page-title">⚙️ Admin Settings</h1>
+            <p class="page-subtitle">Configure system-wide settings</p>
+
+            <div class="card">
+                <h3 class="card-title">Platform Configuration</h3>
+                <div class="form-group">
+                    <label>Maintenance Mode</label>
+                    <select>
+                        <option>Off</option>
+                        <option>On</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Max Users Per Server</label>
+                    <input type="number" value="10000">
+                </div>
+                <button class="btn btn-primary">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin Authentication
+        document.addEventListener('DOMContentLoaded', () => {
+            const adminStatus = localStorage.getItem('isAdmin');
+            if (adminStatus !== 'true') {
+                alert('⛔ Unauthorized Access! This page is for administrators only.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Tab Navigation
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = item.getAttribute('data-tab');
+
+                    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+                    item.classList.add('active');
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+
+            // Logout
+            document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

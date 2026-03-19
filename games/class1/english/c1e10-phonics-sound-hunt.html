@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phonics Sound Hunt</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 25px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
+        .title { font-size: 2rem; color: #667eea; margin-bottom: 30px; }
+        .content { background: #f5f5f5; padding: 30px; border-radius: 15px; margin: 20px 0; }
+        .buttons { margin-top: 30px; }
+        button { padding: 12px 30px; margin: 10px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; }
+        .btn-next { background: #4caf50; color: white; }
+        .btn-home { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Phonics Sound Hunt</h1>
+        <div class="content">
+            <p>🎮 This is an interactive game!</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">Game mechanics being implemented...</p>
+        </div>
+        <div class="buttons">
+            <button class="btn-next" onclick="nextQuestion()">Practice Questions</button>
+            <button class="btn-home" onclick="goHome()">Back Home</button>
+        </div>
+    </div>
+    
+    <script>
+        function nextQuestion() {
+            // Questions will appear here
+        }
+        
+        function goHome() {
+            saveScore();
+            window.location.href = '/subjects.html';
+        }
+    
+        
+        // Save score to localStorage
+        function saveScore() {
+            const gameId = 'class1-game';
+            const score = Math.floor(Math.random() * 100); // Placeholder
+            const timestamp = new Date().toISOString();
+            
+            // Store individual game score
+            localStorage.setItem('lastGameScore', score);
+            localStorage.setItem('lastGameTime', timestamp);
+            localStorage.setItem('lastGameId', gameId);
+            
+            // Add to total
+            let totalScore = parseInt(localStorage.getItem('totalGameScore') || '0');
+            totalScore += score;
+            localStorage.setItem('totalGameScore', totalScore);
+            
+            console.log(`Score saved: ${score}`);
+        }
+        
+        
+        // Timer functionality
+        let gameStartTime;
+        function startTimer() {
+            gameStartTime = Date.now();
+        }
+        
+        function getElapsedTime() {
+            return Math.floor((Date.now() - gameStartTime) / 1000); // seconds
+        }
+        </script>
+</body>
+</html>

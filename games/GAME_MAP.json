@@ -1,0 +1,300 @@
+{
+  "gameMapping": {
+    "class1": {
+      "english": [
+        { "id": "c1e1", "name": "Alphabet Flash Cards", "desc": "Learn English alphabets A-Z with letter sounds", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e1-alphabet-flash-cards.html" },
+        { "id": "c1e2", "name": "Rhyming Word Matcher", "desc": "Match words that rhyme together", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e2-rhyming-word-matcher.html" },
+        { "id": "c1e3", "name": "CVC Word Builder", "desc": "Build 3-letter consonant-vowel-consonant words", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e3-cvc-word-builder.html" },
+        { "id": "c1e4", "name": "Vowel Sound Match", "desc": "Learn 5 vowel sounds with examples", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e4-vowel-sound-match.html" },
+        { "id": "c1e5", "name": "Simple Sentence Constructor", "desc": "Build simple 2-3 word sentences", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e5-simple-sentence-constructor.html" },
+        { "id": "c1e6", "name": "Picture-Word Association", "desc": "Match pictures with English words", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e6-picture-word-association.html" },
+        { "id": "c1e7", "name": "Letter Sequencing (ABC Order)", "desc": "Arrange letters in alphabetical order", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e7-letter-sequencing-(abc-order).html" },
+        { "id": "c1e8", "name": "Word Family Sorter", "desc": "Group words by their word family", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e8-word-family-sorter.html" },
+        { "id": "c1e9", "name": "Sight Words Memory", "desc": "Memory game with common sight words", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e9-sight-words-memory.html" },
+        { "id": "c1e10", "name": "Phonics Sound Hunt", "desc": "Match letter combinations with their sounds", "type": "2D", "tech": "Canvas", "file": "class1/english/c1e10-phonics-sound-hunt.html" }
+      ],
+      "maths": [
+        { "id": "c1m1", "name": "Number Recognition 1-10", "desc": "Learn to recognize and count numbers 1-10", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m1-number-recognition-1-10.html" },
+        { "id": "c1m2", "name": "Counting Objects", "desc": "Count objects in different scenes", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m2-counting-objects.html" },
+        { "id": "c1m3", "name": "Addition within 5", "desc": "Simple addition problems (0-5)", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m3-addition-within-5.html" },
+        { "id": "c1m4", "name": "Subtraction within 5", "desc": "Simple subtraction problems (0-5)", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m4-subtraction-within-5.html" },
+        { "id": "c1m5", "name": "Number Sequence", "desc": "Complete number sequences", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m5-number-sequence.html" },
+        { "id": "c1m6", "name": "Shape Recognition", "desc": "Learn basic 2D shapes", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m6-shape-recognition.html" },
+        { "id": "c1m7", "name": "Size Comparison (Big/Small)", "desc": "Compare sizes of objects", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m7-size-comparison-(big\\small).html" },
+        { "id": "c1m8", "name": "Odd/Even Numbers", "desc": "Identify odd and even numbers", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m8-odd\\even-numbers.html" },
+        { "id": "c1m9", "name": "Pattern Recognition", "desc": "Complete simple patterns", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m9-pattern-recognition.html" },
+        { "id": "c1m10", "name": "Money Basics (Coins)", "desc": "Learn about coins and simple value", "type": "2D", "tech": "Canvas", "file": "class1/maths/c1m10-money-basics-(coins).html" }
+      ],
+      "evs": [
+        { "id": "c1e1", "name": "Body Parts Explorer", "desc": "Learn human body parts", "type": "2D", "tech": "Canvas", "file": "class1/evs/body-parts-explorer.html" },
+        { "id": "c1e2", "name": "Family Tree Builder", "desc": "Build family relationships", "type": "2D", "tech": "Canvas", "file": "class1/evs/family-tree-builder.html" },
+        { "id": "c1e3", "name": "Animal Home 3D", "desc": "Match animals with habitats in 3D", "type": "3D", "tech": "Babylon.js", "file": "class1/evs/animal-home-3d.html" },
+        { "id": "c1e4", "name": "Five Senses Game", "desc": "Explore the five senses", "type": "2D", "tech": "Canvas", "file": "class1/evs/five-senses-game.html" },
+        { "id": "c1e5", "name": "Seasons Explorer", "desc": "Learn about seasons", "type": "2D", "tech": "Canvas", "file": "class1/evs/seasons-explorer.html" },
+        { "id": "c1e6", "name": "Nature Walk 3D", "desc": "Walk through natural environments in 3D", "type": "3D", "tech": "Babylon.js", "file": "class1/evs/nature-walk-3d.html" },
+        { "id": "c1e7", "name": "Living vs Non-Living", "desc": "Classify living things", "type": "2D", "tech": "Canvas", "file": "class1/evs/living-vs-nonliving.html" },
+        { "id": "c1e8", "name": "Daily Routine", "desc": "Learn daily healthy routines", "type": "2D", "tech": "Canvas", "file": "class1/evs/daily-routine.html" },
+        { "id": "c1e9", "name": "Weather Predictor", "desc": "Identify weather patterns", "type": "2D", "tech": "Canvas", "file": "class1/evs/weather-predictor.html" },
+        { "id": "c1e10", "name": "Plant Growth 3D", "desc": "Watch plant growth in 3D", "type": "3D", "tech": "Babylon.js", "file": "class1/evs/plant-growth-3d.html" },
+        { "id": "c1s1", "name": "Body Parts Learning", "desc": "Learn human body parts and their names", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s1-body-parts-learning.html" },
+        { "id": "c1s2", "name": "Family Members Matcher", "desc": "Identify family relationships", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s2-family-members-matcher.html" },
+        { "id": "c1s3", "name": "Animal Habitats", "desc": "Match animals with their habitats", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s3-animal-habitats.html" },
+        { "id": "c1s4", "name": "Five Senses Explorer", "desc": "Learn about seeing, hearing, touching, tasting, smelling", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s4-five-senses-explorer.html" },
+        { "id": "c1s5", "name": "Seasons and Weather", "desc": "Learn about different seasons", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s5-seasons-and-weather.html" },
+        { "id": "c1s6", "name": "Living vs Non-Living", "desc": "Classify living and non-living things", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s6-living-vs-non-living.html" },
+        { "id": "c1s7", "name": "Healthy Habits", "desc": "Learn daily healthy routines and hygiene", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s7-healthy-habits.html" },
+        { "id": "c1s8", "name": "Weather Patterns", "desc": "Identify different weather types", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s8-weather-patterns.html" },
+        { "id": "c1s9", "name": "Plant Parts Learning", "desc": "Learn parts of a plant", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s9-plant-parts-learning.html" },
+        { "id": "c1s10", "name": "Nature Around Us", "desc": "Explore natural objects and environments", "type": "2D", "tech": "Canvas", "file": "class1/evs/c1s10-nature-around-us.html" }
+      ],
+      "hindi": [
+        { "id": "c1h1", "name": "वर्णमाला पहचान (Alphabet Recognition)", "desc": "सभी 46 देवनागरी वर्ण सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h1-वर्णमाला-पहचान-alphabet-recognition.html" },
+        { "id": "c1h2", "name": "स्वर खेल (Vowel Game)", "desc": "5 स्वर (अ, ए, इ, ओ, उ) सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h2-स्वर-खेल-vowel-game.html" },
+        { "id": "c1h3", "name": "व्यंजन मेल (Consonant Match)", "desc": "व्यंजन और उनके नाम सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h3-व्यंजन-मेल-consonant-match.html" },
+        { "id": "c1h4", "name": "शब्द निर्माण (Word Building)", "desc": "सरल हिंदी शब्द बनाएं", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h4-शब्द-निर्माण-word-building.html" },
+        { "id": "c1h5", "name": "मात्रा सीखो (Vowel Modifiers)", "desc": "हिंदी मात्राएं (ा, ि, ी, ु, ू) सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h5-मात्रा-सीखो-vowel-modifiers.html" },
+        { "id": "c1h6", "name": "चित्र-शब्द जोड़ी (Picture-Word Match)", "desc": "चित्र से हिंदी शब्द सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h6-चित्र-शब्द-जोड़ी-picture-word-match.html" },
+        { "id": "c1h7", "name": "रंग पहचान (Colors)", "desc": "हिंदी में रंगों के नाम सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h7-रंग-पहचान-colors.html" },
+        { "id": "c1h8", "name": "संख्याएं (Numbers)", "desc": "हिंदी में संख्या 1-10 सीखें", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h8-संख्याएं-numbers.html" },
+        { "id": "c1h9", "name": "सरल वाक्य (Simple Sentences)", "desc": "2-3 शब्दों के सरल वाक्य", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h9-सरल-वाक्य-simple-sentences.html" },
+        { "id": "c1h10", "name": "कहानी क्रम (Story Sequence)", "desc": "कहानी की घटनाओं को क्रम में लगाएं", "type": "2D", "tech": "Canvas", "file": "class1/hindi/c1h10-कहानी-क्रम-story-sequence.html" }
+      ]
+    },
+    "class2": {
+      "english": [
+        { "id": "c2e1", "name": "Noun Hunter", "desc": "Identify nouns in sentences", "type": "2D", "tech": "Canvas", "file": "class2/english/noun-hunter.html" },
+        { "id": "c2e2", "name": "Verb Action Game", "desc": "Match verbs with actions", "type": "2D", "tech": "Canvas", "file": "class2/english/verb-action-game.html" },
+        { "id": "c2e3", "name": "Storytelling 3D", "desc": "Create stories in 3D scenes", "type": "3D", "tech": "Babylon.js", "file": "class2/english/storytelling-3d.html" },
+        { "id": "c2e4", "name": "Vocabulary Builder", "desc": "Learn 100+ new words", "type": "2D", "tech": "Canvas", "file": "class2/english/vocabulary-builder.html" },
+        { "id": "c2e5", "name": "Sentence Order", "desc": "Arrange words into sentences", "type": "2D", "tech": "Canvas", "file": "class2/english/sentence-order.html" },
+        { "id": "c2e6", "name": "Reading Comprehension 3D", "desc": "Answer questions in interactive 3D", "type": "3D", "tech": "Babylon.js", "file": "class2/english/reading-comp-3d.html" },
+        { "id": "c2e7", "name": "Spelling Bee", "desc": "Spell words correctly", "type": "2D", "tech": "Canvas", "file": "class2/english/spelling-bee.html" },
+        { "id": "c2e8", "name": "Punctuation Quiz", "desc": "Use correct punctuation", "type": "2D", "tech": "Canvas", "file": "class2/english/punctuation-quiz.html" },
+        { "id": "c2e9", "name": "Synonym Match", "desc": "Find words with same meaning", "type": "2D", "tech": "Canvas", "file": "class2/english/synonym-match.html" },
+        { "id": "c2e10", "name": "Story Creator 3D", "desc": "Write and visualize stories in 3D", "type": "3D", "tech": "Babylon.js", "file": "class2/english/story-creator-3d.html" }
+      ],
+      "maths": [
+        { "id": "c2m1", "name": "Addition Master", "desc": "Master two-digit addition", "type": "2D", "tech": "Canvas", "file": "class2/maths/addition-master.html" },
+        { "id": "c2m2", "name": "Subtraction Challenge", "desc": "Solve subtraction problems", "type": "2D", "tech": "Canvas", "file": "class2/maths/subtraction-challenge.html" },
+        { "id": "c2m3", "name": "Geometry 3D", "desc": "Explore 3D shapes and properties", "type": "3D", "tech": "Babylon.js", "file": "class2/maths/geometry-3d.html" },
+        { "id": "c2m4", "name": "Times Table Race", "desc": "Learn multiplication tables", "type": "2D", "tech": "Canvas", "file": "class2/maths/times-table-race.html" },
+        { "id": "c2m5", "name": "Division Basics", "desc": "Understand division concept", "type": "2D", "tech": "Canvas", "file": "class2/maths/division-basics.html" },
+        { "id": "c2m6", "name": "Measurement 3D", "desc": "Measure objects in 3D world", "type": "3D", "tech": "Babylon.js", "file": "class2/maths/measurement-3d.html" },
+        { "id": "c2m7", "name": "Place Value", "desc": "Understand place values", "type": "2D", "tech": "Canvas", "file": "class2/maths/place-value.html" },
+        { "id": "c2m8", "name": "Money Counter", "desc": "Count and calculate money", "type": "2D", "tech": "Canvas", "file": "class2/maths/money-counter.html" },
+        { "id": "c2m9", "name": "Even Odd Game", "desc": "Identify even and odd numbers", "type": "2D", "tech": "Canvas", "file": "class2/maths/even-odd-game.html" },
+        { "id": "c2m10", "name": "Data Visualization 3D", "desc": "Create 3D graphs and charts", "type": "3D", "tech": "Babylon.js", "file": "class2/maths/data-viz-3d.html" }
+      ],
+      "evs": [
+        { "id": "c2e1", "name": "Plant Life Cycle", "desc": "Learn plant growth stages", "type": "2D", "tech": "Canvas", "file": "class2/evs/plant-life-cycle.html" },
+        { "id": "c2e2", "name": "Animal Classification", "desc": "Classify animals by types", "type": "2D", "tech": "Canvas", "file": "class2/evs/animal-classification.html" },
+        { "id": "c2e3", "name": "Weather Simulator 3D", "desc": "Explore weather in 3D", "type": "3D", "tech": "Babylon.js", "file": "class2/evs/weather-simulator-3d.html" },
+        { "id": "c2e4", "name": "Water Cycle", "desc": "Understand water cycle", "type": "2D", "tech": "Canvas", "file": "class2/evs/water-cycle.html" },
+        { "id": "c2e5", "name": "Healthy Habits", "desc": "Learn healthy living", "type": "2D", "tech": "Canvas", "file": "class2/evs/healthy-habits.html" },
+        { "id": "c2e6", "name": "Ecosystem Explorer 3D", "desc": "Explore ecosystems in 3D", "type": "3D", "tech": "Babylon.js", "file": "class2/evs/ecosystem-explorer-3d.html" },
+        { "id": "c2e7", "name": "Body Systems", "desc": "Learn human body systems", "type": "2D", "tech": "Canvas", "file": "class2/evs/body-systems.html" },
+        { "id": "c2e8", "name": "Food Chain", "desc": "Understand food chains", "type": "2D", "tech": "Canvas", "file": "class2/evs/food-chain.html" },
+        { "id": "c2e9", "name": "Seasons & Festivals", "desc": "Learn about seasons and festivals", "type": "2D", "tech": "Canvas", "file": "class2/evs/seasons-festivals.html" },
+        { "id": "c2e10", "name": "Human Body 3D", "desc": "Explore human body in 3D", "type": "3D", "tech": "Babylon.js", "file": "class2/evs/human-body-3d.html" }
+      ],
+      "hindi": [
+        { "id": "c2h1", "name": "संयुक्त अक्षर", "desc": "संयुक्त अक्षर सीखें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/sanyukt-akshar.html" },
+        { "id": "c2h2", "name": "मात्रा विशेषज्ञ", "desc": "सभी मात्राओं को सीखें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/matra-visheshagya.html" },
+        { "id": "c2h3", "name": "शब्द रचना 3D", "desc": "3D में शब्द बनाएं", "type": "3D", "tech": "Babylon.js", "file": "class2/hindi/shabad-rachna-3d.html" },
+        { "id": "c2h4", "name": "वाक्य सुधार", "desc": "वाक्यों को सही करें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/vakya-sudhar.html" },
+        { "id": "c2h5", "name": "कहानी पढ़ो", "desc": "हिंदी कहानियां पढ़ें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/kahani-padho.html" },
+        { "id": "c2h6", "name": "संवाद 3D", "desc": "3D संवाद सीखें", "type": "3D", "tech": "Babylon.js", "file": "class2/hindi/samvad-3d.html" },
+        { "id": "c2h7", "name": "विलोम शब्द", "desc": "विलोम शब्दों को सीखें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/vilom-shabad.html" },
+        { "id": "c2h8", "name": "पर्यायवाची", "desc": "पर्यायवाची शब्द खोजें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/paryayvachi.html" },
+        { "id": "c2h9", "name": "मुहावरे सीखो", "desc": "हिंदी मुहावरे सीखें", "type": "2D", "tech": "Canvas", "file": "class2/hindi/muhavre-seekho.html" },
+        { "id": "c2h10", "name": "लेखन कला 3D", "desc": "3D में लेखन सीखें", "type": "3D", "tech": "Babylon.js", "file": "class2/hindi/lekhan-kala-3d.html" }
+      ]
+    },
+    "class3": {
+      "english": [
+        { "id": "c3e1", "name": "Parts of Speech", "desc": "Learn all parts of speech", "type": "2D", "tech": "Canvas", "file": "class3/english/parts-of-speech.html" },
+        { "id": "c3e2", "name": "Tense Master", "desc": "Master English tenses", "type": "2D", "tech": "Canvas", "file": "class3/english/tense-master.html" },
+        { "id": "c3e3", "name": "Poetry Explorer 3D", "desc": "Explore poems in 3D world", "type": "3D", "tech": "Babylon.js", "file": "class3/english/poetry-explorer-3d.html" },
+        { "id": "c3e4", "name": "Idiom Hunter", "desc": "Learn English idioms", "type": "2D", "tech": "Canvas", "file": "class3/english/idiom-hunter.html" },
+        { "id": "c3e5", "name": "Paragraph Builder", "desc": "Build coherent paragraphs", "type": "2D", "tech": "Canvas", "file": "class3/english/paragraph-builder.html" },
+        { "id": "c3e6", "name": "Character Analysis 3D", "desc": "Analyze story characters in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/english/character-analysis-3d.html" },
+        { "id": "c3e7", "name": "Dialogue Writing", "desc": "Write realistic dialogues", "type": "2D", "tech": "Canvas", "file": "class3/english/dialogue-writing.html" },
+        { "id": "c3e8", "name": "Comprehension Master", "desc": "Advanced reading comprehension", "type": "2D", "tech": "Canvas", "file": "class3/english/comprehension-master.html" },
+        { "id": "c3e9", "name": "Creative Writing", "desc": "Develop creative writing skills", "type": "2D", "tech": "Canvas", "file": "class3/english/creative-writing.html" },
+        { "id": "c3e10", "name": "Literature Quest 3D", "desc": "Journey through literature in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/english/literature-quest-3d.html" }
+      ],
+      "maths": [
+        { "id": "c3m1", "name": "Multiplication Master", "desc": "Master multiplication", "type": "2D", "tech": "Canvas", "file": "class3/maths/multiplication-master.html" },
+        { "id": "c3m2", "name": "Division Expert", "desc": "Master division problems", "type": "2D", "tech": "Canvas", "file": "class3/maths/division-expert.html" },
+        { "id": "c3m3", "name": "Geometry 3D", "desc": "Explore 3D geometry and angles", "type": "3D", "tech": "Babylon.js", "file": "class3/maths/geometry-3d.html" },
+        { "id": "c3m4", "name": "Fraction Explorer", "desc": "Learn fractions deeply", "type": "2D", "tech": "Canvas", "file": "class3/maths/fraction-explorer.html" },
+        { "id": "c3m5", "name": "Decimal Quest", "desc": "Master decimal numbers", "type": "2D", "tech": "Canvas", "file": "class3/maths/decimal-quest.html" },
+        { "id": "c3m6", "name": "Area & Perimeter 3D", "desc": "Calculate in 3D space", "type": "3D", "tech": "Babylon.js", "file": "class3/maths/area-perimeter-3d.html" },
+        { "id": "c3m7", "name": "Data Analysis", "desc": "Analyze data and graphs", "type": "2D", "tech": "Canvas", "file": "class3/maths/data-analysis.html" },
+        { "id": "c3m8", "name": "Time Master", "desc": "Master time calculations", "type": "2D", "tech": "Canvas", "file": "class3/maths/time-master.html" },
+        { "id": "c3m9", "name": "Problem Solver", "desc": "Solve real-world math problems", "type": "2D", "tech": "Canvas", "file": "class3/maths/problem-solver.html" },
+        { "id": "c3m10", "name": "Math Olympics 3D", "desc": "Compete in 3D math challenges", "type": "3D", "tech": "Babylon.js", "file": "class3/maths/math-olympics-3d.html" }
+      ],
+      "science": [
+        { "id": "c3s1", "name": "Living & Non-Living", "desc": "Classify organisms", "type": "2D", "tech": "Canvas", "file": "class3/science/living-nonliving.html" },
+        { "id": "c3s2", "name": "Food & Nutrition", "desc": "Learn about nutrition", "type": "2D", "tech": "Canvas", "file": "class3/science/food-nutrition.html" },
+        { "id": "c3s3", "name": "Microorganism Explorer 3D", "desc": "Explore microscopic life in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/science/microorganism-3d.html" },
+        { "id": "c3s4", "name": "Plant Diversity", "desc": "Learn plant types and parts", "type": "2D", "tech": "Canvas", "file": "class3/science/plant-diversity.html" },
+        { "id": "c3s5", "name": "Animal Kingdom", "desc": "Explore animal classification", "type": "2D", "tech": "Canvas", "file": "class3/science/animal-kingdom.html" },
+        { "id": "c3s6", "name": "Ecosystem 3D", "desc": "Explore ecosystems in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/science/ecosystem-3d.html" },
+        { "id": "c3s7", "name": "Body Systems Expert", "desc": "Learn detailed body systems", "type": "2D", "tech": "Canvas", "file": "class3/science/body-systems-expert.html" },
+        { "id": "c3s8", "name": "Health & Hygiene", "desc": "Learn health practices", "type": "2D", "tech": "Canvas", "file": "class3/science/health-hygiene.html" },
+        { "id": "c3s9", "name": "Natural Resources", "desc": "Understand natural resources", "type": "2D", "tech": "Canvas", "file": "class3/science/natural-resources.html" },
+        { "id": "c3s10", "name": "Weather Science 3D", "desc": "Explore weather phenomena in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/science/weather-science-3d.html" }
+      ],
+      "socialstudies": [
+        { "id": "c3ss1", "name": "Government Basics", "desc": "Learn government structure", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/government-basics.html" },
+        { "id": "c3ss2", "name": "Rights & Duties", "desc": "Understand rights and duties", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/rights-duties.html" },
+        { "id": "c3ss3", "name": "India Map Explorer 3D", "desc": "Explore India in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/socialstudies/india-map-3d.html" },
+        { "id": "c3ss4", "name": "Ancient History", "desc": "Learn ancient Indian history", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/ancient-history.html" },
+        { "id": "c3ss5", "name": "Festivals & Culture", "desc": "Learn about Indian festivals", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/festivals-culture.html" },
+        { "id": "c3ss6", "name": "Historical Timeline 3D", "desc": "Explore history in 3D timeline", "type": "3D", "tech": "Babylon.js", "file": "class3/socialstudies/timeline-3d.html" },
+        { "id": "c3ss7", "name": "State Knowledge", "desc": "Learn about Indian states", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/state-knowledge.html" },
+        { "id": "c3ss8", "name": "Geography Basics", "desc": "Learn geography fundamentals", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/geography-basics.html" },
+        { "id": "c3ss9", "name": "Community Living", "desc": "Understand community life", "type": "2D", "tech": "Canvas", "file": "class3/socialstudies/community-living.html" },
+        { "id": "c3ss10", "name": "Heritage Walk 3D", "desc": "Virtual heritage tour in 3D", "type": "3D", "tech": "Babylon.js", "file": "class3/socialstudies/heritage-walk-3d.html" }
+      ],
+      "hindi": [
+        { "id": "c3h1", "name": "व्याकरण मास्टर", "desc": "हिंदी व्याकरण सीखें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/vyakran-master.html" },
+        { "id": "c3h2", "name": "काल विशेषज्ञ", "desc": "हिंदी काल सीखें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/kaal-visheshagya.html" },
+        { "id": "c3h3", "name": "कविता 3D", "desc": "3D में कविताएँ सीखें", "type": "3D", "tech": "Babylon.js", "file": "class3/hindi/kavita-3d.html" },
+        { "id": "c3h4", "name": "मुहावरे विशेषज्ञ", "desc": "हिंदी मुहावरे मास्टर करें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/muhavre-visheshagya.html" },
+        { "id": "c3h5", "name": "कहानी लेखन", "desc": "हिंदी कहानियां लिखें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/kahani-lekhan.html" },
+        { "id": "c3h6", "name": "साहित्य खोज 3D", "desc": "3D में साहित्य खोजें", "type": "3D", "tech": "Babylon.js", "file": "class3/hindi/sahitya-khoj-3d.html" },
+        { "id": "c3h7", "name": "संज्ञा विश्लेषण", "desc": "हिंदी संज्ञा सीखें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/sangya-vishleshan.html" },
+        { "id": "c3h8", "name": "विशेषण खोज", "desc": "विशेषणों को पहचानें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/visheshan-khoj.html" },
+        { "id": "c3h9", "name": "वाक्य विश्लेषण", "desc": "वाक्य संरचना सीखें", "type": "2D", "tech": "Canvas", "file": "class3/hindi/vakya-vishleshan.html" },
+        { "id": "c3h10", "name": "पाठ निर्माण 3D", "desc": "3D में पाठ बनाएं", "type": "3D", "tech": "Babylon.js", "file": "class3/hindi/path-nirman-3d.html" }
+      ]
+    },
+    "class4": {
+      "english": [
+        { "id": "c4e1", "name": "Advanced Grammar", "desc": "Master complex grammar rules", "type": "2D", "tech": "Canvas", "file": "class4/english/advanced-grammar.html" },
+        { "id": "c4e2", "name": "Essay Writing Master", "desc": "Write effective essays", "type": "2D", "tech": "Canvas", "file": "class4/english/essay-writing-master.html" },
+        { "id": "c4e3", "name": "Literary Devices 3D", "desc": "Explore literary devices in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/english/literary-devices-3d.html" },
+        { "id": "c4e4", "name": "Debate Skills", "desc": "Learn debate and argumentation", "type": "2D", "tech": "Canvas", "file": "class4/english/debate-skills.html" },
+        { "id": "c4e5", "name": "Novel Explorer", "desc": "Explore classic novels", "type": "2D", "tech": "Canvas", "file": "class4/english/novel-explorer.html" },
+        { "id": "c4e6", "name": "Drama 3D", "desc": "Explore drama in 3D scenes", "type": "3D", "tech": "Babylon.js", "file": "class4/english/drama-3d.html" },
+        { "id": "c4e7", "name": "Journalism", "desc": "Learn news writing", "type": "2D", "tech": "Canvas", "file": "class4/english/journalism.html" },
+        { "id": "c4e8", "name": "Public Speaking", "desc": "Master public speaking", "type": "2D", "tech": "Canvas", "file": "class4/english/public-speaking.html" },
+        { "id": "c4e9", "name": "Language Nuances", "desc": "Understand language subtleties", "type": "2D", "tech": "Canvas", "file": "class4/english/language-nuances.html" },
+        { "id": "c4e10", "name": "Story Analysis 3D", "desc": "Deep story analysis in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/english/story-analysis-3d.html" }
+      ],
+      "maths": [
+        { "id": "c4m1", "name": "Decimals Master", "desc": "Master decimal operations", "type": "2D", "tech": "Canvas", "file": "class4/maths/decimals-master.html" },
+        { "id": "c4m2", "name": "Fraction Operations", "desc": "Complex fraction operations", "type": "2D", "tech": "Canvas", "file": "class4/maths/fraction-operations.html" },
+        { "id": "c4m3", "name": "3D Geometry Expert", "desc": "Master 3D shapes and volumes", "type": "3D", "tech": "Babylon.js", "file": "class4/maths/3d-geometry-expert.html" },
+        { "id": "c4m4", "name": "Algebra Basics", "desc": "Introduction to algebra", "type": "2D", "tech": "Canvas", "file": "class4/maths/algebra-basics.html" },
+        { "id": "c4m5", "name": "Data Handling", "desc": "Analyze and interpret data", "type": "2D", "tech": "Canvas", "file": "class4/maths/data-handling.html" },
+        { "id": "c4m6", "name": "Measurement Expert 3D", "desc": "Advanced measurements in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/maths/measurement-expert-3d.html" },
+        { "id": "c4m7", "name": "Ratio & Proportion", "desc": "Master ratios and proportions", "type": "2D", "tech": "Canvas", "file": "class4/maths/ratio-proportion.html" },
+        { "id": "c4m8", "name": "Geometry Builder", "desc": "Construct geometric figures", "type": "2D", "tech": "Canvas", "file": "class4/maths/geometry-builder.html" },
+        { "id": "c4m9", "name": "Word Problems Expert", "desc": "Solve complex word problems", "type": "2D", "tech": "Canvas", "file": "class4/maths/word-problems-expert.html" },
+        { "id": "c4m10", "name": "Math Genius 3D", "desc": "Compete in advanced 3D math", "type": "3D", "tech": "Babylon.js", "file": "class4/maths/math-genius-3d.html" }
+      ],
+      "science": [
+        { "id": "c4s1", "name": "Force & Motion", "desc": "Understand forces and motion", "type": "2D", "tech": "Canvas", "file": "class4/science/force-motion.html" },
+        { "id": "c4s2", "name": "Energy Explorer", "desc": "Explore forms of energy", "type": "2D", "tech": "Canvas", "file": "class4/science/energy-explorer.html" },
+        { "id": "c4s3", "name": "Physics Lab 3D", "desc": "Virtual physics experiments in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/science/physics-lab-3d.html" },
+        { "id": "c4s4", "name": "Human Body Systems", "desc": "Detailed organ systems", "type": "2D", "tech": "Canvas", "file": "class4/science/human-body-systems.html" },
+        { "id": "c4s5", "name": "Matter & Reactions", "desc": "Learn about matter states", "type": "2D", "tech": "Canvas", "file": "class4/science/matter-reactions.html" },
+        { "id": "c4s6", "name": "Chemistry Lab 3D", "desc": "Virtual chemistry in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/science/chemistry-lab-3d.html" },
+        { "id": "c4s7", "name": "Sound & Light", "desc": "Explore sound and light", "type": "2D", "tech": "Canvas", "file": "class4/science/sound-light.html" },
+        { "id": "c4s8", "name": "Reproduction", "desc": "Learn about reproduction", "type": "2D", "tech": "Canvas", "file": "class4/science/reproduction.html" },
+        { "id": "c4s9", "name": "Earth Science", "desc": "Learn earth and rocks", "type": "2D", "tech": "Canvas", "file": "class4/science/earth-science.html" },
+        { "id": "c4s10", "name": "Space Explorer 3D", "desc": "Explore space in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/science/space-explorer-3d.html" }
+      ],
+      "socialstudies": [
+        { "id": "c4ss1", "name": "Indian Constitution", "desc": "Learn Indian Constitution", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/indian-constitution.html" },
+        { "id": "c4ss2", "name": "Medieval History", "desc": "Explore medieval India", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/medieval-history.html" },
+        { "id": "c4ss3", "name": "World Geography 3D", "desc": "Explore world in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/socialstudies/world-geography-3d.html" },
+        { "id": "c4ss4", "name": "Independence Movement", "desc": "Learn independence struggle", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/independence-movement.html" },
+        { "id": "c4ss5", "name": "Cultural Diversity", "desc": "Understand Indian culture", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/cultural-diversity.html" },
+        { "id": "c4ss6", "name": "Monument Explorer 3D", "desc": "Explore famous monuments in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/socialstudies/monument-explorer-3d.html" },
+        { "id": "c4ss7", "name": "Economic Systems", "desc": "Understand economics", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/economic-systems.html" },
+        { "id": "c4ss8", "name": "Civics Expert", "desc": "Master civics concepts", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/civics-expert.html" },
+        { "id": "c4ss9", "name": "Map Skills", "desc": "Master map reading", "type": "2D", "tech": "Canvas", "file": "class4/socialstudies/map-skills.html" },
+        { "id": "c4ss10", "name": "History Quest 3D", "desc": "Time travel through history in 3D", "type": "3D", "tech": "Babylon.js", "file": "class4/socialstudies/history-quest-3d.html" }
+      ],
+      "hindi": [
+        { "id": "c4h1", "name": "उन्नत व्याकरण", "desc": "उन्नत हिंदी व्याकरण", "type": "2D", "tech": "Canvas", "file": "class4/hindi/unnat-vyakran.html" },
+        { "id": "c4h2", "name": "काव्य विश्लेषण", "desc": "कविताओं का विश्लेषण", "type": "2D", "tech": "Canvas", "file": "class4/hindi/kavya-vishleshan.html" },
+        { "id": "c4h3", "name": "साहित्य खोज 3D", "desc": "3D में साहित्य अन्वेषण", "type": "3D", "tech": "Babylon.js", "file": "class4/hindi/sahitya-khoj-class4-3d.html" },
+        { "id": "c4h4", "name": "विविध रचनाएं", "desc": "विभिन्न साहित्य रचनाएं", "type": "2D", "tech": "Canvas", "file": "class4/hindi/vivid-rachnayein.html" },
+        { "id": "c4h5", "name": "भाषा सौंदर्य", "desc": "हिंदी भाषा की सुंदरता", "type": "2D", "tech": "Canvas", "file": "class4/hindi/bhasha-saundarya.html" },
+        { "id": "c4h6", "name": "निबंध लेखन 3D", "desc": "3D निबंध लेखन", "type": "3D", "tech": "Babylon.js", "file": "class4/hindi/nibandh-lekhan-3d.html" },
+        { "id": "c4h7", "name": "संवाद विधा", "desc": "संवाद लेखन सीखें", "type": "2D", "tech": "Canvas", "file": "class4/hindi/samvad-vidha.html" },
+        { "id": "c4h8", "name": "पत्र लेखन", "desc": "पत्र लेखन मास्टर करें", "type": "2D", "tech": "Canvas", "file": "class4/hindi/patra-lekhan.html" },
+        { "id": "c4h9", "name": "समीक्षा लेखन", "desc": "समीक्षा कैसे लिखें", "type": "2D", "tech": "Canvas", "file": "class4/hindi/sameeksha-lekhan.html" },
+        { "id": "c4h10", "name": "साहित्य मास्टर 3D", "desc": "3D साहित्य कक्षा", "type": "3D", "tech": "Babylon.js", "file": "class4/hindi/sahitya-master-3d.html" }
+      ]
+    },
+    "class5": {
+      "english": [
+        { "id": "c5e1", "name": "Shakespeare & Classics", "desc": "Study classic literature", "type": "2D", "tech": "Canvas", "file": "class5/english/shakespeare-classics.html" },
+        { "id": "c5e2", "name": "Rhetoric Master", "desc": "Master rhetorical devices", "type": "2D", "tech": "Canvas", "file": "class5/english/rhetoric-master.html" },
+        { "id": "c5e3", "name": "Literary Analysis 3D", "desc": "Deep literary analysis in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/english/literary-analysis-3d.html" },
+        { "id": "c5e4", "name": "Advanced Composition", "desc": "Master advanced writing", "type": "2D", "tech": "Canvas", "file": "class5/english/advanced-composition.html" },
+        { "id": "c5e5", "name": "Poetry & Verse", "desc": "Master poetry forms", "type": "2D", "tech": "Canvas", "file": "class5/english/poetry-verse.html" },
+        { "id": "c5e6", "name": "Narrative 3D", "desc": "Create narratives in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/english/narrative-3d.html" },
+        { "id": "c5e7", "name": "Critical Thinking", "desc": "Develop critical analysis", "type": "2D", "tech": "Canvas", "file": "class5/english/critical-thinking.html" },
+        { "id": "c5e8", "name": "Research Writing", "desc": "Master research papers", "type": "2D", "tech": "Canvas", "file": "class5/english/research-writing.html" },
+        { "id": "c5e9", "name": "Language & Culture", "desc": "English in global context", "type": "2D", "tech": "Canvas", "file": "class5/english/language-culture.html" },
+        { "id": "c5e10", "name": "Masterpiece Studio 3D", "desc": "Create literary masterpieces in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/english/masterpiece-studio-3d.html" }
+      ],
+      "maths": [
+        { "id": "c5m1", "name": "Advanced Algebra", "desc": "Master algebra concepts", "type": "2D", "tech": "Canvas", "file": "class5/maths/advanced-algebra.html" },
+        { "id": "c5m2", "name": "Geometry Mastery", "desc": "Master geometric proofs", "type": "2D", "tech": "Canvas", "file": "class5/maths/geometry-mastery.html" },
+        { "id": "c5m3", "name": "Calculus Intro 3D", "desc": "Intro to calculus in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/maths/calculus-intro-3d.html" },
+        { "id": "c5m4", "name": "Trigonometry", "desc": "Master trigonometry", "type": "2D", "tech": "Canvas", "file": "class5/maths/trigonometry.html" },
+        { "id": "c5m5", "name": "Probability", "desc": "Understand probability", "type": "2D", "tech": "Canvas", "file": "class5/maths/probability.html" },
+        { "id": "c5m6", "name": "Statistics 3D", "desc": "Advanced statistics in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/maths/statistics-3d.html" },
+        { "id": "c5m7", "name": "Functions Master", "desc": "Master functions", "type": "2D", "tech": "Canvas", "file": "class5/maths/functions-master.html" },
+        { "id": "c5m8", "name": "Equations Solver", "desc": "Solve complex equations", "type": "2D", "tech": "Canvas", "file": "class5/maths/equations-solver.html" },
+        { "id": "c5m9", "name": "Math Modeling", "desc": "Model real-world problems", "type": "2D", "tech": "Canvas", "file": "class5/maths/math-modeling.html" },
+        { "id": "c5m10", "name": "Math PhD 3D", "desc": "Advanced problem solving in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/maths/math-phd-3d.html" }
+      ],
+      "science": [
+        { "id": "c5s1", "name": "Physics Advanced", "desc": "Advanced physics concepts", "type": "2D", "tech": "Canvas", "file": "class5/science/physics-advanced.html" },
+        { "id": "c5s2", "name": "Chemistry Master", "desc": "Master chemistry", "type": "2D", "tech": "Canvas", "file": "class5/science/chemistry-master.html" },
+        { "id": "c5s3", "name": "Biology Lab 3D", "desc": "Advanced biology in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/science/biology-lab-3d.html" },
+        { "id": "c5s4", "name": "Astronomy Explorer", "desc": "Explore astronomy", "type": "2D", "tech": "Canvas", "file": "class5/science/astronomy-explorer.html" },
+        { "id": "c5s5", "name": "Environmental Science", "desc": "Learn environmental studies", "type": "2D", "tech": "Canvas", "file": "class5/science/environmental-science.html" },
+        { "id": "c5s6", "name": "Technology 3D", "desc": "Explore technology in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/science/technology-3d.html" },
+        { "id": "c5s7", "name": "Biotechnology", "desc": "Learn biotechnology", "type": "2D", "tech": "Canvas", "file": "class5/science/biotechnology.html" },
+        { "id": "c5s8", "name": "Health Science", "desc": "Advanced health topics", "type": "2D", "tech": "Canvas", "file": "class5/science/health-science.html" },
+        { "id": "c5s9", "name": "Climate Change", "desc": "Learn about climate", "type": "2D", "tech": "Canvas", "file": "class5/science/climate-change.html" },
+        { "id": "c5s10", "name": "Science Frontier 3D", "desc": "Cutting-edge science in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/science/science-frontier-3d.html" }
+      ],
+      "socialstudies": [
+        { "id": "c5ss1", "name": "Ancient Civilizations", "desc": "Study ancient civilizations", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/ancient-civilizations.html" },
+        { "id": "c5ss2", "name": "Medieval Empires", "desc": "Learn about medieval empires", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/medieval-empires.html" },
+        { "id": "c5ss3", "name": "World History 3D", "desc": "Explore world history in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/socialstudies/world-history-3d.html" },
+        { "id": "c5ss4", "name": "Modern India", "desc": "Learn about modern India", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/modern-india.html" },
+        { "id": "c5ss5", "name": "Global Citizenship", "desc": "Understand global citizenship", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/global-citizenship.html" },
+        { "id": "c5ss6", "name": "Cultural Heritage 3D", "desc": "Explore cultural heritage in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/socialstudies/cultural-heritage-3d.html" },
+        { "id": "c5ss7", "name": "Geography Analysis", "desc": "Master geographic analysis", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/geography-analysis.html" },
+        { "id": "c5ss8", "name": "Political Systems", "desc": "Understand political systems", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/political-systems.html" },
+        { "id": "c5ss9", "name": "Economic World", "desc": "Global economics", "type": "2D", "tech": "Canvas", "file": "class5/socialstudies/economic-world.html" },
+        { "id": "c5ss10", "name": "Future Civilization 3D", "desc": "Imagine future civilizations in 3D", "type": "3D", "tech": "Babylon.js", "file": "class5/socialstudies/future-civilization-3d.html" }
+      ],
+      "hindi": [
+        { "id": "c5h1", "name": "साहित्य इतिहास", "desc": "हिंदी साहित्य का इतिहास", "type": "2D", "tech": "Canvas", "file": "class5/hindi/sahitya-itihas.html" },
+        { "id": "c5h2", "name": "काव्य सद्भावना", "desc": "काव्य की गहराई", "type": "2D", "tech": "Canvas", "file": "class5/hindi/kavya-sadbhavna.html" },
+        { "id": "c5h3", "name": "महान साहित्यकार 3D", "desc": "3D महान साहित्यकार", "type": "3D", "tech": "Babylon.js", "file": "class5/hindi/mahan-sahityakaar-3d.html" },
+        { "id": "c5h4", "name": "गद्य विधाएं", "desc": "गद्य रचनाएं सीखें", "type": "2D", "tech": "Canvas", "file": "class5/hindi/gadya-vidhayein.html" },
+        { "id": "c5h5", "name": "पद्य परंपरा", "desc": "हिंदी कविता परंपरा", "type": "2D", "tech": "Canvas", "file": "class5/hindi/padya-parampra.html" },
+        { "id": "c5h6", "name": "लेखन कला 3D", "desc": "3D में लेखन परिष्कार", "type": "3D", "tech": "Babylon.js", "file": "class5/hindi/lekhan-kala-class5-3d.html" },
+        { "id": "c5h7", "name": "समालोचना", "desc": "आलोचनात्मक लेखन", "type": "2D", "tech": "Canvas", "file": "class5/hindi/samalocan.html" },
+        { "id": "c5h8", "name": "नाटक विधा", "desc": "नाटक लेखन सीखें", "type": "2D", "tech": "Canvas", "file": "class5/hindi/natak-vidha.html" },
+        { "id": "c5h9", "name": "भाषा दर्शन", "desc": "भाषा का दर्शन", "type": "2D", "tech": "Canvas", "file": "class5/hindi/bhasha-darshan.html" },
+        { "id": "c5h10", "name": "साहित्य विश्व 3D", "desc": "3D साहित्य संसार", "type": "3D", "tech": "Babylon.js", "file": "class5/hindi/sahitya-vishwa-3d.html" }
+      ]
+    }
+  }
+}

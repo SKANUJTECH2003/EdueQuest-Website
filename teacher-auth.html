@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Portal - Login & Signup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #e8f0fe;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --bg-color: #f8f9fa;
+            --text-color: #202124;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: #5f6368;
+            font-size: 0.95rem;
+        }
+
+        .auth-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--secondary-color);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid #dadce0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        input.error {
+            border-color: var(--danger-color);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle .toggle-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 1.1rem;
+            margin-top: 1.1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #5f6368;
+            font-size: 0.95rem;
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .requirements-list {
+            background: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .requirements-list li {
+            list-style: none;
+            padding: 0.3rem 0;
+            color: #5f6368;
+        }
+
+        .requirements-list li.met {
+            color: var(--success-color);
+        }
+
+        .requirements-list li::before {
+            content: '✕ ';
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .requirements-list li.met::before {
+            content: '✓ ';
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 1.5rem;
+            }
+
+            .auth-header h1 {
+                font-size: 1.5rem;
+            }
+
+            input, select {
+                padding: 0.8rem;
+                font-size: 16px;
+            }
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #dadce0;
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            display: inline-block;
+            width: 45%;
+            height: 1px;
+            background: #dadce0;
+            vertical-align: middle;
+        }
+
+        .divider::before {
+            margin-right: 0.8rem;
+        }
+
+        .divider::after {
+            margin-left: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <h1>👨‍🏫 EduQuest</h1>
+                <p>Teacher Portal</p>
+            </div>
+
+            <!-- Toggle Buttons -->
+            <div class="auth-toggle">
+                <button class="toggle-btn active" onclick="switchMode('login')">Login</button>
+                <button class="toggle-btn" onclick="switchMode('signup')">Sign Up</button>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage"></div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" style="display: block;">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="teacher@example.com" required>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <span class="toggle-icon" onclick="togglePasswordVisibility('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="error-message"></div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="handleLogin()">Login to Portal</button>
+
+                <div class="form-footer">
+                    Don't have an account? <a onclick="switchMode('signup')">Sign Up</a>
+                </div>
+            </form>
+
+            <!-- SIGNUP FORM -->
+            <form id="signupForm" style="display: none;">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" placeholder="John Doe" required>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="teacher@example.com" required>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupSchool">School Name</label>
+                    <input type="text" id="signupSchool" placeholder="Government School" required>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupClass">Teaching Class</label>
+                    <select id="signupClass" required>
+                        <option value="">Select Class</option>
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                    </select>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword">Create Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="signupPassword" placeholder="Min 8 characters" required>
+                        <span class="toggle-icon" onclick="togglePasswordVisibility('signupPassword')">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="requirements-list">
+                        <li id="req-length">At least 8 characters</li>
+                        <li id="req-uppercase">At least one uppercase letter</li>
+                        <li id="req-number">At least one number</li>
+                    </div>
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupConfirm">Confirm Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="signupConfirm" placeholder="Re-enter password" required>
+                        <span class="toggle-icon" onclick="togglePasswordVisibility('signupConfirm')">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="error-message"></div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="handleSignup()">Create Account</button>
+
+                <div class="form-footer">
+                    Already have an account? <a onclick="switchMode('login')">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Switch between login and signup
+        function switchMode(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const toggleBtns = document.querySelectorAll('.toggle-btn');
+
+            if (mode === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                toggleBtns[0].classList.add('active');
+                toggleBtns[1].classList.remove('active');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                toggleBtns[0].classList.remove('active');
+                toggleBtns[1].classList.add('active');
+            }
+        }
+
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = event.target.closest('.toggle-icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+
+        // Password strength checker
+        document.getElementById('signupPassword')?.addEventListener('input', function() {
+            const password = this.value;
+            
+            const lengthMet = password.length >= 8;
+            const upperMet = /[A-Z]/.test(password);
+            const numberMet = /[0-9]/.test(password);
+
+            updateRequirement('req-length', lengthMet);
+            updateRequirement('req-uppercase', upperMet);
+            updateRequirement('req-number', numberMet);
+        });
+
+        function updateRequirement(id, met) {
+            const element = document.getElementById(id);
+            if (met) {
+                element.classList.add('met');
+            } else {
+                element.classList.remove('met');
+            }
+        }
+
+        // Validation functions
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const errorMsg = input.parentElement.querySelector('.error-message');
+            input.classList.add('error');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+        }
+
+        function clearError(inputId) {
+            const input = document.getElementById(inputId);
+            const errorMsg = input.parentElement.querySelector('.error-message');
+            input.classList.remove('error');
+            errorMsg.classList.remove('show');
+        }
+
+        // Handle Login
+        function handleLogin() {
+            console.log('handleLogin called');
+            const email = document.getElementById('loginEmail')?.value || '';
+            const password = document.getElementById('loginPassword')?.value || '';
+
+            console.log('Email:', email, 'Password:', password ? 'set' : 'empty');
+
+            if (!email.trim()) {
+                alert('Email is required');
+                return;
+            }
+
+            if (!password.trim()) {
+                alert('Password is required');
+                return;
+            }
+
+            console.log('Sending login request to /api/teacher/login');
+
+            fetch('/api/teacher/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email.trim(), password })
+            })
+            .then(response => {
+                console.log('Login response status:', response.status);
+                return response.json().then(data => ({ status: response.status, data }));
+            })
+            .then(({ status, data }) => {
+                console.log('Login response data:', data);
+                if (status === 200 && data.message === 'Login successful!') {
+                    alert('✓ Login successful! Redirecting to portal...');
+                    localStorage.setItem('currentTeacher', JSON.stringify({
+                        id: data.teacher._id,
+                        name: data.teacher.name,
+                        email: data.teacher.email,
+                        school: data.teacher.school,
+                        class: data.teacher.class,
+                        loginTime: new Date().toISOString()
+                    }));
+                    localStorage.setItem('teacherToken', data.token);
+                    setTimeout(() => {
+                        window.location.href = 'teacher-portal-complete.html';
+                    }, 1000);
+                } else {
+                    alert('❌ ' + (data.message || 'Login failed'));
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('❌ Error: ' + error.message);
+            });
+        }
+
+        // Handle Signup
+        function handleSignup() {
+            console.log('handleSignup called');
+            const name = document.getElementById('signupName')?.value || '';
+            const email = document.getElementById('signupEmail')?.value || '';
+            const school = document.getElementById('signupSchool')?.value || '';
+            const classVal = document.getElementById('signupClass')?.value || '';
+            const password = document.getElementById('signupPassword')?.value || '';
+            const confirm = document.getElementById('signupConfirm')?.value || '';
+
+            console.log('Form data:', { name: name.trim(), email: email.trim(), school: school.trim(), class: classVal, password: password ? '***' : 'empty' });
+
+            // Basic validation
+            if (!name.trim()) {
+                alert('Name is required');
+                return;
+            }
+            if (!email.trim()) {
+                alert('Email is required');
+                return;
+            }
+            if (!school.trim()) {
+                alert('School is required');
+                return;
+            }
+            if (!classVal) {
+                alert('Please select a class');
+                return;
+            }
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters');
+                return;
+            }
+            if (!/[A-Z]/.test(password)) {
+                alert('Password must contain an uppercase letter');
+                return;
+            }
+            if (!/[0-9]/.test(password)) {
+                alert('Password must contain a number');
+                return;
+            }
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            console.log('Sending signup request to /api/teacher/signup');
+
+            fetch('/api/teacher/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    email: email.trim(),
+                    school: school.trim(),
+                    class: classVal,
+                    password,
+                    confirmPassword: confirm
+                })
+            })
+            .then(response => {
+                console.log('Signup response status:', response.status);
+                return response.json().then(data => ({ status: response.status, data }));
+            })
+            .then(({ status, data }) => {
+                console.log('Signup response data:', data);
+                if (status === 201 && data.message === 'Teacher account created successfully!') {
+                    alert('✓ Account created! Switching to login...');
+                    setTimeout(() => {
+                        switchMode('login');
+                        document.getElementById('loginEmail').value = data.teacher.email;
+                        document.getElementById('loginPassword').focus();
+                    }, 500);
+                } else {
+                    alert('❌ ' + (data.message || 'Signup failed'));
+                }
+            })
+            .catch(error => {
+                console.error('Signup error:', error);
+                alert('❌ Error: ' + error.message);
+            });
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+        }
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentTeacher = localStorage.getItem('currentTeacher');
+            if (currentTeacher) {
+                window.location.href = 'teacher-portal-complete.html';
+            }
+        });
+    </script>
+</body>
+</html>

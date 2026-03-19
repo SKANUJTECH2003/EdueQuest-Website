@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Go Game | मेरा गो खेल</title>
+    <script src="gameframework.js"></script>
+    <style>
+        body {
+            /* Flex column centers content vertically/horizontally */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Start content from the top */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .header-status {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 90%;
+            max-width: 600px; /* Match canvas width */
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        canvas {
+            background-color: #deb887;
+            display: block;
+            margin-bottom: 20px; /* Space below canvas */
+            border: 2px solid black;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- CONTROL PANEL UPDATES: Centered below canvas --- */
+        .controls-panel {
+            /* Position is static/relative in the flow, not absolute */
+            position: relative;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 300px; /* Set a reasonable width for the panel */
+            margin-bottom: 20px;
+        }
+
+        .controls-panel button {
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 8px 0; /* Vertical margin for spacing */
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+            width: 100%; /* Full width within the panel */
+        }
+
+        .controls-panel button:hover {
+            background-color: #0056b3;
+        }
+        
+        .score-display {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            text-align: left; /* Align text within the panel */
+        }
+        
+        .score-display span {
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body class="game-page">
+    <div class="game-header">
+        <h1>🎮 मेरा गो खेल (My Go Game)</h1>
+        <div class="game-header-right">
+            <div class="game-stat">
+                <span class="game-stat-label">Score</span>
+                <span class="game-stat-value" id="score">0</span>
+            </div>
+            <div class="game-stat timer">
+                <i class="fas fa-clock"></i>
+                <span id="timer-status">10:00</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header-status">
+        <span id="player-turn">बारी: **काला** (Black)</span>
+        <span id="score-status">स्कोर (Captures x 10): <span>0</span></span>
+    </div>
+
+    <canvas id="go-board" width="600" height="600"></canvas>
+    
+    <div class="controls-panel">
+        <div id="capture-counter" class="score-display">
+            काला कैप्चर (Black Capture): 0<br>सफ़ेद कैप्चर (White Capture): 0
+        </div>
+        <button id="undo-button">悔棋 (Undo)</button>
+        <button id="restart-button">पुनः प्रारंभ (Restart)</button>
+        <button id="quit-button" style="background-color: #e74c3c;">बाहर निकलें (Go Back)</button>
+    </div>
+    
+    <script>
+        // Initialize Game Framework
+        const gameManager = new GameManager('Go Game', 'games');
+        if (!gameManager.init()) {
+            window.location.href = '/login.html';
+        }
+
+        const boardSize = 19;
+        const board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
+        let currentPlayer = 'black';
+        let moveRecord = [];
+        let boardHistory = []; 
+        let blackCaptures = 0;
+        let whiteCaptures = 0;
+        let captureHistory = []; 
+
+        // Timer Variables
+        let timer;
+        let timeLeft = 600; 
+        let gameRunning = true;
+        const CAPTURE_SCORE_VALUE = 10;
+
+        const canvas = document.querySelector("#go-board");
+        const ctx = canvas.getContext('2d');
+        const cellSize = canvas.width / boardSize;
+
+        const playerTurnDisplay = document.getElementById("player-turn");
+        const scoreStatusDisplay = document.getElementById("score-status").querySelector("span");
+        const timerStatusDisplay = document.getElementById("timer-status");
+        const captureCounterDisplay = document.getElementById("capture-counter");
+        const undoButton = document.getElementById("undo-button");
+        const restartButton = document.getElementById("restart-button");
+        const quitButton = document.getElementById("quit-button");
+        
+        // --- Core Go Logic (Restored to original logic) ---
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            
+            for (let i = 0; i < boardSize; i++) {
+                ctx.beginPath();
+                ctx.moveTo(cellSize / 2, i * cellSize + cellSize / 2);
+                ctx.lineTo(canvas.width - cellSize / 2, i * cellSize + cellSize / 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(i * cellSize + cellSize / 2, cellSize / 2);
+                ctx.lineTo(i * cellSize + cellSize / 2, canvas.height - cellSize / 2);
+                ctx.stroke();
+            }
+            drawNinePoints();
+            drawStones();
+            updateGameStatus();
+        }
+
+        function drawNinePoints() {
+            const starPoints = [
+                [3, 3], [9, 3], [15, 3],
+                [3, 9], [9, 9], [15, 9],
+                [3, 15], [9, 15], [15, 15]
+            ];
+            
+            ctx.fillStyle = "black";
+            starPoints.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        function drawStones() {
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    if (board[row][col] !== null) {
+                        drawStone(row, col, board[row][col]);
+                    }
+                }
+            }
+        }
+
+        function drawStone(row, col, color) {
+            const x = (col + 0.5) * cellSize;
+            const y = (row + 0.5) * cellSize;
+            ctx.beginPath();
+            ctx.arc(x, y, cellSize / 2.2, 0, 2 * Math.PI);
+            ctx.fillStyle = color === 'black' ? '#000' : '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+        }
+
+        function placeStone(event) {
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+
+            if (board[row][col] === null) {
+                const capturedGroups = [];
+                
+                // 1. Temporarily place the stone
+                board[row][col] = currentPlayer;
+                
+                // 2. Check for captures made by this move
+                checkCaptures(row, col, currentPlayer, capturedGroups);
+                const makesCapture = capturedGroups.length > 0;
+                
+                // 3. Check for the placed stone group's liberty *after* considering captures
+                let hasLiberty = false;
+                if (!makesCapture) {
+                    hasLiberty = hasLibertyCheck(row, col, currentPlayer, []);
+                } else {
+                    hasLiberty = true;
+                }
+                
+                // 4. Revert placement if the move is invalid (suicide and no capture)
+                if (!hasLiberty && !makesCapture) {
+                    board[row][col] = null;
+                    alert("यह चाल अमान्य है: आत्मघाती (Suicide move is illegal).");
+                    return;
+                }
+
+                // --- Finalizing the valid move ---
+                
+                // 5. If valid, remove captured stones
+                const totalCapturedCount = removeCapturedStones(capturedGroups.flat()); 
+                
+                // 6. Check for Ko rule violation
+                if (isKo()) {
+                    // Revert move and captures because of Ko rule violation
+                    board[row][col] = null;
+                    restoreKoCaptures(capturedGroups.flat()); 
+                    alert("यह 'को' नियम का उल्लंघन करता है। एक ही चाल तुरंत वापस नहीं ली जा सकती। Ko rule violation, move reverted.");
+                    return;
+                }
+                
+                // 7. Finalize and switch player
+                captureHistory.push({ black: blackCaptures, white: whiteCaptures });
+                moveRecord.push({ row, col, player: currentPlayer, captured: totalCapturedCount });
+                saveBoardState();
+                
+                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+                drawBoard();
+            }
+        }
+
+        function hasLibertyCheck(row, col, color, group, visited = new Set()) {
+            if (row < 0 || col < 0 || row >= boardSize || col >= boardSize) return false;
+            const key = `${row},${col}`;
+            if (visited.has(key)) return false;
+            visited.add(key);
+
+            if (board[row][col] === null) return true;
+            if (board[row][col] !== color) return false;
+            
+            group.push([row, col]);
+            const directions = [
+                [1, 0], [-1, 0], [0, 1], [0, -1]
+            ];
+            
+            return directions.some(([dx, dy]) => hasLibertyCheck(row + dx, col + dy, color, group, visited));
+        }
+
+        function checkCaptures(row, col, color, capturedGroups) {
+            const opponent = color === 'black' ? 'white' : 'black';
+            const directions = [
+                [1, 0], [-1, 0], [0, 1], [0, -1]
+            ];
+            
+            directions.forEach(([dx, dy]) => {
+                const targetRow = row + dx;
+                const targetCol = col + dy;
+                const group = [];
+                const groupVisited = new Set();
+                
+                if (board[targetRow]?.[targetCol] === opponent) {
+                    
+                    const originalStone = board[row][col];
+                    board[row][col] = null; // Temporarily remove our stone to check opponent's liberty
+                    
+                    if (!hasLibertyCheck(targetRow, targetCol, opponent, group, groupVisited)) {
+                        capturedGroups.push(group);
+                    }
+                    
+                    board[row][col] = originalStone; // Restore our stone
+                }
+            });
+        }
+        
+        function removeCapturedStones(group) {
+            let capturedCount = 0;
+            const capturedColor = currentPlayer === 'black' ? 'white' : 'black';
+            
+            group.forEach(([row, col]) => {
+                if (board[row][col] === capturedColor) {
+                    board[row][col] = null;
+                    capturedCount++;
+                }
+            });
+            
+            if (currentPlayer === 'black') {
+                blackCaptures += capturedCount;
+            } else {
+                whiteCaptures += capturedCount;
+            }
+            updateCaptureCounter();
+            return capturedCount;
+        }
+
+        function restoreKoCaptures(group) {
+            group.forEach(([row, col]) => {
+                 board[row][col] = currentPlayer === 'black' ? 'white' : 'black';
+            });
+             
+            if (currentPlayer === 'black') {
+                blackCaptures -= group.length;
+            } else {
+                whiteCaptures -= group.length;
+            }
+            updateCaptureCounter();
+        }
+
+        function saveBoardState() {
+            boardHistory.push(JSON.parse(JSON.stringify(board)));
+            if (boardHistory.length > 3) {
+                boardHistory.shift();
+            }
+        }
+
+        function isKo() {
+            if (boardHistory.length < 3) return false;
+            const previousState = boardHistory[boardHistory.length - 3];
+            return JSON.stringify(board) === JSON.stringify(previousState);
+        }
+        
+        // --- Game Control & Status ---
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerStatusDisplay.innerText = `समय: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert("समय समाप्त! (Time's up!)");
+                    endGame();
+                }
+            // Update game manager score
+            gameManager.score = blackCaptures * CAPTURE_SCORE_VALUE;
+            gameManager.updateScoreUI(document.getElementById('score'));
+            }, 1000);
+        }
+
+        function updateCaptureCounter() {
+            captureCounterDisplay.innerHTML = `काला कैप्चर (Black Capture): ${blackCaptures}<br>सफ़ेद कैप्चर (White Capture): ${whiteCaptures}`;
+            scoreStatusDisplay.innerText = blackCaptures * CAPTURE_SCORE_VALUE;
+        }
+
+        function updateGameStatus() {
+            const turnColor = currentPlayer === 'black' ? 'काला' : 'सफ़ेद';
+            const turnColorEnglish = currentPlayer === 'black' ? 'Black' : 'White';
+        async function endGame() {
+            gameRunning = false;
+            clearInterval(timer);
+            const finalScore = blackCaptures * CAPTURE_SCORE_VALUE; 
+            
+            gameManager.score = finalScore;
+            await gameManager.updateScoreOnServer();
+            gameManager.showCompletionPopup(
+            localStorage.setItem('gameCompleted', 'true');
+            
+            alert(`खेल समाप्त! आपका स्कोर (काले पत्थरों के आधार पर): ${finalScore} \n(Game Over! Your score (based on Black captured stones): ${finalScore})`);
+        }
+
+        // --- Button Event Handlers ---
+
+        function undoMove() {
+            if (!gameRunning) return;
+            if (boardHistory.length < 2 || captureHistory.length < 1) {
+                alert("अमान्य 'पूर्ववत करें' चाल (No moves to undo)");
+                return;
+            }
+            
+            boardHistory.pop();
+            const previousState = boardHistory[boardHistory.length - 1];
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    board[i][j] = previousState[i][j];
+                }
+            }
+            
+            const previousCaptures = captureHistory.pop();
+            blackCaptures = previousCaptures.black;
+            whiteCaptures = previousCaptures.white;
+            updateCaptureCounter();
+            
+            moveRecord.pop();
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+            drawBoard();
+        }
+
+        function restartGame() {
+            if (!confirm("क्या आप वाकई खेल पुनः प्रारंभ करना चाहते हैं? Are you sure you want to restart the game?")) return;
+
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    board[i][j] = null;
+                }
+            }
+
+            moveRecord = [];
+            boardHistory = [];
+            captureHistory = [];
+            blackCaptures = 0;
+            whiteCaptures = 0;
+            currentPlayer = "black";
+            timeLeft = 600;
+            clearInterval(timer);
+            gameRunning = true;
+            startTimer();
+            drawBoard();
+            updateCaptureCounter();
+        async function quitGame() {
+            if (!confirm("क्या आप वाकई खेल छोड़ना चाहते हैं? आपका स्कोर सेव हो जाएगा। Are you sure you want to quit and go back? Your score will be saved.")) return;
+            
+            const finalScore = blackCaptures * CAPTURE_SCORE_VALUE;
+            gameManager.score = finalScore;
+            await gameManager.updateScoreOnServer();
+            
+            window.location.href = "/meCompleted', 'true');
+            
+            window.location.href = "subjects.html";
+        }
+        
+        // --- Initialization ---
+        canvas.addEventListener('click', placeStone);
+        undoButton.addEventListener("click", undoMove);
+        restartButton.addEventListener("click", restartGame);
+        quitButton.addEventListener("click", quitGame);
+
+        // Initial setup
+        saveBoardState();
+        drawBoard();
+        startTimer();
+    </script>
+</body>
+</html>

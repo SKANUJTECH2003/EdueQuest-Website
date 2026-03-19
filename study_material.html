@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Material - Notes & Books</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+        <script src="global-timer.js"></script>
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --bg-color-light: #f7f9fc;
+            --card-bg-light: #fff;
+            --text-color-light: #333;
+            --text-color-secondary: #666;
+            --primary-color: #1a73e8;
+            --secondary-color: #e8f0fe;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --border-color: #e0e0e0;
+        }
+
+        body.dark-theme {
+            --bg-color-light: #121212;
+            --card-bg-light: #1e1e1e;
+            --text-color-light: #f0f0f0;
+            --text-color-secondary: #b0b0b0;
+            --primary-color: #4da6ff;
+            --secondary-color: #3a3a3a;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --border-color: #444;
+        }
+        
+        body { 
+            font-family: "Poppins", sans-serif; 
+            background-color: var(--bg-color-light); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-color-light); 
+            transition: background-color 0.3s, color 0.3s; 
+        }
+        
+        /* --- COMMON HEADER/NAVBAR STYLES (Unified) --- */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 1.2rem 2rem; 
+            background-color: var(--card-bg-light); 
+            box-shadow: 0 2px 4px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            font-weight: 600; 
+            font-size: 1.25rem; 
+            color: var(--primary-color);
+            margin-right: 1rem;
+        }
+        .logo img { 
+            height: 2rem; 
+            margin-right: 0.5rem; 
+        }
+        
+        /* Desktop Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        .nav a { 
+            text-decoration: none; 
+            color: var(--text-color-secondary); 
+            margin: 0 1rem; 
+            font-weight: 500; 
+            transition: color 0.3s ease; 
+            position: relative; 
+            white-space: nowrap;
+        }
+        .nav a:hover, .nav a.active { 
+            color: var(--primary-color); 
+        }
+        .nav a::after { 
+            content: ""; 
+            position: absolute; 
+            width: 0; 
+            height: 2px; 
+            bottom: -5px; 
+            left: 0; 
+            background-color: var(--primary-color); 
+            transition: width 0.3s ease-in-out; 
+        }
+        .nav a:hover::after, .nav a.active::after { 
+            width: 100%; 
+        }
+
+        /* Right Side Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 2rem;
+        }
+
+        .user-profile-container { 
+            position: relative; 
+            font-weight: 500;
+            margin-left: 0;
+        }
+        .profile-dropdown-trigger { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: relative; 
+            cursor: pointer; 
+        }
+        .profile-dropdown-trigger:hover .logout-link { 
+            visibility: visible; 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+        .user-profile-container #userNameDisplay { 
+            font-size: 0.9rem; 
+            color: var(--text-color-secondary); 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            transition: background-color 0.3s ease; 
+        }
+        .profile-dropdown-trigger:hover #userNameDisplay { 
+            background-color: var(--secondary-color); 
+            color: var(--primary-color); 
+        }
+        .user-profile-container .logout-link { 
+            position: absolute; 
+            top: 100%; 
+            text-decoration: none; 
+            background-color: var(--card-bg-light); 
+            color: #e66a6a; 
+            white-space: nowrap; 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px var(--shadow-color); 
+            z-index: 10; 
+            visibility: hidden; 
+            opacity: 0; 
+            transform: translateY(-5px); 
+            transition: all 0.2s ease-in-out; 
+        }
+        .total-score-container { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            color: var(--primary-color); 
+            background-color: var(--secondary-color); 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            margin-left: 1rem; 
+            display: flex; 
+            align-items: center; 
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color-secondary);
+            transition: color 0.3s;
+        }
+        .theme-toggle-btn:hover {
+            color: var(--primary-color);
+        }
+        .menu-toggle {
+            display: none; /* Hidden on desktop */
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color-light);
+        }
+        /* Unified header/sidebar styles */
+        .header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 2rem; background-color:var(--card-bg-light); box-shadow:0 2px 4px var(--shadow-color); z-index:100; position:fixed; top:0; left:0; right:0; height:70px; }
+        .logo img { height:2.5rem; }
+        .nav { display:none; }
+        .header-stats { display:flex; align-items:center; gap:2rem; flex:1; margin-left:3rem; }
+        .stat-item{ display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem; color:var(--text-color-light); }
+        .timer-display { background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); color:white; padding:0.5rem 1rem; border-radius:12px; font-weight:700; font-size:0.9rem; min-width:70px; text-align:center; }
+        .sidebar-nav{ position:fixed; top:70px; left:0; width:260px; height:calc(100vh - 70px); background-color:var(--card-bg-light); box-shadow:2px 0 5px var(--shadow-color); padding-top:1.5rem; z-index:90; display:flex; flex-direction:column; align-items:flex-start; overflow-y:auto; }
+        .sidebar-nav a, .sidebar-nav button{ display:flex; align-items:center; width:85%; padding:0.8rem 1.5rem; text-decoration:none; color:var(--text-color-light); font-weight:500; transition:all 0.3s ease; background:none; border:none; cursor:pointer; text-align:left; border-radius:8px; margin:0.3rem 0.75rem; }
+        .sidebar-nav a i, .sidebar-nav button i{ margin-right:1rem; font-size:1.2rem; color:var(--primary-color); }
+        .sidebar-nav a:hover, .sidebar-nav a.active, .sidebar-nav button:hover{ background-color:var(--secondary-color); color:var(--primary-color); border-left:4px solid var(--primary-color); padding-left:1.2rem; }
+        .dashboard-wrapper{ margin-left:260px; margin-top:70px; padding-top:1rem; }
+        /* --- END COMMON HEADER/NAVBAR STYLES --- */
+
+        .study-main { 
+            padding: 2rem 3rem; 
+        }
+        .selection-section { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            background-color: var(--card-bg-light);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .selection-section h1 { 
+            font-size: 2rem; 
+            font-weight: 600; 
+            color: var(--primary-color); 
+            margin-bottom: 1.5rem; 
+        }
+        .class-buttons, .subject-buttons { 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 1rem; 
+            margin-bottom: 1rem;
+        }
+        .class-btn, .subject-btn { 
+            padding: 0.75rem 1.5rem; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            color: var(--primary-color); 
+            background-color: var(--secondary-color); 
+            border: 2px solid var(--primary-color); 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+        .class-btn:hover, .class-btn.active, .subject-btn:hover, .subject-btn.active { 
+            background-color: var(--primary-color); 
+            color: #fff; 
+            transform: translateY(-2px); 
+            box-shadow: 0 2px 5px var(--shadow-color); 
+        }
+        
+        .material-container {
+            background-color: var(--card-bg-light); 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 8px var(--shadow-color); 
+            min-height: 300px;
+            position: relative; 
+        }
+
+        .material-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .material-card {
+            background-color: var(--bg-color-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative; 
+        }
+
+        .material-card.user-note {
+            border-left: 5px solid #ffc107; 
+            background-color: #fff3cd30;
+        }
+
+        .material-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px var(--shadow-color);
+        }
+        
+        .material-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .material-card p {
+            color: var(--text-color-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Delete Button for User Notes */
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            line-height: 1;
+            text-align: center;
+            padding: 0;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        /* --- Action Buttons (Read/Download) --- */
+        .material-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .read-link {
+            background-color: #3b82f6; /* Blue for Read */
+            color: white;
+        }
+
+        .download-link {
+            background-color: #059669; /* Green for Download */
+            color: white;
+        }
+
+        .read-link:hover {
+            background-color: #2563eb;
+        }
+        .download-link:hover {
+            background-color: #047857;
+        }
+
+        /* --- PDF/Text Viewer Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0,0,0,0.9);
+            padding: 0;
+        }
+
+        .modal-content-reader {
+            background-color: var(--card-bg-light);
+            margin: auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 95%;
+            height: 95%;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-btn {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .pdf-iframe-container {
+            flex-grow: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Text Viewer specific styles */
+        #textViewer {
+            background-color: var(--card-bg-light);
+            color: var(--text-color-light);
+            padding: 20px;
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        #textViewer img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        
+        /* --- Notes Creation Modal/Form Styles --- */
+        #createNoteModal .modal-content {
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            text-align: left;
+        }
+        #createNoteForm label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+            color: var(--text-color-light);
+        }
+        #createNoteForm input[type="text"],
+        #createNoteForm textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+            resize: vertical;
+        }
+        #createNoteForm button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* --- File Upload Button (Hidden input) --- */
+        #fileUploadContainer {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        #uploadFileButton {
+            padding: 8px 15px;
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        #uploadFileName {
+            font-size: 0.85rem;
+            color: var(--text-color-secondary);
+        }
+        
+        /* --- Floating Action Button (FAB) --- */
+        #createNoteFAB {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            display: none; 
+        }
+        #createNoteFAB:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
+        }
+
+
+        /* --- Mobile Menu & Responsiveness --- */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg-light);
+            z-index: 99;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5rem;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        .mobile-menu a {
+            font-size: 1.5rem;
+            color: var(--text-color-light);
+            padding: 1rem;
+            width: 80%;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            text-decoration: none;
+        }
+        @media (max-width: 1024px) {
+            .header {
+                padding: 1rem 1.5rem;
+            }
+            .nav {
+                display: none;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .header-controls {
+                margin-left: 0.5rem;
+                gap: 0.5rem;
+            }
+            .user-profile-container {
+                display: none;
+            }
+            .total-score-container {
+                display: none !important;
+            }
+            .study-main {
+                padding: 1rem;
+            }
+            .selection-section {
+                padding: 1rem;
+            }
+            .material-card {
+                padding: 1rem;
+            }
+            .class-buttons, .subject-buttons {
+                justify-content: space-around;
+            }
+            .modal-content-reader, #createNoteModal .modal-content {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .mobile-menu {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="subjects.html">Play and Learn</a>
+        <a href="quiz.html">Quests/Challenges</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="study_material.html" class="active">Study Material</a>
+        <a href="#" id="mobileLogoutBtn" style="color: #e66a6a;">Logout</a>
+    </div>
+
+    <header class="header">
+        <div class="logo">
+            <img src="Picture1-removebg-preview.png" alt="EduQuest Logo" />
+            <span>EduQuest</span>
+        </div>
+        
+        <div class="header-stats">
+            <div class="stat-item">
+                <i class="fas fa-fire"></i>
+                <span id="navStreakDisplay">0</span> Streak
+            </div>
+            <div class="timer-display" id="globalTimerDisplay">00:00</div>
+        </div>
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <div id="totalScoreDiv" class="total-score-container" style="display: none;">
+            <i class="fas fa-star"></i> Score : <span id="totalScoreDisplay">0</span>
+        </div>
+        
+        <div class="user-profile-container">
+            <div class="profile-dropdown-trigger">
+                <span id="userNameDisplay">User</span>
+                <a href="#" id="logoutBtn" class="logout-link">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="subjects.html" class="nav-item">
+            <i class="fas fa-gamepad"></i> Play & Learn
+        </a>
+        <a href="quiz.html" class="nav-item">
+            <i class="fas fa-pencil-alt"></i> Quests
+        </a>
+        <a href="leaderboard.html" class="nav-item">
+            <i class="fas fa-trophy"></i> Leaderboard
+        </a>
+        <a href="study_material.html" class="nav-item active">
+            <i class="fas fa-book"></i> Study Material
+        </a>
+        <a href="redeem.html" class="nav-item" style="color: #FFC107;">
+            <i class="fas fa-coins"></i> Redeem Coins
+        </a>
+        <button id="settingsBtn" class="nav-item">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </aside>
+
+    <div class="dashboard-wrapper">
+    <main class="study-main">
+        <section class="selection-section">
+            <h1>📚 Select Study Material</h1>
+            
+            <h2>1. Select Class</h2>
+            <div class="class-buttons">
+                <button class="class-btn" data-class="1">Class 1st</button>
+                <button class="class-btn" data-class="2">Class 2nd</button>
+                <button class="class-btn" data-class="3">Class 3rd</button>
+                <button class="class-btn" data-class="4">Class 4th</button>
+                <button class="class-btn" data-class="5">Class 5th</button>
+            </div>
+
+            <h2 id="subject-heading" style="margin-top: 2rem; display: none;">2. Select Subject</h2>
+            <div class="subject-buttons" id="subject-buttons-container">
+                </div>
+        </section>
+
+        <section class="material-container">
+            <h2 style="color: var(--text-color-light);">Notes and Books</h2>
+            <div id="material-content" class="material-list">
+                <p class="placeholder-text" style="color: var(--text-color-secondary);">Select a class and subject to view study materials.</p>
+            </div>
+        </section>
+    </main>
+    </div>
+
+    <button id="createNoteFAB" title="Create New Note" onclick="openCreateNoteModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+
+    <div id="pdfReaderModal" class="modal">
+        <div class="modal-content-reader">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <span class="close-btn" onclick="closePDFModal()">&times;</span>
+            </div>
+            
+            <div class="pdf-iframe-container">
+                <iframe id="pdfIframe" class="pdf-iframe" allowfullscreen></iframe>
+                
+                <div id="textViewer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="createNoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCreateNoteModal()">&times;</span>
+            <h2>Create New PDF Note</h2>
+            <form id="createNoteForm">
+                <label for="noteTitle">Note Title (Name)</label>
+                <input type="text" id="noteTitle" required placeholder="e.g., My Math Cheat Sheet">
+                
+                <label for="noteDescription">Short Description</label>
+                <input type="text" id="noteDescription" required placeholder="A brief summary of content">
+
+                <div id="fileUploadContainer">
+                    <button type="button" id="uploadFileButton">
+                        <i class="fas fa-upload"></i> Select PDF File
+                    </button>
+                    <span id="uploadFileName">No PDF selected.</span>
+                    <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
+                </div>
+                
+                <button type="submit">Save Note</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL THEME SWITCHING LOGIC ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        const applyTheme = () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-theme');
+                if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.classList.remove('dark-theme');
+                if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        };
+        applyTheme();
+
+        window.toggleTheme = () => {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-theme');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        };
+        if (themeToggleBtn) themeToggleBtn.addEventListener('click', window.toggleTheme);
+        
+        window.toggleMenu = () => {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        };
+        // --- END THEME/MENU LOGIC ---
+
+        // --- PDF VIEWER LOGIC ---
+        const pdfModal = document.getElementById('pdfReaderModal');
+        const pdfIframe = document.getElementById('pdfIframe');
+        const textViewer = document.getElementById('textViewer');
+        const modalTitle = document.getElementById('modalTitle');
+
+        window.openPDFModal = (content, title, isUserNote) => {
+            modalTitle.textContent = title;
+            
+            // For PDFs, we assume 'content' is the file path (for official) or Base64 data (for user uploads)
+            // Note: Since we aim for backend saving, in a real scenario, this 'content' would be a server-provided URL.
+
+            if (isUserNote) {
+                 // Hide text viewer and use iframe for PDF preview
+                textViewer.style.display = 'none';
+                pdfIframe.style.display = 'block';
+                
+                // Content for user PDF is Base64 data URL
+                pdfIframe.src = content; 
+            } else {
+                // Official PDFs use file path
+                textViewer.style.display = 'none';
+                pdfIframe.style.display = 'block';
+                pdfIframe.src = content; 
+            }
+
+            pdfModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; 
+        };
+
+        window.closePDFModal = () => {
+            pdfModal.style.display = 'none';
+            pdfIframe.src = ''; 
+            textViewer.innerHTML = '';
+            document.body.style.overflow = 'auto'; 
+        };
+
+        window.onclick = function(event) {
+            if (event.target == pdfModal) {
+                closePDFModal();
+            }
+        };
+        // --- END PDF VIEWER LOGIC ---
+
+        // --- NOTE CREATION LOGIC ---
+        const createNoteModal = document.getElementById('createNoteModal');
+        const createNoteForm = document.getElementById('createNoteForm');
+        const createNoteFAB = document.getElementById('createNoteFAB');
+        const pdfFileInput = document.getElementById('pdfFileInput');
+        const uploadFileButton = document.getElementById('uploadFileButton');
+        const uploadFileNameSpan = document.getElementById('uploadFileName');
+
+        let selectedClass = null;
+        let selectedSubject = null;
+        let pdfDataURL = null; // Stores Base64 data URL for the PDF
+
+        // Setup file input listener
+        uploadFileButton.addEventListener('click', () => {
+            pdfFileInput.click();
+        });
+
+        pdfFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                pdfDataURL = null;
+                uploadFileNameSpan.textContent = "No PDF selected.";
+                return;
+            }
+
+            if (file.type !== 'application/pdf') {
+                alert("Please select a PDF file.");
+                pdfFileInput.value = '';
+                uploadFileNameSpan.textContent = "Invalid file type.";
+                pdfDataURL = null;
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // Limit file size to 5MB (for Base64 storage)
+                alert("File size exceeds 5MB limit for Base64 storage.");
+                pdfFileInput.value = '';
+                uploadFileNameSpan.textContent = "File too large!";
+                pdfDataURL = null;
+                return;
+            }
+
+            uploadFileNameSpan.textContent = `Processing: ${file.name}...`;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                pdfDataURL = reader.result; // This is the Base64 Data URL
+                uploadFileNameSpan.textContent = `PDF Ready: ${file.name}`;
+            };
+            reader.onerror = () => {
+                uploadFileNameSpan.textContent = "Error reading file.";
+                pdfDataURL = null;
+            };
+            reader.readAsDataURL(file);
+        });
+
+
+        window.openCreateNoteModal = () => {
+            if (!selectedClass || !selectedSubject) {
+                alert("Please select a Class and Subject before creating a note.");
+                return;
+            }
+            createNoteForm.reset(); 
+            pdfDataURL = null;
+            uploadFileNameSpan.textContent = "No PDF selected.";
+            createNoteModal.style.display = 'flex';
+        };
+
+        window.closeCreateNoteModal = () => {
+            createNoteModal.style.display = 'none';
+        };
+
+        function getUserNotesKey() {
+            return `userNotes_${selectedClass}_${selectedSubject}`;
+        }
+        
+        window.deleteUserNote = async (noteId) => {
+            if (!confirm("Are you sure you want to delete this custom PDF note?")) {
+                return;
+            }
+            
+            const userEmail = localStorage.getItem("userEmail");
+            
+            try {
+                // Backend Delete API Call
+                const response = await fetch('/api/delete-note', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: userEmail,
+                        classId: selectedClass,
+                        subjectId: selectedSubject,
+                        noteId: noteId 
+                    })
+                });
+
+                if (response.ok) {
+                    renderMaterial();
+                    alert("PDF Note deleted successfully!");
+                } else {
+                    const data = await response.json();
+                    alert("Failed to delete note: " + (data.message || "Server error."));
+                }
+            } catch (error) {
+                console.error('Error deleting note:', error);
+                alert("Network error. Could not delete note.");
+            }
+        };
+
+        createNoteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!pdfDataURL) {
+                alert("Please upload a PDF file first.");
+                return;
+            }
+
+            const noteTitle = document.getElementById('noteTitle').value;
+            const noteDescription = document.getElementById('noteDescription').value;
+            
+            // Prepare data for Backend Saving
+            const noteData = {
+                email: localStorage.getItem("userEmail"),
+                classId: selectedClass,
+                subjectId: selectedSubject,
+                title: noteTitle,
+                desc: noteDescription,
+                // In a REAL implementation, you would send the PDF file here.
+                // For our simulation, we send the Base64 data URL as the file path (filePath).
+                filePath: pdfDataURL 
+            };
+
+            try {
+                // Backend Save API Call
+                const response = await fetch('/api/save-note', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(noteData)
+                });
+
+                if (response.ok) {
+                    closeCreateNoteModal();
+                    renderMaterial();
+                    alert("PDF Note saved successfully and is linked to your account!");
+                } else {
+                    const data = await response.json();
+                    alert("Failed to save note: " + (data.message || "Server error."));
+                }
+
+            } catch (error) {
+                console.error('Error saving note:', error);
+                alert("Network error. Could not save note.");
+            }
+        });
+
+        // --- MAIN PAGE LOGIC (Modified to handle User Notes) ---
+        
+        document.addEventListener("DOMContentLoaded", async (event) => {
+            const isLoggedIn = localStorage.getItem("isLoggedIn");
+            const userName = localStorage.getItem("userName");
+            const userEmail = localStorage.getItem("userEmail");
+            const userNameDisplayElement = document.getElementById("userNameDisplay");
+            const logoutBtn = document.getElementById("logoutBtn");
+            const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+            const totalScoreDisplay = document.getElementById("totalScoreDisplay");
+            const totalScoreDiv = document.getElementById("totalScoreDiv");
+
+            if (isLoggedIn !== "true" || !userName || !userEmail) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const firstName = userName.split(" ")[0];
+            userNameDisplayElement.textContent = firstName;
+
+            const performLogout = (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = "login.html";
+            };
+            
+            logoutBtn.addEventListener("click", performLogout);
+            mobileLogoutBtn.addEventListener("click", performLogout);
+
+
+            async function fetchAndDisplayUserScore() {
+                try {
+                    const response = await fetch(`/api/user-data?email=${userEmail}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        totalScoreDisplay.textContent = data.user.points;
+                        totalScoreDiv.style.display = 'flex';
+                    } else {
+                        console.error("Failed to fetch user data.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+            await fetchAndDisplayUserScore();
+
+            // --- STUDY MATERIAL DATA ---
+            const classSubjects = {
+                '1': ["English", "Hindi", "Maths"],
+                '2': ["English", "Mathematics", "Science"],
+                '3': ["Science", "Social Studies", "English", "Mathematics"],
+                '4': ["English", "Mathematics", "Science", "History"],
+                '5': ["English", "Mathematics", "Science", "Geography", "Coding"]
+            };
+
+            const officialMaterialData = {
+                '1': {
+                    'english': [
+                        { type: 'Book', title: 'Class 1 English NCERT', file: 'books/class1/ENG-NCERT.pdf', desc: 'Official NCERT textbook for Class 1 English.' },
+                        { type: 'Notes', title: 'My English book one', file: 'books/class1/eng-mybook.pdf', desc: 'Fantastic book for class 1 standard by Maharashtra State Bureau of Textbook Production and Curriculum Research, Pune.  ' },
+                        { type: 'Notes', title: 'Mridang - worksheet', file: 'books/class1/eng-worksheet.pdf', desc: 'Fantastic worksheet for class 1 standard by anuj vishwakarma' }
+                    ],
+                    'maths': [
+                        { type: 'Book', title: 'Class 1 Maths NCERT', file: 'books/class1/MATH-NCERT.pdf', desc: 'Introduction to numbers and basic arithmetic.' },
+                        { type: 'Notes', title: 'Counting & Shapes Review', file: 'notes/class1/math-notes-1.pdf', desc: 'Practice material for counting 1-100 and common shapes.' }
+                    ],
+                     'Hindi': [
+                        { type: 'Book', title: 'Class 1 EVS NCERT', file: 'books/class1/HINDI-NCERT.pdf', desc: 'Understanding the Hindi' },
+                        { type: 'Notes', title: 'Hindi Varnamala Chart', file: 'notes/class1/hindi-notes-1.pdf', desc: 'Chart of Hindi alphabets (Varnamala).' }
+                    ],
+                }
+            };
+            
+            async function fetchUserCustomNotes() {
+                if (!selectedClass || !selectedSubject) return [];
+                 try {
+                    const response = await fetch(`/api/user-notes?email=${userEmail}&classId=${selectedClass}&subjectId=${selectedSubject}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.notes || [];
+                    }
+                } catch (error) {
+                    console.error("Error fetching custom notes:", error);
+                }
+                return [];
+            }
+
+
+            const classButtons = document.querySelectorAll(".class-btn");
+            const subjectButtonsContainer = document.getElementById("subject-buttons-container");
+            const materialContent = document.getElementById("material-content");
+            const subjectHeading = document.getElementById("subject-heading");
+            
+
+            function renderSubjects(classId) {
+                subjectButtonsContainer.innerHTML = '';
+                subjectHeading.style.display = 'block';
+                
+                document.querySelectorAll('.subject-btn').forEach(btn => btn.classList.remove('active'));
+
+                const subjects = classSubjects[classId];
+                if (subjects) {
+                    subjects.forEach(subject => {
+                        const button = document.createElement('button');
+                        button.classList.add('subject-btn');
+                        button.textContent = subject;
+                        button.dataset.subject = subject.toLowerCase().replace(/\s/g, '').replace('mathematics', 'maths').replace('socialstudies', 'socialstudies'); 
+                        button.addEventListener('click', handleSubjectClick);
+                        subjectButtonsContainer.appendChild(button);
+                    });
+                }
+            }
+
+            async function renderMaterial() {
+                materialContent.innerHTML = '';
+                
+                if (!selectedClass || !selectedSubject) {
+                    materialContent.innerHTML = `<p class="placeholder-text" style="color: var(--text-color-secondary);">Select a class and subject to view study materials.</p>`;
+                    createNoteFAB.style.display = 'none';
+                    return;
+                }
+                
+                const officialMaterials = officialMaterialData[selectedClass]?.[selectedSubject] || [];
+                const userCustomNotes = await fetchUserCustomNotes(); // Load user-created notes from backend
+
+                const allMaterials = [...userCustomNotes, ...officialMaterials]; // Show user notes first
+
+                if (allMaterials.length > 0) {
+                    const materialsHTML = allMaterials.map(material => {
+                        const isUserNote = material.type === 'User PDF'; // Changed from User Note to User PDF
+                        
+                        // User notes pass Base64 (from filePath property) and a flag; official pass the file path
+                        const contentToPass = isUserNote ? material.file : material.file;
+                        
+                        const actions = isUserNote 
+                            ? `
+                            <div class="material-actions">
+                                <button class="action-btn read-link" onclick="openPDFModal('${contentToPass}', '${material.title}', true)">
+                                    <i class="fas fa-book-open"></i> View PDF
+                                </button>
+                                <button class="delete-btn" onclick="deleteUserNote(${material.id})">
+                                    &times;
+                                </button>
+                            </div>`
+                            : `
+                            <div class="material-actions">
+                                <button class="action-btn read-link" onclick="openPDFModal('${contentToPass}', '${material.title}', false)">
+                                    <i class="fas fa-book-open"></i> Read Online
+                                </button>
+                                <a href="${material.file}" class="action-btn download-link" download>
+                                    <i class="fas fa-download"></i> Download ${material.type}
+                                </a>
+                            </div>`;
+
+                        return `
+                        <div class="material-card ${isUserNote ? 'user-note' : ''}">
+                            <h3><i class="fas fa-file-alt"></i> ${material.title} (${isUserNote ? 'My PDF' : material.type})</h3>
+                            <p>${material.desc}</p>
+                            ${actions}
+                        </div>`;
+                    }).join('');
+                    materialContent.innerHTML = `<div class="material-list">${materialsHTML}</div>`;
+                } else {
+                    materialContent.innerHTML = `<p class="placeholder-text" style="color: var(--text-color-secondary);">No content found. Click the '+' button to upload your first PDF note!</p>`;
+                }
+
+                createNoteFAB.style.display = 'block'; 
+            }
+
+            function handleClassClick(event) {
+                classButtons.forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                selectedClass = event.target.dataset.class;
+                selectedSubject = null;
+                
+                renderSubjects(selectedClass);
+                renderMaterial();
+            }
+
+            function handleSubjectClick(event) {
+                document.querySelectorAll('.subject-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                selectedSubject = event.target.dataset.subject;
+                renderMaterial();
+            }
+
+            // Attach event listeners
+            classButtons.forEach(button => {
+                button.addEventListener('click', handleClassClick);
+            });
+        });
+    </script>
+</body>
+</html>

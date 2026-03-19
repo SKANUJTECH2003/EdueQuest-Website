@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduQuest - Quests & Challenges</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+      <script src="global-timer.js"></script>
+    <style>
+      /* --- CSS Variables for Theming (Added for dark mode support) --- */
+      :root {
+          --bg-color-light: #f7f9fc;
+          --bg-color-secondary: #e9f0f7;
+          --card-bg-light: #fff;
+          --text-color-light: #333;
+          --text-color-secondary: #64748b;
+          --primary-color: #1a73e8;
+          --secondary-btn-bg: #e8f0fe;
+          --shadow-color: rgba(0, 0, 0, 0.05);
+          --border-color: #e2e8f0;
+      }
+
+      body.dark-theme {
+          --bg-color-light: #121212;
+          --bg-color-secondary: #1e1e1e;
+          --card-bg-light: #2c2c2c;
+          --text-color-light: #f0f0f0;
+          --text-color-secondary: #b0b0b0;
+          --primary-color: #4da6ff;
+          --secondary-btn-bg: #3a3a3a;
+          --shadow-color: rgba(0, 0, 0, 0.5);
+          --border-color: #444;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 3rem;
+        background-color: var(--card-bg-light);
+        box-shadow: 0 2px 4px var(--shadow-color);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: var(--primary-color);
+      }
+
+      .logo img {
+        height: 3.5rem;
+        margin-right: 15vw;
+      }
+
+      .nav a {
+        text-decoration: none;
+        color: var(--text-color-secondary);
+        margin: 0 1.5rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav a:hover,
+      .nav a.active {
+        color: var(--primary-color);
+      }
+      .user-profile-container {
+        position: relative;
+        font-weight: 500;
+        margin-left: 7vw;
+      }
+
+      .profile-dropdown-trigger {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .profile-dropdown-trigger:hover .logout-link {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .user-profile-container #userNameDisplay {
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+      }
+
+      .profile-dropdown-trigger:hover #userNameDisplay {
+        background-color: var(--secondary-btn-bg);
+        color: var(--primary-color);
+      }
+
+      .user-profile-container .logout-link {
+        position: absolute;
+        top: 100%;
+        text-decoration: none;
+        background-color: var(--card-bg-light);
+        color: #e66a6a;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        z-index: 10;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .nav a {
+        text-decoration: none;
+        color: var(--text-color-secondary);
+        margin: 0 1.5rem;
+        font-weight: 500;
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      .nav a::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: var(--primary-color);
+        transition: width 0.3s ease-in-out;
+      }
+
+      .nav a:hover::after,
+      .nav a.active::after {
+        width: 100%;
+      }
+      /* Unified header/sidebar styles */
+      .header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 2rem; background-color:var(--card-bg-light); box-shadow:0 2px 4px var(--shadow-color); z-index:100; position:fixed; top:0; left:0; right:0; height:70px; }
+      .logo img { height:2.5rem; }
+      .nav { display:none; }
+      .header-stats { display:flex; align-items:center; gap:2rem; flex:1; margin-left:3rem; }
+      .stat-item{ display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem; color:var(--text-color-light); }
+      .timer-display { background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); color:white; padding:0.5rem 1rem; border-radius:12px; font-weight:700; font-size:0.9rem; min-width:70px; text-align:center; }
+      .sidebar-nav{ position:fixed; top:70px; left:0; width:260px; height:calc(100vh - 70px); background-color:var(--card-bg-light); box-shadow:2px 0 5px var(--shadow-color); padding-top:1.5rem; z-index:90; display:flex; flex-direction:column; align-items:flex-start; overflow-y:auto; }
+      .sidebar-nav a, .sidebar-nav button{ display:flex; align-items:center; width:85%; padding:0.8rem 1.5rem; text-decoration:none; color:var(--text-color-light); font-weight:500; transition:all 0.3s ease; background:none; border:none; cursor:pointer; text-align:left; border-radius:8px; margin:0.3rem 0.75rem; }
+      .sidebar-nav a i, .sidebar-nav button i{ margin-right:1rem; font-size:1.2rem; color:var(--primary-color); }
+      .sidebar-nav a:hover, .sidebar-nav a.active, .sidebar-nav button:hover{ background-color:var(--secondary-color); color:var(--primary-color); border-left:4px solid var(--primary-color); padding-left:1.2rem; }
+      .dashboard-wrapper{ margin-left:260px; margin-top:70px; padding-top:1rem; }
+      .sidebar-nav a i, .sidebar-nav button i{ margin-right:1rem; font-size:1.2rem; color:var(--primary-color); }
+      .sidebar-nav a:hover, .sidebar-nav a.active, .sidebar-nav button:hover{ background-color:var(--secondary-color); color:var(--primary-color); border-left:4px solid var(--primary-color); padding-left:1.2rem; }
+      .dashboard-wrapper{ margin-left:260px; margin-top:70px; padding-top:1rem; }
+      
+      .page-section {
+        padding: 4rem 2rem;
+        background: var(--bg-color-light);
+        text-align: center;
+      }
+
+      .section-header {
+        max-width: 800px;
+        margin: auto;
+        margin-bottom: 3rem;
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+        color: var(--text-color-light);
+        margin-bottom: 0.5rem;
+      }
+
+      .section-header p {
+        font-size: 1.2rem;
+        color: var(--text-color-secondary);
+      }
+
+      #challenges-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .challenge-card {
+        background: var(--card-bg-light);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px var(--shadow-color);
+        padding: 2rem;
+        text-align: left;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .challenge-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px var(--shadow-color);
+      }
+
+      .challenge-card h3 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .challenge-card p {
+        font-size: 1rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+      }
+
+      .challenge-card .icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+      }
+
+      #quest-container {
+        max-width: 800px;
+        margin: auto;
+        background: var(--card-bg-light);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px var(--shadow-color);
+        padding: 3rem;
+        display: none;
+        text-align: left;
+      }
+
+      .btn-back {
+        background-color: var(--border-color);
+        color: var(--text-color-light);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        border: none;
+      }
+
+      .btn-back:hover {
+        background-color: #cbd5e1;
+      }
+
+      .question-card {
+        background: var(--secondary-btn-bg);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: left;
+      }
+
+      .question-card h3 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .option-btn {
+        background: var(--card-bg-light);
+        border: 2px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        color: var(--text-color-light);
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.3s ease;
+      }
+
+      .option-btn:hover:not(:disabled) {
+        background-color: var(--secondary-btn-bg);
+      }
+
+      .option-btn.correct {
+        background-color: #d1f7e3;
+        border-color: #28a745;
+        color: #1e293b;
+      }
+
+      .option-btn.wrong {
+        background-color: #ffe0e0;
+        border-color: #dc3545;
+        color: #1e293b;
+      }
+
+      #results-container {
+        max-width: 600px;
+        margin: auto;
+        background: var(--card-bg-light);
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px var(--shadow-color);
+        text-align: center;
+        display: none;
+      }
+
+      #results-container h2 {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      #results-container p {
+        font-size: 1.2rem;
+        color: var(--text-color-secondary);
+        margin-bottom: 2rem;
+      }
+
+      #results-container .btn-back {
+        background-color: var(--primary-color);
+        color: #fff;
+        border: none;
+      }
+
+      .games-showcase-section {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-color-secondary);
+      }
+
+      .games-showcase-section h2 {
+        font-size: 2.5rem;
+        color: var(--text-color-light);
+        margin-bottom: 0.5rem;
+      }
+
+      .games-showcase-section p {
+        font-size: 1.2rem;
+        color: var(--text-color-secondary);
+        margin-bottom: 3rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .game-card {
+        background: var(--card-bg-light);
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px var(--shadow-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .game-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px var(--shadow-color);
+      }
+
+      .game-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .game-card h3 {
+        font-size: 1.7rem;
+        color: var(--text-color-light);
+        margin-bottom: 0.5rem;
+      }
+
+      .game-card p {
+        font-size: 1rem;
+        color: var(--text-color-secondary);
+        text-align: center;
+        flex-grow: 1;
+        margin-bottom: 1.5rem;
+      }
+
+      .game-start-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 1.2rem;
+        width: fit-content;
+        margin-top: auto;
+      }
+
+      /* Quest/Challenge specific styles */
+      .controls { display:flex; gap:1rem; justify-content:flex-end; align-items:center; max-width:1200px; margin:0 auto 1.5rem; }
+      .search-input { padding:0.6rem 1rem; border-radius:12px; border:1px solid var(--border-color); width:320px; background:var(--card-bg-light); color:var(--text-color-light); }
+      .filter-select { padding:0.6rem 0.8rem; border-radius:10px; border:1px solid var(--border-color); background:var(--card-bg-light); color:var(--text-color-light); }
+
+      .challenges-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem; max-width:1200px; margin:0 auto; }
+      .challenge-card { position:relative; overflow:hidden; display:flex; flex-direction:column; }
+      .challenge-card .card-meta { display:flex; gap:1rem; align-items:center; }
+      .challenge-card .badge { background: linear-gradient(90deg,#ffd86f,#ffb347); color:#1b1b1b; padding:0.3rem 0.6rem; border-radius:999px; font-weight:700; font-size:0.85rem; }
+      .challenge-card .difficulty { font-size:0.85rem; color:var(--text-color-secondary); margin-left:auto; }
+      .challenge-footer { display:flex; gap:1rem; align-items:center; margin-top:1.2rem; }
+      .progress { height:10px; background:var(--border-color); border-radius:999px; overflow:hidden; flex:1; }
+      .progress > i { display:block; height:100%; background:linear-gradient(90deg,#4facfe,#00f2fe); width:40%; }
+      .start-btn { background:var(--primary-color); color:#fff; padding:0.6rem 1rem; border-radius:10px; border:none; cursor:pointer; }
+      .start-btn.secondary { background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); }
+
+      .total-score-container {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        background-color: var(--secondary-btn-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+      }
+      /* Theme Toggle Button Style (Same as subjects.html) */
+      .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color-secondary);
+            margin-left: 1rem;
+            transition: color 0.3s;
+        }
+        .theme-toggle-btn:hover {
+            color: var(--primary-color);
+        }
+    </style>
+  </head>
+  <body class="light-theme">
+    
+
+      <header class="header">
+        <div class="logo">
+          <img src="logo.png" alt="EduQuest Logo" />
+          <span>EduQuest</span>
+        </div>
+        
+        <div class="header-stats">
+          <div class="stat-item">
+            <i class="fas fa-fire"></i>
+            <span id="navStreakDisplay">0</span> Streak
+          </div>
+          <div class="timer-display" id="globalTimerDisplay">00:00</div>
+        </div>
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        
+        <div id="totalScoreDiv" class="total-score-container" style="display: none;">
+          <i class="fas fa-star"></i> Score : <span id="totalScoreDisplay">0</span>
+        </div>
+        
+        <div class="user-profile-container">
+          <div class="profile-dropdown-trigger">
+            <span id="userNameDisplay"></span>
+            <a href="#" id="logoutBtn" class="logout-link">Logout</a>
+          </div>
+        </div>
+      </header>
+    
+      <aside class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="subjects.html" class="nav-item">
+          <i class="fas fa-gamepad"></i> Play & Learn
+        </a>
+        <a href="quiz.html" class="nav-item active">
+          <i class="fas fa-pencil-alt"></i> Quests
+        </a>
+        <a href="leaderboard.html" class="nav-item">
+          <i class="fas fa-trophy"></i> Leaderboard
+        </a>
+        <a href="study_material.html" class="nav-item">
+          <i class="fas fa-book"></i> Study Material
+        </a>
+        <a href="redeem.html" class="nav-item" style="color: #FFC107;">
+          <i class="fas fa-coins"></i> Redeem Coins
+        </a>
+        <button id="settingsBtn" class="nav-item">
+          <i class="fas fa-cog"></i> Settings
+        </button>
+      </aside>
+    <div class="dashboard-wrapper">
+      <section class="page-section">
+        <div class="section-header">
+          <h2>Quests & Challenges</h2>
+          <p>Complete quests to earn points, level up, and unlock badges.</p>
+        </div>
+
+        <div class="controls">
+          <input id="questSearch" class="search-input" placeholder="Search quests, e.g. Science, History" />
+          <select id="questFilter" class="filter-select">
+            <option value="all">All Difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div id="challenges-view" class="challenges-grid">
+          <div class="challenge-card" data-challenge="science">
+            <div class="card-meta">
+              <span class="icon">🔬</span>
+              <div>
+                <h3>Science Explorer</h3>
+                <p>Explore the wonders of the natural world. Learn about plants, animals, and the solar system.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">New</span>
+              <span class="difficulty">Beginner</span>
+              <div class="progress" aria-hidden="true"><i></i></div>
+              <button class="start-btn" onclick="showQuest('science')">Start</button>
+            </div>
+          </div>
+
+          <div class="challenge-card" data-challenge="history">
+            <div class="card-meta">
+              <span class="icon">📜</span>
+              <div>
+                <h3>History Hero</h3>
+                <p>Travel through time and test your knowledge of famous people and events.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">Popular</span>
+              <span class="difficulty">Intermediate</span>
+              <div class="progress" aria-hidden="true"><i style="width:60%"></i></div>
+              <button class="start-btn" onclick="showQuest('history')">Start</button>
+            </div>
+          </div>
+
+          <div class="challenge-card" data-challenge="math">
+            <div class="card-meta">
+              <span class="icon">➗</span>
+              <div>
+                <h3>Math Mania</h3>
+                <p>Solve fun math puzzles and improve your calculation speed.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">Timed</span>
+              <span class="difficulty">Medium</span>
+              <div class="progress" aria-hidden="true"><i style="width:25%"></i></div>
+              <button class="start-btn" onclick="startQuizFor(1,'math')">Play 10 Q</button>
+            </div>
+          </div>
+          <div class="challenge-card" data-challenge="hindi">
+            <div class="card-meta">
+              <span class="icon">📝</span>
+              <div>
+                <h3>Hindi Shiksha</h3>
+                <p>Basic Hindi practice for young learners.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">Junior</span>
+              <span class="difficulty">Easy</span>
+              <div class="progress" aria-hidden="true"><i style="width:10%"></i></div>
+              <button class="start-btn" onclick="showQuest('hindi')">Start</button>
+            </div>
+          </div>
+
+          <div class="challenge-card" data-challenge="english">
+            <div class="card-meta">
+              <span class="icon">📚</span>
+              <div>
+                <h3>English Basics</h3>
+                <p>Simple English vocabulary and comprehension.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">Junior</span>
+              <span class="difficulty">Easy</span>
+              <div class="progress" aria-hidden="true"><i style="width:15%"></i></div>
+              <button class="start-btn" onclick="showQuest('english')">Start</button>
+            </div>
+          </div>
+
+          <div class="challenge-card" data-challenge="evs">
+            <div class="card-meta">
+              <span class="icon">🌱</span>
+              <div>
+                <h3>EVS Explorer</h3>
+                <p>Environmental and general knowledge for kids.</p>
+              </div>
+            </div>
+            <div class="challenge-footer">
+              <span class="badge">Kids</span>
+              <span class="difficulty">Easy</span>
+              <div class="progress" aria-hidden="true"><i style="width:5%"></i></div>
+              <button class="start-btn" onclick="showQuest('evs')">Start</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="quest-container">
+          <button class="btn-back" onclick="showChallenges()">
+            ← Back to Challenges
+          </button>
+          <div class="section-header">
+            <h2 id="quest-title"></h2>
+            <p id="quest-description"></p>
+            <p id="progress-text"></p>
+          </div>
+          <div id="quest-content"></div>
+        </div>
+
+        <div id="results-container">
+          <h2>Quest Complete!</h2>
+          <p id="final-score-text"></p>
+          <button class="btn-back" onclick="showChallenges()">
+            Play Again!
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="games-showcase-section">
+      <h2>Our Engaging Games</h2>
+      <p>
+        Explore a variety of fun and educational games designed to make learning
+        enjoyable.
+      </p>
+
+      <div class="games-grid">
+        <div class="game-card">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxCkNFcRyp1vNOqDQek007Ng2HHhlBc9QWVw&s"
+            alt="Interactive Quiz Game"
+          />
+          <h3>Memmory Game</h3>
+          <p>Test your knowledge across subjects with exciting quizzes!</p>
+          <a href="games/memmory_game.html" class="btn primary-btn game-start-btn"
+            >Start Game</a
+          >
+        </div>
+        <div class="game-card">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREin6ZGTTjlqhDLSP5IXkrxsPMppT9r-S5iSS9-FUZoC3D3mxmmG3t0STGk8Ee4Lc0Pr4&usqp=CAU"
+            alt="Educational Puzzle Game"
+          />
+          <h3>clumsy bird master</h3>
+          <p>Sharpen your problem-solving skills with challenging puzzles.</p>
+          <a href="clumsy-bird-master/index.html" class="btn primary-btn game-start-btn">Start Game</a>
+        </div>
+        <div class="game-card">
+          <img
+            src="https://play-lh.googleusercontent.com/oyEO-2ihnIg6ig1z2iwbq6Pc63aop0PjcSjOexnw1hMwBUdR7FSrHIexI2_HJlVIMsA"
+            alt="Memory Matching Game"
+          />
+          <h3>Memory boost</h3>
+          <p>Improve your memory and concentration with this classic game.</p>
+          <a href="#" class="btn primary-btn game-start-btn">Start Game</a>
+        </div>
+        <div class="game-card">
+          <img
+            src="https://cdn.britannica.com/65/965-004-063DE606/Position-stones-board-go-game.jpg?w=400&h=300&c=crop"
+            alt="Math Challenge Game"
+          />
+          <h3>Go Board Game</h3>
+          <p>
+            Conquer numbers and equations in this fast-paced math challenge.
+          </p>
+          <a href="games/go_game.html" class="btn primary-btn game-start-btn">Start Game</a>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // --- THEME SWITCHING LOGIC ---
+      const themeToggleBtn = document.getElementById('themeToggle');
+      const body = document.body;
+      const savedTheme = localStorage.getItem('theme');
+
+      // Apply saved theme on load
+      if (savedTheme === 'dark') {
+          body.classList.add('dark-theme');
+          themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+      } else {
+          body.classList.remove('dark-theme');
+          themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+
+      // Toggle theme on click
+      themeToggleBtn.addEventListener('click', () => {
+          if (body.classList.contains('dark-theme')) {
+              body.classList.remove('dark-theme');
+              themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+              localStorage.setItem('theme', 'light');
+          } else {
+              body.classList.add('dark-theme');
+              themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+              localStorage.setItem('theme', 'dark');
+          }
+      });
+      // --- END THEME SWITCHING LOGIC ---
+
+      document.addEventListener("DOMContentLoaded", async (event) => {
+          const isLoggedIn = localStorage.getItem("isLoggedIn");
+          const userName = localStorage.getItem("userName");
+          const userEmail = localStorage.getItem("userEmail");
+          const userNameDisplayElement = document.getElementById("userNameDisplay");
+          const logoutBtn = document.getElementById("logoutBtn");
+          const totalScoreDiv = document.getElementById("totalScoreDiv");
+          const totalScoreDisplay = document.getElementById("totalScoreDisplay");
+
+          if (isLoggedIn !== "true" || !userName) {
+              window.location.href = "login.html";
+              return;
+          }
+
+          const firstName = userName.split(" ")[0];
+          userNameDisplayElement.textContent = firstName;
+
+          logoutBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              localStorage.clear();
+              window.location.href = "login.html";
+          });
+
+          // Fetch and display the user's current score from the server on page load
+          async function fetchAndDisplayUserScore() {
+              try {
+                  const response = await fetch(`/api/user-data?email=${userEmail}`, {
+                      headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+                      }
+                  });
+                  if (response.ok) {
+                      const data = await response.json();
+                      localStorage.setItem("totalScore", data.user.points);
+                      totalScoreDisplay.textContent = data.user.points;
+                      totalScoreDiv.style.display = 'flex';
+                  } else {
+                      console.error("Failed to fetch user data.");
+                  }
+              } catch (error) {
+                  console.error("Error fetching user data:", error);
+              }
+          }
+          await fetchAndDisplayUserScore();
+      });
+
+      const challengesData = {
+        math: {
+          title: "Math Mania Quest",
+          description:
+            "Solve these fun math problems to become a numerical ninja!",
+          questions: [
+            {
+              question: "What is 5 + 3?",
+              options: ["7", "8", "9", "10"],
+              correct: "8",
+            },
+            {
+              question: "What is 10 - 4?",
+              options: ["5", "6", "7", "8"],
+              correct: "6",
+            },
+            {
+              question: "What is 2 x 5?",
+              options: ["7", "10", "12", "15"],
+              correct: "10",
+            },
+            {
+              question: "What is 12 ÷ 3?",
+              options: ["2", "3", "4", "6"],
+              correct: "4",
+            },
+            {
+              question: "What is the sum of 6 and 4?",
+              options: ["9", "10", "11", "12"],
+              correct: "10",
+            },
+            {
+              question: "What is 15 + 5?",
+              options: ["18", "19", "20", "21"],
+              correct: "20",
+            },
+            {
+              question: "What is 8 x 2?",
+              options: ["14", "16", "18", "20"],
+              correct: "16",
+            },
+            {
+              question: "What is 20 - 7?",
+              options: ["11", "12", "13", "14"],
+              correct: "13",
+            },
+            {
+              question: "How many sides does a triangle have?",
+              options: ["2", "3", "4", "5"],
+              correct: "3",
+            },
+            {
+              question: "What is 3 + 3 + 3?",
+              options: ["6", "8", "9", "10"],
+              correct: "9",
+            },
+          ],
+        },
+        science: {
+          title: "Science Explorer Quest",
+          description:
+            "Answer questions about the world around us to earn your science badge!",
+          questions: [
+            {
+              question: "What is the largest planet in our solar system?",
+              options: ["Earth", "Mars", "Jupiter", "Saturn"],
+              correct: "Jupiter",
+            },
+            {
+              question: "What is H2O commonly known as?",
+              options: ["Salt", "Water", "Sugar", "Air"],
+              correct: "Water",
+            },
+            {
+              question: "What do bees make?",
+              options: ["Honey", "Milk", "Paper", "Bread"],
+              correct: "Honey",
+            },
+            {
+              question: "What part of a plant is usually underground?",
+              options: ["Leaf", "Flower", "Stem", "Root"],
+              correct: "Root",
+            },
+            {
+              question: "What is the main source of energy for the Earth?",
+              options: ["Moon", "Stars", "Sun", "Wind"],
+              correct: "Sun",
+            },
+            {
+              question: "What animal barks?",
+              options: ["Cat", "Dog", "Cow", "Sheep"],
+              correct: "Dog",
+            },
+            {
+              question: "What is a baby cow called?",
+              options: ["Kid", "Pup", "Calf", "Kitten"],
+              correct: "Calf",
+            },
+            {
+              question: "What are the two main gases in the air we breathe?",
+              options: [
+                "Hydrogen and Helium",
+                "Oxygen and Nitrogen",
+                "Carbon Dioxide and Methane",
+                "Argon and Neon",
+              ],
+              correct: "Oxygen and Nitrogen",
+            },
+            {
+              question: "Which of these is a fruit?",
+              options: ["Potato", "Carrot", "Apple", "Onion"],
+              correct: "Apple",
+            },
+            {
+              question: "Which sense do you use to hear music?",
+              options: ["Sight", "Smell", "Hearing", "Taste"],
+              correct: "Hearing",
+            },
+          ],
+        },
+        history: {
+          title: "History Hero Quest",
+          description:
+            "Journey through time and test your knowledge of world history.",
+          questions: [
+            {
+              question: "In which year did India gain independence?",
+              options: ["1945", "1947", "1950", "1952"],
+              correct: "1947",
+            },
+            {
+              question: "Who was the first Prime Minister of India?",
+              options: [
+                "Jawaharlal Nehru",
+                "Sardar Vallabhbhai Patel",
+                "Mahatma Gandhi",
+                "Dr. B. R. Ambedkar",
+              ],
+              correct: "Jawaharlal Nehru",
+            },
+            {
+              question: 'Who is known as the "Father of the Nation" in India?',
+              options: [
+                "Subhas Chandra Bose",
+                "Mahatma Gandhi",
+                "Bhagat Singh",
+                "Dr. B. R. Ambedkar",
+              ],
+              correct: "Mahatma Gandhi",
+            },
+            {
+              question: "Who built the Taj Mahal?",
+              options: ["Akbar", "Jahangir", "Shah Jahan", "Aurangzeb"],
+              correct: "Shah Jahan",
+            },
+            {
+              question: "Who was the first man to walk on the moon?",
+              options: [
+                "Yuri Gagarin",
+                "Buzz Aldrin",
+                "Neil Armstrong",
+                "Michael Collins",
+              ],
+              correct: "Neil Armstrong",
+            },
+            {
+              question: "Which ancient wonder was a giant lighthouse?",
+              options: [
+                "Great Pyramid of Giza",
+                "Hanging Gardens of Babylon",
+                "Colossus of Rhodes",
+                "Lighthouse of Alexandria",
+              ],
+              correct: "Lighthouse of Alexandria",
+            },
+            {
+              question: "Who discovered the sea route to India?",
+              options: [
+                "Christopher Columbus",
+                "Vasco da Gama",
+                "Ferdinand Magellan",
+                "Marco Polo",
+              ],
+              correct: "Vasco da Gama",
+            },
+            {
+              question:
+                "Which country did the British rule over for many years?",
+              options: ["China", "Japan", "India", "Russia"],
+              correct: "India",
+            },
+            {
+              question:
+                "Which famous leader used a spinning wheel as a symbol of self-reliance?",
+              options: [
+                "Jawaharlal Nehru",
+                "Mahatma Gandhi",
+                "Indira Gandhi",
+                "Sardar Patel",
+              ],
+              correct: "Mahatma Gandhi",
+            },
+            {
+              question: "What is the name of the first Indian satellite?",
+              options: ["Chandrayaan", "Mangalyaan", "Aryabhata", "Bhaskara"],
+              correct: "Aryabhata",
+            },
+          ],
+        },
+        hindi: {
+          title: "Hindi Shiksha Quest",
+          description: "Buniyadi Hindi sawalon ke saath apni bhasha sudharo aur maza lo.",
+          questions: [
+            { question: "'घर' shabd ka arth kya hai?", options: ["School","Home","Market","Park"], correct: "Home" },
+            { question: "'नमस्ते' ka prayog kab kiya jata hai?", options: ["Greeting","Eating","Sleeping","Writing"], correct: "Greeting" },
+            { question: "Kaun sa vachan ek hai?", options: ["वो","वे","वे सब","हम"], correct: "वो" },
+            { question: "'बड़ा' ka opposite kya hai?", options: ["چھوٹा","छोटा","मोटा","पतला"], correct: "छोटा" },
+            { question: "'पानी' kis cheez ka naam hai?", options: ["Drink","Color","Animal","Fruit"], correct: "Drink" },
+            { question: "'राम' ek ______ hai.", options: ["Naam","Kriya","Visheshan","Sangya"], correct: "Naam" },
+            { question: "'चलना' kis prakaar ka shabd hai?", options: ["Kriya","Sangya","Visheshan","Sambandh"], correct: "Kriya" },
+            { question: "'लाल' kis category mein aata hai?", options: ["Rang","Janwar","Phal","Jagah"], correct: "Rang" },
+            { question: "'माँ' ka English kya hai?", options: ["Father","Mother","Brother","Sister"], correct: "Mother" },
+            { question: "'खाना' kis cheez se sambandhit hai?", options: ["Khana","Pena","Khel","Padhai"], correct: "Khana" }
+          ]
+        },
+        english: {
+          title: "English Basics Quest",
+          description: "Simple English questions to build reading and vocabulary skills.",
+          questions: [
+            { question: "What is the opposite of 'big'?", options: ["Small","Tall","Short","Fast"], correct: "Small" },
+            { question: "Which word is a color?", options: ["Apple","Blue","Run","Eat"], correct: "Blue" },
+            { question: "'Cat' is a _____?", options: ["Animal","Place","Thing","Plant"], correct: "Animal" },
+            { question: "How do you say 'नमस्ते' in English?", options: ["Hello","Goodbye","Please","Thanks"], correct: "Hello" },
+            { question: "What do you drink?", options: ["Book","Water","Chair","Pen"], correct: "Water" },
+            { question: "What is the plural of 'dog'?", options: ["Dogs","Doges","Dogss","Dog"], correct: "Dogs" },
+            { question: "Which is a fruit?", options: ["Car","Apple","Table","Shoe"], correct: "Apple" },
+            { question: "Which one is a greeting?", options: ["Run","Sit","Hello","Jump"], correct: "Hello" },
+            { question: "Which word is an action?", options: ["Blue","Eat","Happy","Green"], correct: "Eat" },
+            { question: "Which is used to write?", options: ["Pen","Plate","Spoon","Shoe"], correct: "Pen" }
+          ]
+        },
+        evs: {
+          title: "EVS Explorer Quest",
+          description: "Basic environmental science and general knowledge for juniors.",
+          questions: [
+            { question: "Which one is a tree?", options: ["Car","Tree","House","River"], correct: "Tree" },
+            { question: "Which do plants need to grow?", options: ["Soil","Water","Sunlight","All of these"], correct: "All of these" },
+            { question: "Which animal says 'meow'?", options: ["Dog","Cat","Cow","Lion"], correct: "Cat" },
+            { question: "Where do fish live?", options: ["Sky","Water","Mountain","Desert"], correct: "Water" },
+            { question: "Which is a source of light?", options: ["Moon","Sun","Tree","Rock"], correct: "Sun" },
+            { question: "Which helps in breathing?", options: ["Leaves","Stones","Water","Sand"], correct: "Leaves" },
+            { question: "What do we use to drink water?", options: ["Glass","Book","Pencil","Shoe"], correct: "Glass" },
+            { question: "Which moves on tracks?", options: ["Car","Train","Plane","Boat"], correct: "Train" },
+            { question: "Which is an animal that can fly?", options: ["Dog","Bird","Cow","Fish"], correct: "Bird" },
+            { question: "Which helps keep us warm?", options: ["Sweater","Spoon","Book","Fork"], correct: "Sweater" }
+          ]
+        },
+      };
+
+      // Quiz bank + chunk-serving helpers
+      function getUserEmail() {
+        return localStorage.getItem('userEmail') || 'guest';
+      }
+
+      function ensureQuestionBank(cls, subject) {
+        const key = `class${cls}_${subject}`;
+        if (!challengesData[key]) {
+          challengesData[key] = {
+            title: `${subject.charAt(0).toUpperCase()+subject.slice(1)} - Class ${cls} Paper`,
+            description: `Auto-generated ${subject} paper for Class ${cls}`,
+            questions: generateQuestionBank(cls, subject),
+          };
+        } else if (challengesData[key].questions.length < 100) {
+          challengesData[key].questions = generateQuestionBank(cls, subject);
+        }
+        return key;
+      }
+
+      function generateQuestionBank(cls, subject) {
+        const qs = [];
+        for (let i=1;i<=100;i++) {
+          if (subject.toLowerCase() === 'math') {
+            const a = Math.floor(Math.random()*10)+(cls);
+            const b = Math.floor(Math.random()*10);
+            const ops = ['+','-','x'];
+            const op = ops[Math.floor(Math.random()*ops.length)];
+            let q, correct;
+            if (op === '+') { q = `${a} + ${b}`; correct = (a+b).toString(); }
+            else if (op === '-') { q = `${a} - ${b}`; correct = (a-b).toString(); }
+            else { q = `${a} x ${b}`; correct = (a*b).toString(); }
+            const opts = new Set();
+            opts.add(correct);
+            while (opts.size < 4) opts.add((Math.floor(Math.random()*20)).toString());
+            const options = Array.from(opts).sort(()=>Math.random()-0.5);
+            qs.push({question:`What is ${q}?`, options, correct});
+          } else {
+            const correct = `Answer ${((i%4)+1)}`;
+            const options = [`Answer 1`,`Answer 2`,`Answer 3`,`Answer 4`].map((t,idx)=> t + (idx+1=== (i%4)+1 ? '' : ''));
+            // shuffle
+            options.sort(()=>Math.random()-0.5);
+            qs.push({question:`${subject.charAt(0).toUpperCase()+subject.slice(1)} Question ${i} for Class ${cls}`, options, correct});
+          }
+        }
+        return qs;
+      }
+
+      function getProgressKey(email, cls, subject) {
+        return `quizProgress_${email}_${cls}_${subject}`;
+      }
+
+      function getNextChunk(cls, subject, chunkSize=10) {
+        const email = getUserEmail();
+        const bankKey = ensureQuestionBank(cls, subject);
+        const bank = challengesData[bankKey].questions;
+        const total = bank.length;
+        const pKey = getProgressKey(email, cls, subject);
+        let progress = JSON.parse(localStorage.getItem(pKey)) || {served:[]};
+
+        let available = [];
+        for (let i=0;i<total;i++) if (!progress.served.includes(i)) available.push(i);
+
+        let take = [];
+        if (available.length >= chunkSize) {
+          // pick random chunkSize from available
+          while (take.length < chunkSize) {
+            const idx = available.splice(Math.floor(Math.random()*available.length),1)[0];
+            take.push(idx);
+          }
+        } else {
+          // take remaining, then reset and take rest from new pool (avoid duplicates within chunk)
+          take = available.slice();
+          // reset
+          progress.served = [];
+          const remainingNeed = chunkSize - take.length;
+          const pool = [];
+          for (let i=0;i<total;i++) if (!take.includes(i)) pool.push(i);
+          while (take.length < chunkSize) {
+            const idx = pool.splice(Math.floor(Math.random()*pool.length),1)[0];
+            take.push(idx);
+          }
+        }
+
+        // update progress.served
+        progress.served = progress.served.concat(take);
+        // if completed full cycle, we can reset next time
+        if (progress.served.length >= total) {
+          // leave as is for now; next call will reset when available < chunkSize
+        }
+        localStorage.setItem(pKey, JSON.stringify(progress));
+
+        // build challenge object with selected questions
+        const selectedQuestions = take.map(i => bank[i]);
+        const dynKey = `dyn_${email}_${cls}_${subject}_${Date.now()}`;
+        challengesData[dynKey] = {
+          title: `${subject.charAt(0).toUpperCase()+subject.slice(1)} - Class ${cls} (10 Q)`,
+          description: `Next ${chunkSize} questions from Class ${cls} ${subject}`,
+          questions: selectedQuestions,
+        };
+        return dynKey;
+      }
+
+      function startQuizFor(cls, subject) {
+        const dynKey = getNextChunk(cls, subject, 10);
+        showQuest(dynKey);
+      }
+
+      const challengesView = document.getElementById("challenges-view");
+      const questContainer = document.getElementById("quest-container");
+      const resultsContainer = document.getElementById("results-container");
+      const questContent = document.getElementById("quest-content");
+      const questTitle = document.getElementById("quest-title");
+      const questDescription = document.getElementById("quest-description");
+      const progressText = document.getElementById("progress-text");
+      const finalScoreText = document.getElementById("final-score-text");
+
+      let currentChallenge;
+      let currentQuestionIndex = 0;
+      let score = 0;
+
+      function showChallenges() {
+        challengesView.style.display = "block";
+        questContainer.style.display = "none";
+        resultsContainer.style.display = "none";
+      }
+
+      function showQuest(challengeId) {
+        currentChallenge = challengesData[challengeId];
+        if (!currentChallenge) return;
+
+        currentQuestionIndex = 0;
+        score = 0;
+
+        challengesView.style.display = "none";
+        questContainer.style.display = "block";
+        resultsContainer.style.display = "none";
+
+        questTitle.textContent = currentChallenge.title;
+        questDescription.textContent = currentChallenge.description;
+
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        if (currentQuestionIndex >= currentChallenge.questions.length) {
+          endQuiz();
+          return;
+        }
+
+        const currentQuestion =
+          currentChallenge.questions[currentQuestionIndex];
+        progressText.textContent = `Question ${currentQuestionIndex + 1} of ${
+          currentChallenge.questions.length
+        }`;
+
+        let html = `
+                <div class="question-card">
+                    <h3>${currentQuestion.question}</h3>
+                    <div class="options-grid">
+                        ${currentQuestion.options
+                          .map(
+                            (option) =>
+                              `<button class="option-btn">${option}</button>`
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+        questContent.innerHTML = html;
+
+        document.querySelectorAll(".option-btn").forEach((button) => {
+          button.addEventListener("click", handleAnswerClick);
+        });
+      }
+
+      function handleAnswerClick(event) {
+        const selectedOption = event.target;
+        const userAnswer = selectedOption.textContent;
+        const correctAnswer =
+          currentChallenge.questions[currentQuestionIndex].correct;
+
+        if (userAnswer === correctAnswer) {
+          selectedOption.classList.add("correct");
+          score++;
+        } else {
+          selectedOption.classList.add("wrong");
+          // Highlight the correct answer
+          document.querySelectorAll(".option-btn").forEach((button) => {
+            if (button.textContent === correctAnswer) {
+              button.classList.add("correct");
+            }
+          });
+        }
+
+        // Disable all buttons after an answer is selected
+        document.querySelectorAll(".option-btn").forEach((button) => {
+          button.disabled = true;
+        });
+
+        // Move to the next question after a delay
+        setTimeout(() => {
+          currentQuestionIndex++;
+          renderQuestion();
+        }, 1500); // 1.5 second delay
+      }
+
+      // Function to add a new activity to localStorage
+      function logActivity(name, points) {
+          let recentActivities = JSON.parse(localStorage.getItem('recentActivities')) || [];
+          recentActivities.push({ name, points, timestamp: new Date() });
+          localStorage.setItem('recentActivities', JSON.stringify(recentActivities));
+      }
+
+        // Small toast popup to show score added confirmation
+        function showScorePopup(addedPoints, newTotal) {
+          try {
+            const existing = document.getElementById('score-popup-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'score-popup-toast';
+            toast.style.position = 'fixed';
+            toast.style.right = '20px';
+            toast.style.bottom = '20px';
+            toast.style.background = 'linear-gradient(90deg,#4facfe,#00f2fe)';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 16px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+            toast.style.zIndex = 99999;
+            toast.style.fontWeight = '600';
+            toast.innerText = `Your score of ${addedPoints} points has been added to your account. Total: ${newTotal}`;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = '×';
+            closeBtn.style.marginLeft = '12px';
+            closeBtn.style.background = 'transparent';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.fontSize = '18px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = () => toast.remove();
+
+            toast.appendChild(closeBtn);
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+              try { toast.remove(); } catch (e) {}
+            }, 4500);
+          } catch (e) {
+            console.warn('Unable to show score popup', e);
+          }
+        }
+
+      async function endQuiz() {
+        questContainer.style.display = "none";
+        resultsContainer.style.display = "block";
+        finalScoreText.textContent = `You scored ${score} out of ${currentChallenge.questions.length}!`;
+
+        const pointsToAdd = score * 10;
+        const userEmail = localStorage.getItem("userEmail");
+        const totalScoreDisplay = document.getElementById("totalScoreDisplay");
+
+        // Update score on the server
+        try {
+          const response = await fetch('/api/update-score', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+            },
+            body: JSON.stringify({ email: userEmail, points: pointsToAdd }),
+          });
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('totalScore', data.newScore);
+                totalScoreDisplay.textContent = data.newScore;
+                console.log('Score updated on server after quiz completion.');
+                
+                // Log the activity after successful server update
+                logActivity(currentChallenge.title, pointsToAdd);
+
+            // Broadcast the score update to other open pages
+            try {
+              localStorage.setItem('scoreUpdate', JSON.stringify({ newScore: data.newScore, added: pointsToAdd, time: Date.now() }));
+            } catch (e) {
+              console.warn('Failed to write scoreUpdate to localStorage', e);
+            }
+
+            // Show a small popup to the user confirming points were added
+            showScorePopup(pointsToAdd, data.newScore);
+
+            } else {
+                console.error('Failed to update server score.');
+            }
+        } catch (error) {
+            console.error('Error updating score:', error);
+        }
+      }
+
+      // Event listeners for challenge cards
+      document.querySelectorAll(".challenge-card").forEach((card) => {
+        card.addEventListener("click", function () {
+          const challengeId = this.getAttribute("data-challenge");
+          showQuest(challengeId);
+        });
+      });
+
+      // Search & filter for challenges
+      const questSearch = document.getElementById('questSearch');
+      const questFilter = document.getElementById('questFilter');
+      function filterChallenges() {
+        const q = (questSearch.value || '').toLowerCase();
+        const f = questFilter.value;
+        document.querySelectorAll('.challenges-grid .challenge-card').forEach(card => {
+          const txt = (card.textContent || '').toLowerCase();
+          let visible = true;
+          if (q && !txt.includes(q)) visible = false;
+          if (f !== 'all') {
+            const diff = card.querySelector('.difficulty')?.textContent?.toLowerCase() || '';
+            if (!diff.includes(f)) visible = false;
+          }
+          card.style.display = visible ? 'flex' : 'none';
+        });
+      }
+      if (questSearch) questSearch.addEventListener('input', filterChallenges);
+      if (questFilter) questFilter.addEventListener('change', filterChallenges);
+
+      // Auto-start queued quiz from subjects page
+      (function autoStartQueuedQuiz(){
+        try {
+          const queued = localStorage.getItem('quiz_start');
+          if (!queued) return;
+          const p = JSON.parse(queued);
+          if (p && p.cls && p.subject) {
+            // start quiz (10-question chunk)
+            startQuizFor(Number(p.cls), p.subject);
+          }
+        } catch (e) {
+          console.error('Failed to auto-start queued quiz', e);
+        } finally {
+          localStorage.removeItem('quiz_start');
+        }
+      })();
+    </script>
+    </div>
+  </body>
+</html>

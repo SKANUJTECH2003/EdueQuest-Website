@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Objects</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+        
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 25px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .title { font-size: 2rem; color: #667eea; }
+        .stats { display: flex; gap: 20px; }
+        .stat { background: #f5f5f5; padding: 10px 20px; border-radius: 15px; }
+        .stat-label { font-size: 0.8rem; color: #999; }
+        .stat-value { font-size: 1.2rem; color: #667eea; font-weight: bold; }
+        
+        .progress-bar { height: 8px; background: #e0e0e0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: 0%; transition: width 0.3s; }
+        
+        .question { background: #f5f5f5; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: center; font-size: 1.2rem; color: #666; }
+        
+        .items { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 40px 0; }
+        .item { font-size: 3rem; }
+        
+        .answer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 30px 0; }
+        .btn-answer { padding: 15px; background: #f5f5f5; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s; }
+        .btn-answer:hover { background: #e0e0e0; transform: translateY(-2px); }
+        .btn-answer.selected { background: #667eea; color: white; border-color: #667eea; }
+        .btn-answer.correct { background: #4caf50; color: white; border-color: #4caf50; }
+        .btn-answer.incorrect { background: #f44336; color: white; border-color: #f44336; }
+        
+        .buttons { display: flex; gap: 10px; justify-content: center; margin-top: 30px; }
+        button { padding: 12px 30px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-check { background: #4caf50; color: white; }
+        .btn-check:hover { background: #45a049; transform: translateY(-2px); }
+        .btn-next { background: #ff9800; color: white; }
+        .btn-home { background: #f5f5f5; color: #333; }
+        .btn-home:hover { background: #e0e0e0; }
+        
+        .feedback { text-align: center; margin: 20px 0; font-size: 1.2rem; font-weight: 600; }
+        .feedback.correct { color: #4caf50; }
+        .feedback.incorrect { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Counting Objects</h1>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">⏱️ Time</div>
+                    <div class="stat-value"><span id="timer">0</span>s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">✓ Correct</div>
+                    <div class="stat-value"><span id="correct">0</span>/5</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div class="question" id="question">How many apples?</div>
+        <div class="items" id="items"></div>
+        
+        <div class="answer-grid" id="answers"></div>
+        
+        <div class="feedback" id="feedback" style="display: none;"></div>
+        
+        <div class="buttons">
+            <button class="btn-check" onclick="checkAnswer()">Check Answer</button>
+            <button class="btn-home" onclick="goHome()">Back Home</button>
+        </div>
+    </div>
+    
+    <script>
+        const items = [{"emoji": "\ud83c\udf4e", "count": 5, "question": "How many apples?"}, {"emoji": "\u2b50", "count": 7, "question": "How many stars?"}, {"emoji": "\ud83c\udf88", "count": 3, "question": "How many balloons?"}, {"emoji": "\ud83d\udc15", "count": 4, "question": "How many dogs?"}, {"emoji": "\ud83c\udf4a", "count": 6, "question": "How many oranges?"}];
+        let currentIndex = 0;
+        let selected = null;
+        let correctCount = 0;
+        let gameStartTime;
+        let answered = false;
+        const gameId = 'c1m2';
+        
+        function initGame() {
+            gameStartTime = Date.now();
+            updateTimer();
+            displayQuestion();
+        }
+        
+        function updateTimer() {
+            setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+                document.getElementById('timer').textContent = elapsed;
+            }, 1000);
+        }
+        
+        function displayQuestion() {
+            if (currentIndex >= items.length) {
+                finishGame();
+                return;
+            }
+            
+            const current = items[currentIndex];
+            document.getElementById('question').textContent = current.question;
+            
+            let itemsHtml = '';
+            for (let i = 0; i < current.count; i++) {
+                itemsHtml += `<div class="item">${current.emoji}</div>`;
+            }
+            document.getElementById('items').innerHTML = itemsHtml;
+            
+            let answersHtml = '';
+            for (let i = 1; i <= 10; i++) {
+                answersHtml += `<button class="btn-answer" onclick="selectAnswer(${i})">${i}</button>`;
+            }
+            document.getElementById('answers').innerHTML = answersHtml;
+            
+            selected = null;
+            answered = false;
+            document.getElementById('feedback').style.display = 'none';
+            
+            const progress = ((currentIndex) / items.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function selectAnswer(num) {
+            selected = num;
+            document.querySelectorAll('.btn-answer').forEach((btn, idx) => {
+                if (idx + 1 === num) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            });
+        }
+        
+        function checkAnswer() {
+            if (answered) {
+                currentIndex++;
+                displayQuestion();
+                return;
+            }
+            
+            if (selected === null) { 
+                alert('Please select an answer');
+                return;
+            }
+            
+            const current = items[currentIndex];
+            const isCorrect = selected === current.count;
+            answered = true;
+            
+            if (isCorrect) {
+                correctCount++;
+                document.querySelectorAll('.btn-answer').forEach((btn, idx) => {
+                    if (idx + 1 === selected) {
+                        btn.classList.remove('selected');
+                        btn.classList.add('correct');
+                    }
+                });
+                document.getElementById('feedback').textContent = '✓ Correct!';
+                document.getElementById('feedback').classList.add('correct');
+            } else {
+                document.querySelectorAll('.btn-answer').forEach((btn, idx) => {
+                    if (idx + 1 === current.count) {
+                        btn.classList.add('correct');
+                    } else if (idx + 1 === selected) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+                document.getElementById('feedback').textContent = `✗ Wrong! The answer is ${current.count}`;
+                document.getElementById('feedback').classList.add('incorrect');
+            }
+            
+            document.getElementById('feedback').style.display = 'block';
+            document.getElementById('correct').textContent = correctCount;
+        }
+        
+        function finishGame() {
+            const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+            const finalScore = Math.floor((correctCount / items.length) * 100);
+            
+            const gameData = {
+                gameId: gameId,
+                gameTitle: 'Counting Objects',
+                score: finalScore,
+                timeInSeconds: elapsed,
+                correctAnswers: correctCount,
+                totalQuestions: items.length,
+                completedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('lastGameScore', finalScore);
+            localStorage.setItem('lastGameData', JSON.stringify(gameData));
+            
+            let gamesHistory = JSON.parse(localStorage.getItem('gamesHistory') || '[]');
+            gamesHistory.push(gameData);
+            localStorage.setItem('gamesHistory', JSON.stringify(gamesHistory));
+            
+            let totalScore = parseInt(localStorage.getItem('totalGameScore') || '0');
+            totalScore += finalScore;
+            localStorage.setItem('totalGameScore', totalScore);
+            
+            alert(`🎉 Game Complete!\n\nCorrect: ${correctCount}/5\nScore: ${finalScore}\nTime: ${elapsed}s`);
+            goHome();
+        }
+        
+        function goHome_original(){} {
+            window.location.href = '/subjects.html';
+        }
+        
+        initGame();
+
+        function goHome() {
+            saveScore();
+            window.location.href = '/subjects.html';
+        }
+    </script>
+</body>
+</html>

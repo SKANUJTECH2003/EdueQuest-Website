@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="EduQuest - Educational gamification platform for K-12 students with interactive quizzes, games, and rewards" />
+    <meta name="theme-color" content="#1a73e8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="EduQuest" />
+    <link rel="icon" type="image/png" href="/images/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>EduQuest - Learn, Play, Grow</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13k+3L2wD8c5u/5Fw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <style>
+    /* ------------------- CSS Variables for Theming ------------------- */
+    :root {
+      --bg-color-light: #f7f9fc;
+      --text-color-light: #1e293b;
+      --text-color-secondary-light: #64748b;
+      --primary-color-light: #3b82f6;
+      --secondary-btn-bg-light: #ffffff;
+      --card-bg-light: #ffffff;
+      --card-shadow-light: rgba(0, 0, 0, 0.05);
+      --footer-bg-light: #1e293b;
+      --footer-text-light: #f7f9fc;
+      --footer-border-light: #475569;
+    }
+
+    body.dark-theme {
+      --bg-color-light: #121212;
+      --text-color-light: #e0e0e0;
+      --text-color-secondary-light: #b0b0b0;
+      --primary-color-light: #4da6ff;
+      --secondary-btn-bg-light: #2c2c2c;
+      --card-bg-light: #1e1e1e;
+      --card-shadow-light: rgba(0, 0, 0, 0.5);
+      --footer-bg-light: #0d0d0d;
+      --footer-text-light: #b0b0b0;
+      --footer-border-light: #333333;
+    }
+
+    /* ------------------- General Styles (Using variables) ------------------- */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* --- New Navbar Styles --- */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 90%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 5rem;
+        background-color: var(--card-bg-light);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        z-index: 100;
+    }
+    .navbar-logo {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: var(--primary-color-light);
+    }
+    .navbar-logo img {
+        height: 4rem;
+        margin-right: 0.5rem;
+    }
+    .navbar-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    /* Updated Hero Section Styles */
+    .hero-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem 5rem;
+      background: transparent;
+    }
+    
+    .hero-content {
+      max-width: 50%;
+      text-align: left;
+    }
+    
+    .hero-image-container {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+    }
+    
+    .hero-section .hero-buttons {
+      text-align: left;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 600;
+      color: var(--text-color-light);
+    }
+
+    .highlight {
+      color: var(--primary-color-light);
+    }
+
+    p {
+      font-size: 1.3rem;
+      color: var(--text-color-secondary-light);
+      margin: 2.5rem 0;
+    }
+
+    .hero-buttons {
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      margin-right: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .primary-btn {
+      background-color: var(--primary-color-light);
+      color: white;
+    }
+
+    .primary-btn:hover {
+      background-color: var(--secondary-color-light);
+      color: var(--primary-color-light);
+      border: 2px solid var(--primary-color-light);
+    }
+
+    .secondary-btn {
+      background-color: var(--secondary-btn-bg-light);
+      color: var(--primary-color-light);
+      border: 2px solid var(--primary-color-light);
+    }
+
+    .secondary-btn:hover {
+      background-color: var(--primary-color-light);
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-title {
+      animation: fadeIn 1.5s ease-out forwards;
+    }
+
+    .highlight {
+      animation: colorChange 2s infinite alternate;
+    }
+
+    @keyframes colorChange {
+      from {
+        color: #3b82f6;
+      }
+      to {
+        color: #1d4ed8;
+      }
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .features-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--bg-color-light);
+}
+
+.features-section h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-color-light);
+    margin-bottom: 1rem;
+}
+
+.features-section p {
+    font-size: 1.2rem;
+    color: var(--text-color-secondary-light);
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 0 4rem;
+}
+
+.feature-card {
+    background: var(--card-bg-light);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--card-shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-align: left;
+    transform: translateY(0);
+}
+
+.feature-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px var(--card-shadow-light);
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color-light);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .icon {
+    transform: scale(1.1);
+}
+
+@media (max-width: 992px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+}
+
+    .main-footer {
+      background-color: var(--footer-bg-light);
+      color: var(--footer-text-light);
+      padding: 4rem 2rem;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-brand {
+      flex: 1 1 200px;
+    }
+
+    .footer-logo {
+      width: 150px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-brand p {
+      font-size: 1rem;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    .footer-links,
+    .footer-socials {
+      flex: 1 1 200px;
+    }
+
+    .footer-column h4,
+    .footer-socials h4 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--footer-text-light);
+    }
+
+    .footer-column ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-column ul li a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .footer-column ul li a:hover {
+      color: var(--primary-color-light);
+    }
+
+    .social-icons a {
+      color: #cbd5e1;
+      font-size: 1.5rem;
+      margin-right: 1.5rem;
+      transition: color 0.3s ease;
+      text-decoration: none;
+    }
+
+    .social-icons a:hover {
+      color: var(--primary-color-light);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--footer-border-light);
+    }
+
+    .footer-bottom p {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .footer-container {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-links {
+        justify-content: center;
+        gap: 1.5rem;
+      }
+    }
+
+    /* Update the carousel container to use Swiper classes properly */
+.carousel-section {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--bg-color-light); /* Changed to use the light background variable */
+}
+
+.carousel-section h2 {
+    font-size: 2.5rem;
+    color: var(--text-color-light);
+    margin-bottom: 0.5rem;
+}
+
+.carousel-section p {
+    font-size: 1.2rem;
+    color: var(--text-color-secondary-light);
+    margin-bottom: 2rem;
+}
+
+.swiper-container {
+    width: 100%;
+    height: auto;
+    padding-bottom: 3rem;
+    position: relative; /* Add this line */
+}
+
+/* Card-like styling for each carousel item */
+.swiper-slide {
+    background: var(--card-bg-light);
+    border-radius: 15px; /* Rounded corners for a softer look */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Deeper shadow for depth */
+    transition: transform 0.3s ease-in-out;
+    cursor: grab;
+    overflow: hidden; /* Ensures image and content stay within card boundaries */
+}
+
+/* Added a slight scale effect on hover for a dynamic feel */
+.swiper-slide:hover {
+    transform: scale(1.02);
+}
+
+.swiper-slide img {
+    width: 100%;
+    height: 400px; /* Reduced height to make the card more compact */
+    object-fit: cover;
+    border-top-left-radius: 15px; /* Matches the card's top corners */
+    border-top-right-radius: 15px;
+    transition: transform 0.5s ease; /* Smooth zoom effect on hover */
+}
+
+.swiper-slide:hover img {
+    transform: scale(1.05);
+}
+
+.swiper-slide .content {
+    padding: 1.5rem; /* Increased padding for better spacing */
+    text-align: left;
+}
+
+.swiper-slide h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color-light);
+    margin: 0 0 0.5rem 0;
+}
+
+.swiper-slide p {
+    font-size: 1rem;
+    color: var(--text-color-secondary-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Pagination and navigation button styling */
+.swiper-pagination-bullet {
+    background-color: var(--text-color-secondary-light) !important;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: var(--primary-color-light) !important;
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: var(--primary-color-light) !important;
+}
+
+/* Updated media queries for better responsiveness */
+@media (max-width: 768px) {
+    .swiper-slide {
+        min-width: 90vw; /* Make cards fill most of the screen on mobile */
+    }
+
+    .swiper-slide img {
+        height: 250px;
+    }
+}
+
+    #loader {
+      height: 100%;
+      width: 100%;
+      background-color: #000;
+      position: fixed;
+      z-index: 999;
+      top: 0;
+      transition: all ease 0.7s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+    }
+
+    #loader h1 {
+      font-size: 4vw;
+      color: transparent;
+      background: linear-gradient(to right, orange, orangered);
+      -webkit-background-clip: text;
+      background-clip: text;
+      position: absolute;
+      opacity: 0;
+      animation-name: load;
+      animation-duration: 1s;
+      animation-delay: 1s;
+      animation-timing-function: linear;
+    }
+
+    #loader h1:nth-child(2) {
+      animation-delay: 2s;
+    }
+
+    #loader h1:nth-child(3) {
+      animation-delay: 3s;
+    }
+
+    @keyframes load {
+      0% {
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #loader h1 {
+        font-size: 9vw;
+      }
+    }
+
+   .back{
+      height: 100vh;
+      width: 100vw;
+      position:fixed;
+      z-index: -99;
+    }
+    .back img{
+      height: 100vh;
+      width: 100vw;
+    }
+
+
+#part3 {
+    background-color: var(--bg-color-light);
+    width: 100%;
+    padding: 4vw 0;
+    min-height: 100vh;
+}
+
+#elem-container {
+    padding: 0 2vw;
+}
+
+.elem {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    border-bottom: 1px solid #38383864;
+    cursor: pointer;
+}
+
+.elem h2 {
+    position: relative;
+    z-index: 9;
+    font-size: 2rem;
+    color: var(--text-color-light);
+    padding-left: 2vw;
+    transition: color 0.3s ease;
+}
+
+.elem:hover h2 {
+    color: #fff;
+}
+
+.elem .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: -100%;
+    transition: all ease 0.25s;
+    background-color: #FF9831;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 2vw;
+    box-sizing: border-box;
+}
+
+.elem:hover .overlay {
+    top: 0;
+}
+
+.overlay p {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 1rem;
+    max-width: 50%;
+    text-align: right;
+    color: #fff;
+    margin: 0;
+}
+
+.overlay p span {
+    font-size: 1rem;
+    font-weight: 200;
+    line-height: 1.2;
+}
+
+#fixed-image {
+    position: fixed;
+    width: 24vw;
+    height: 30vw;
+    top: 25%;
+    left: 50%;
+    z-index: 99;
+    display: none;
+    border-radius: 15px;
+    background-size: cover;
+    background-position: center;
+}
+
+@media (max-width: 600px) {
+    #part3 {
+        padding: 8vw 0;
+    }
+    .elem {
+        height: 100px;
+        border-bottom: 1px solid #38383864;
+        padding: 0 4vw;
+    }
+    .elem h2 {
+        font-size: 2rem;
+    }
+    .overlay {
+        padding: 0 4vw;
+    }
+    .overlay p {
+        max-width: 70%;
+        padding: 0.5rem;
+    }
+    .overlay p span {
+        font-size: 0.8rem;
+    }
+    #fixed-image {
+        display: none !important;
+    }
+}
+/* ------------------- Toggle Button Styling ------------------- */
+#theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+#theme-toggle .fa-sun {
+    color: #f39c12;
+}
+
+#theme-toggle .fa-moon {
+    color: #34495e;
+}
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 5rem;
+    }
+    .hero-image-container {
+        width: 80%;
+        margin-bottom: 2rem;
+    }
+    .hero-content {
+        max-width: 100%;
+        text-align: center;
+    }
+    .hero-section .hero-buttons {
+        text-align: center;
+    }
+    h1 {
+        font-size: 2.5rem;
+    }
+    p {
+        font-size: 1.2rem;
+    }
+}
+  </style>
+  <body>
+    <div id="loader">
+      <h1>WELCOME TO</h1>
+      <h1>INDIA'S NO-1</h1>
+      <h1>GAMIFICATION LEARNING PLATFORM</h1>
+    </div>
+    <div class="back">
+      <img src="p6.jpg" alt="backgrondimage">
+      </div>
+    <div id="main">
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <img src="logo.png" alt="EduQuest Logo" />
+            </div>
+            <div class="navbar-buttons">
+                <a href="teacher-auth.html" class="btn secondary-btn">👨‍🏫 Teachers</a>
+                <a href="login.html" class="btn secondary-btn">Login/Sign Up</a>
+            </div>
+        </nav>
+        <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+
+      <section class="hero-section">
+        <div class="hero-image-container">
+            <img src="hero_img-removebg-preview.png" alt="Happy students learning with games" class="hero-image">
+        </div>
+        <div class="hero-content">
+          <h1>
+            Unlock Your Superpowers Through Play!
+          </h1>
+          <p>
+            Gamified Learning Adventures for Class 1-5
+          </p>
+          <div class="hero-buttons">
+            <a href="login.html" class="btn primary-btn">Start Your Adventure!</a>
+            <a href="about.html" class="btn secondary-btn">Learn More</a>
+          </div>
+          <p>Already have account? <a href="login.html" class="login-link">Login</a></p>
+        </div>
+      </section>
+
+      <section class="carousel-section">
+    <h2>Transforming Rural Education</h2>
+    <p>See how EduQuest is making a difference in rural communities</p>
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="images/intractive_learning.png" alt="Students engaged with learning"/>
+                <div class="content">
+                    <h3>Interactive Learning</h3>
+                    <p>Engaging rural students with interactive, fun learning experiences through EduQuest.</p>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <img src="images/bringing the gap.png" alt="Digital learning in a rural classroom"/>
+                <div class="content">
+                    <h3>Bridging the Gap</h3>
+                    <p>Bringing digital classrooms to remote villages, bridging the education gap.</p>
+                </div>
+            </div>
+             <div class="swiper-slide">
+                <img src="images/teamwork.png" alt="Students collaborating on a laptop" />
+                <div class="content">
+                    <h3>Teamwork & Collaboration</h3>
+                    <p>Collaborative learning in action, fostering teamwork and knowledge sharing.</p>
+                </div>
+            </div>
+             <div class="swiper-slide">
+                <img src="images/flexible learning.png" alt="Student studying with a tablet outdoors" />
+                <div class="content">
+                    <h3>Flexible Learning</h3>
+                    <p>Flexible learning, anytime, anywhere – even in the heart of rural settings.</p>
+                </div>
+            </div>
+             <div class="swiper-slide">
+                <img src="images/focused session.png" alt="Students focused on a shared screen" />
+                <div class="content">
+                    <h3>Focused Sessions</h3>
+                    <p>Focused learning sessions, making complex topics accessible and enjoyable.</p>
+                </div>
+            </div>
+             <div class="swiper-slide">
+                <img src="images/empowering.png" alt="Teacher guiding students with technology" />
+                <div class="content">
+                    <h3>Empowering Educators</h3>
+                    <p>Empowering educators to deliver impactful lessons with modern tools.</p>
+                </div>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+
+      <section class="features-section">
+        <h2>Why Choose EduQuest?</h2>
+        <p>
+          Designed specifically for rural education with offline support,
+          low-data usage, and engaging gamification elements.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="icon">🏆</div>
+            <h3>Gamified Learning</h3>
+            <p>
+              Interactive quizzes, puzzles, and games that make learning fun and
+              engaging while building essential skills.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="icon">⚡</div>
+            <h3>Progress Tracking</h3>
+            <p>
+              Visual dashboards showing learning progress, achievements, and
+              areas that need improvement with detailed analytics.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="icon">👥</div>
+            <h3>Leaderboards & Competition</h3>
+            <p>
+              Friendly competition with classmates through leaderboards, badges,
+              and achievement systems to motivate learning.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="icon">📶</div>
+            <h3>Offline Support</h3>
+            <p>
+              Download quizzes and lessons for offline access, perfect for areas
+              with limited internet connectivity.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="icon">🛡️</div>
+            <h3>Multi-Role Dashboard</h3>
+            <p>
+              Separate dashboards for students, teachers, and parents with
+              real-time performance insights and reports.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="icon">📚</div>
+            <h3>Adaptive Learning</h3>
+            <p>
+              Difficulty adjusts based on student performance, ensuring
+              personalized learning experiences for every student.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    <div id="part3">
+    <div id="fixed-image"></div>
+    <div id="elem-container">
+        <div id="elem1" class="elem" data-image="photo2.jpeg">
+            <div class="overlay">
+                <p>Math Quests<span>Interactive Challenges</span></p>
+            </div>
+            <h2>Number Mastery</h2>
+        </div>
+        <div class="elem" data-image="photo1.jpg">
+            <div class="overlay">
+                <P>Science Quests<span>Hands-on Learning</span></P>
+            </div>
+            <h2>World of Science</h2>
+        </div>
+        <div class="elem" data-image="photo3.jpeg">
+            <div class="overlay">
+                <p>English Quests<span>Reading & Writing</span></p>
+            </div>
+            <h2>Language Adventures</h2>
+        </div>
+        <div class="elem" data-image="photo5.png">
+            <div class="overlay">
+                <p>Coding Quests<span>Logic & Puzzles</span></p>
+            </div>
+            <h2>Coding for Kids</h2>
+        </div>
+        <div class="elem" data-image="photo4.png">
+            <div class="overlay">
+                <P>EVS Quests<span>Environmental Studies</span></P>
+            </div>
+            <h2>Planet Earth</h2>
+        </div>
+        <div class="elem" data-image="photo5.png">
+            <div class="overlay">
+                <P>History Quests<span>Explore the Past</span></P>
+            </div>
+            <h2>Time Travel</h2>
+        </div>
+        <div class="elem" data-image="https://images.unsplash.com/photo-1506765500588-1402283e9b11?q=80&w=2940&auto=format&fit=crop">
+            <div class="overlay">
+                <P>General Knowledge<span>Fun Facts & Quizzes</span></P>
+            </div>
+            <h2>World Explorer</h2>
+        </div>
+    </div>
+</div>
+
+
+      <footer class="main-footer">
+        <div class="footer-container">
+          <div class="footer-brand">
+            <img
+              src="logo.png"
+              alt="EduQuest Logo"
+              class="footer-logo"
+            />
+            <p>Learn, Play, Grow</p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-column">
+              <h4>Company</h4>
+              <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+              </ul>
+            </div>
+            <div class="footer-column">
+              <h4>Resources</h4>
+              <ul>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Support</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Testimonials</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-socials">
+            <h4>Follow Us</h4>
+            <div class="social-icons">
+              <a href="#"><i class="bi bi-facebook"></i></a>
+              <a href="#"><i class="bi bi-twitter"></i></a>
+              <a href="#"><i class="bi bi-instagram"></i></a>
+              <a href="#"><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 EduQuest. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- High Priority Features Scripts -->
+  <script src="progress-tracker.js"></script>
+  <script src="achievements.js"></script>
+  <script src="audio-support.js"></script>
+  <script src="offline-manager.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/fontawesome.min.js"
+    integrity="sha512-C8qHv0HOaf4yoA7ISuuCTrsPX8qjolYTZyoFRKNA9dFKnxgzIHnYTOJhXQIt6zwpIFzCrRzUBuVgtC4e5K1nhA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+  <script>
+
+    // Swiper Carousel Initialization
+var swiper = new Swiper('.swiper-container', {
+    slidesPerView: 'auto',
+    spaceBetween: 30,
+    grabCursor: true,
+    centeredSlides: true,
+    loop: true,
+    autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    breakpoints: {
+        640: {
+            slidesPerView: 1.5,
+            spaceBetween: 20,
+        },
+        768: {
+            slidesPerView: 2.5,
+            spaceBetween: 40,
+        },
+        1024: {
+            slidesPerView: 3,
+            spaceBetween: 50,
+        },
+    }
+});
+    const scroll = new LocomotiveScroll({
+      el: document.querySelector("#main"),
+      smooth: true,
+    });
+
+    function loaderAnimation() {
+      var loader = document.querySelector("#loader");
+      setTimeout(function () {
+        loader.style.opacity = 0;
+        setTimeout(function () {
+          loader.style.display = "none";
+        }, 700);
+      }, 4200);
+    }
+
+    loaderAnimation();
+    
+    // Your existing loaderAnimation and Locomotive Scroll code...
+    
+    // --- New JavaScript for the hover effect ---
+    const elemContainer = document.querySelector("#elem-container");
+    const fixedImage = document.querySelector("#fixed-image");
+
+    elemContainer.addEventListener("mouseenter", () => {
+        fixedImage.style.display = "block";
+    });
+
+    elemContainer.addEventListener("mouseleave", () => {
+        fixedImage.style.display = "none";
+    });
+
+    const elems = document.querySelectorAll(".elem");
+    elems.forEach(elem => {
+        elem.addEventListener("mouseenter", () => {
+            const image = elem.getAttribute("data-image");
+            fixedImage.style.backgroundImage = `url(${image})`;
+        });
+    });
+
+    // ------------------- Theme Toggle Logic -------------------
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Check for user's preference in localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        body.classList.remove('dark-theme');
+        themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('dark-theme')) {
+            body.classList.remove('dark-theme');
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.classList.add('dark-theme');
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+  </script>
+
+  <!-- Service Worker Registration for PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered successfully:', registration);
+                    
+                    // Check for updates periodically
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Check every minute
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+
+        // Listen for controller change (new SW activated)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('New Service Worker activated');
+        });
+    }
+
+    // Install PWA promotion banner
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install button/banner if desired
+        const installBanner = document.getElementById('install-banner');
+        if (installBanner) {
+            installBanner.style.display = 'block';
+            installBanner.querySelector('button').addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            });
+        }
+    });
+  </script>
+</html>

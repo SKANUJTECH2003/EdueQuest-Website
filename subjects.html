@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subjects / Courses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+        <script src="global-timer.js"></script>
+    <style>
+        /* --- CSS Variables for Theming (Added for dark mode support) --- */
+        :root {
+            --bg-color-light: #f7f9fc;
+            --card-bg-light: #fff;
+            --text-color-light: #333;
+            --text-color-secondary: #666;
+            --primary-color: #1a73e8;
+            --secondary-color: #e8f0fe;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --border-color: #e0e0e0;
+        }
+
+        body.dark-theme {
+            --bg-color-light: #121212;
+            --card-bg-light: #1e1e1e;
+            --text-color-light: #f0f0f0;
+            --text-color-secondary: #b0b0b0;
+            --primary-color: #4da6ff;
+            --secondary-color: #3a3a3a;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --border-color: #444;
+        }
+        
+        body { font-family: "Poppins", sans-serif; background-color: var(--bg-color-light); margin: 0; padding: 0; color: var(--text-color-light); transition: background-color 0.3s, color 0.3s; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; background-color: var(--card-bg-light); box-shadow: 0 2px 4px var(--shadow-color); }
+        .logo { display: flex; align-items: center; font-weight: 600; font-size: 1.25rem; color: var(--primary-color); }
+        .logo img { height: 3.5rem; margin-right: 15vw; }
+        .nav a { text-decoration: none; color: var(--text-color-secondary); margin: 0 1.5rem; font-weight: 500; transition: color 0.3s ease; }
+        .nav a:hover, .nav a.active { color: var(--primary-color); }
+        .user-profile-container { position: relative; font-weight: 500;margin-left: 5vw; }
+        .profile-dropdown-trigger { display: flex; flex-direction: column; align-items: center; position: relative; cursor: pointer; }
+        .profile-dropdown-trigger:hover .logout-link { visibility: visible; opacity: 1; transform: translateY(0); }
+        .user-profile-container #userNameDisplay { font-size: 0.9rem; color: var(--text-color-secondary); padding: 0.5rem 1rem; border-radius: 8px; transition: background-color 0.3s ease; }
+        .profile-dropdown-trigger:hover #userNameDisplay { background-color: var(--secondary-color); color: var(--primary-color); }
+        .user-profile-container .logout-link { position: absolute; top: 100%; text-decoration: none; background-color: var(--card-bg-light); color: #e66a6a; white-space: nowrap; padding: 0.5rem 1rem; border-radius: 8px; box-shadow: 0 2px 8px var(--shadow-color); z-index: 10; visibility: hidden; opacity: 0; transform: translateY(-5px); transition: all 0.2s ease-in-out; }
+        .nav a::after { content: ""; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--primary-color); transition: width 0.3s ease-in-out; }
+        .nav a:hover::after, .nav a.active::after { width: 100%; }
+        /* Unified header/sidebar styles */
+        .header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 2rem; background-color:var(--card-bg-light); box-shadow:0 2px 4px var(--shadow-color); z-index:100; position:fixed; top:0; left:0; right:0; height:70px; }
+        .logo img { height:2.5rem; }
+        .nav { display:none; }
+        .header-stats { display:flex; align-items:center; gap:2rem; flex:1; margin-left:3rem; }
+        .stat-item{ display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:0.95rem; color:var(--text-color-light); }
+        .timer-display { background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); color:white; padding:0.5rem 1rem; border-radius:12px; font-weight:700; font-size:0.9rem; min-width:70px; text-align:center; }
+        .sidebar-nav{ position:fixed; top:70px; left:0; width:260px; height:calc(100vh - 70px); background-color:var(--card-bg-light); box-shadow:2px 0 5px var(--shadow-color); padding-top:1.5rem; z-index:90; display:flex; flex-direction:column; align-items:flex-start; overflow-y:auto; }
+        .sidebar-nav a, .sidebar-nav button{ display:flex; align-items:center; width:85%; padding:0.8rem 1.5rem; text-decoration:none; color:var(--text-color-light); font-weight:500; transition:all 0.3s ease; background:none; border:none; cursor:pointer; text-align:left; border-radius:8px; margin:0.3rem 0.75rem; }
+        .sidebar-nav a i, .sidebar-nav button i{ margin-right:1rem; font-size:1.2rem; color:var(--primary-color); }
+        .sidebar-nav a:hover, .sidebar-nav a.active, .sidebar-nav button:hover{ background-color:var(--secondary-color); color:var(--primary-color); border-left:4px solid var(--primary-color); padding-left:1.2rem; }
+        .dashboard-wrapper{ margin-left:260px; margin-top:70px; padding-top:1rem; }
+        .sidebar-nav a i, .sidebar-nav button i{ margin-right:1rem; font-size:1.2rem; color:var(--primary-color); }
+        .sidebar-nav a:hover, .sidebar-nav a.active, .sidebar-nav button:hover{ background-color:var(--secondary-color); color:var(--primary-color); border-left:4px solid var(--primary-color); padding-left:1.2rem; }
+        .dashboard-wrapper{ margin-left:260px; margin-top:70px; padding-top:1rem; }
+        .subjects-main { padding: 2rem 3rem; }
+        .selection-section { text-align: center; margin-bottom: 2rem; }
+        .selection-section h1 { font-size: 2rem; font-weight: 600; color: var(--text-color-light); margin-bottom: 1.5rem; }
+        .class-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.2rem; margin-bottom: 1rem; }
+        .class-btn { 
+            padding: 0.95rem 2.5rem; 
+            font-size: 1.05rem; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-color) 100%);
+            border: 2.5px solid var(--primary-color); 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
+            letter-spacing: 0.5px;
+        }
+        .class-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+        .class-btn:hover::before {
+            left: 100%;
+        }
+        .class-btn:hover, .class-btn.active { 
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
+            color: #fff; 
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.4);
+            border-color: #fff;
+        }
+        .class-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        .subjects-container { background-color: var(--card-bg-light); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 8px var(--shadow-color); min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s ease-in-out; }
+        .placeholder-text { font-size: 1.1rem; color: var(--text-color-secondary); text-align: center; }
+        .subject-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; width: 100%; }
+        .subject-card { background-color: var(--bg-color-light); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .subject-card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px var(--shadow-color); }
+        .subject-card h3 { margin-top: 0; font-size: 1.25rem; color: var(--primary-color); }
+        .subject-card p { font-size: 0.9rem; color: var(--text-color-secondary); }
+        .start-learning-btn, .play-10q-btn { margin-top: 1rem; padding: 0.6rem 1.8rem; font-size: 0.95rem; font-weight: 700; color: #fff; text-decoration: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; border: none; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        .start-learning-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; }
+        .play-10q-btn { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 12px; margin-left: 0.5rem; }
+        .start-learning-btn::before, .play-10q-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); transition: left 0.5s ease; }
+        .start-learning-btn:hover::before, .play-10q-btn:hover::before { left: 100%; }
+        .start-learning-btn:hover, .play-10q-btn:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+        .start-learning-btn:active, .play-10q-btn:active { transform: translateY(-1px) scale(1.02); }
+        .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; width: 100%; padding: 1rem; }
+        .games-section { margin-top: 3rem; margin-bottom: 3rem; }
+        .games-section h2 { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1.5rem; text-align: left; padding-left: 0.5rem; border-left: 4px solid var(--primary-color); }
+        .game-card { 
+            background: linear-gradient(135deg, var(--card-bg-light) 0%, var(--card-bg-light) 100%);
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden; 
+            position: relative; 
+            border: 3px solid transparent;
+            cursor: pointer;
+            transform-origin: center center;
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(30px);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .game-card:nth-child(3n+1) { animation-delay: 0.1s; }
+        .game-card:nth-child(3n+2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3n+3) { animation-delay: 0.3s; }
+        
+        .game-card:hover { 
+            transform: translateY(-18px) scale(1.08) rotateZ(1deg);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.35);
+            border-color: var(--primary-color);
+        }
+        .game-card:active {
+            transform: translateY(-12px) scale(1.04);
+        }
+        
+        .game-card-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
+            box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .game-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: brightness(1);
+        }
+        .game-card:hover img {
+            transform: scale(1.15) rotate(2deg);
+            filter: brightness(1.1);
+        }
+        .game-difficulty-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: bounce 0.8s ease-out;
+        }
+        @keyframes bounce {
+            0% { transform: scale(0) rotate(-45deg); }
+            50% { transform: scale(1.1) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .card-content { 
+            padding: 1.8rem; 
+            background: var(--card-bg-light);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0 0 24px 24px;
+        }
+        .card-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            animation: slideRight 0.6s ease-out;
+        }
+        @keyframes slideRight {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        .card-content h3 { 
+            font-size: 1.3rem; 
+            margin-top: 0.5rem;
+            margin-bottom: 0.7rem;
+            color: var(--primary-color); 
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .card-content p { 
+            font-size: 0.9rem; 
+            color: var(--text-color-secondary);
+            margin: 0.3rem 0;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .start-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 1rem; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff; 
+            text-decoration: none; 
+            text-align: center; 
+            border-radius: 14px; 
+            margin-top: 1.2rem; 
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+        }
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        .start-btn:hover::before {
+            left: 100%;
+        }
+        .start-btn:hover { 
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.45);
+        }
+        .start-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+        }
+        .total-score-container { font-size: 1rem; font-weight: 600; color: var(--primary-color); background-color: var(--secondary-color); padding: 0.5rem 1rem; border-radius: 8px; margin-left: 1rem; display: flex; align-items: center; }
+        .completed-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 900;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            z-index: 10;
+            animation: popBadge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+        @keyframes popBadge {
+            0% { 
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+            50% { 
+                transform: scale(1.15) rotate(5deg);
+            }
+            100% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        .quiz-card {
+            background-color: var(--card-bg-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            width: 90%;
+            height: 10vh;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+        .quiz-card h2 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .quiz-card p {
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+            margin: 0.2rem 0;
+        }
+        .start-quiz-btn {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 0;
+        }
+        .start-quiz-btn:hover {
+            background-color: #2563eb;
+        }
+        .quizzes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+        .quiz-text-content {
+            flex-grow: 1;
+        }
+        /* Theme Toggle Button Style */
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color-secondary);
+            margin-left: 1rem;
+            transition: color 0.3s;
+        }
+        .theme-toggle-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .games-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        }
+        
+        @media (max-width: 768px) {
+            .games-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .game-card { border-radius: 18px; }
+            .game-card-image-container { height: 180px; }
+            .card-content { padding: 1.3rem; min-height: 140px; }
+            .card-content h3 { font-size: 1.1rem; }
+            .card-content p { font-size: 0.85rem; }
+            .start-btn { padding: 0.9rem; font-size: 0.95rem; margin-top: 1rem; }
+            .game-difficulty-badge { padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .games-grid { gap: 1rem; padding: 0.5rem; }
+            .game-card { border-radius: 16px; }
+            .game-card-image-container { height: 160px; }
+            .card-content { padding: 1rem; min-height: 120px; }
+            .card-content h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+            .card-content p { font-size: 0.8rem; }
+            .start-btn { padding: 0.8rem; font-size: 0.9rem; margin-top: 0.8rem; }
+            .games-section h2 { font-size: 1.4rem; margin-bottom: 1rem; }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <header class="header">
+        <div class="logo">
+            <img src="logo.png" alt="EduQuest Logo" />
+            <span>EduQuest</span>
+        </div>
+        
+        <div class="header-stats">
+            <div class="stat-item">
+                <i class="fas fa-fire"></i>
+                <span id="navStreakDisplay">0</span> Streak
+            </div>
+            <div class="timer-display" id="globalTimerDisplay">00:00</div>
+        </div>
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <div id="totalScoreDiv" class="total-score-container" style="display: none;">
+            <i class="fas fa-star"></i> Score : <span id="totalScoreDisplay">0</span>
+        </div>
+        
+        <div class="user-profile-container">
+            <div class="profile-dropdown-trigger">
+                <span id="userNameDisplay"></span>
+                <a href="#" id="logoutBtn" class="logout-link">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="subjects.html" class="nav-item active">
+            <i class="fas fa-gamepad"></i> Play & Learn
+        </a>
+        <a href="quiz.html" class="nav-item">
+            <i class="fas fa-pencil-alt"></i> Quests
+        </a>
+        <a href="leaderboard.html" class="nav-item">
+            <i class="fas fa-trophy"></i> Leaderboard
+        </a>
+        <a href="study_material.html" class="nav-item">
+            <i class="fas fa-book"></i> Study Material
+        </a>
+        <a href="redeem.html" class="nav-item" style="color: #FFC107;">
+            <i class="fas fa-coins"></i> Redeem Coins
+        </a>
+        <button id="settingsBtn" class="nav-item">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </aside>
+
+    <div class="dashboard-wrapper">
+    <main class="subjects-main">
+        <section class="selection-section">
+            <h1>Select Your Class</h1>
+            <div class="class-buttons">
+                <button class="class-btn" data-class="1">Class 1st</button>
+                <button class="class-btn" data-class="2">Class 2nd</button>
+                <button class="class-btn" data-class="3">Class 3rd</button>
+                <button class="class-btn" data-class="4">Class 4th</button>
+                <button class="class-btn" data-class="5">Class 5th</button>
+            </div>
+        </section>
+
+        <section class="subjects-container" id="content-display">
+            <p class="placeholder-text">Select a class to see the subjects.</p>
+        </section>
+    </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        // --- THEME SWITCHING LOGIC (Kept as is) ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            body.classList.remove('dark-theme');
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-theme');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+        // --- END THEME SWITCHING LOGIC ---
+
+        document.addEventListener("DOMContentLoaded", async (event) => {
+            // ============================================================
+            // GAME STRUCTURE GUIDE - HOW TO ADD YOUR GAMES
+            // ============================================================
+            // This page now uses GAME_MAP.json to load games dynamically
+            // 
+            // TO ADD NEW GAMES:
+            // 1. Update games/GAME_MAP.json with your game entries
+            // 2. Structure should be:
+            //    {
+            //        "gameMapping": {
+            //            "class1": {
+            //                "english": [
+            //                    {
+            //                        "id": "unique-game-id",
+            //                        "name": "Game Title",
+            //                        "desc": "Short Description",
+            //                        "file": "path-to-your-game.html",
+            //                        "type": "2D" or "3D",
+            //                        "tech": "HTML5/Canvas/Three.js/etc"
+            //                    }
+            //                ]
+            //            }
+            //        }
+            //    }
+            // 3. Or directly add game HTML links in the future
+            // ============================================================
+            const isLoggedIn = localStorage.getItem("isLoggedIn");
+            const userName = localStorage.getItem("userName");
+            const userEmail = localStorage.getItem("userEmail");
+            const userNameDisplayElement = document.getElementById("userNameDisplay");
+            const logoutBtn = document.getElementById("logoutBtn");
+            const totalScoreDiv = document.getElementById("totalScoreDiv");
+            const totalScoreDisplay = document.getElementById("totalScoreDisplay");
+            
+            if (isLoggedIn !== "true" || !userName || !userEmail) {
+                window.location.href = "login.html";
+                return;
+            }
+            const firstName = userName.split(" ")[0];
+            userNameDisplayElement.textContent = firstName;
+            logoutBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                window.location.href = "login.html";
+            });
+
+            // Function to log activity (kept as is)
+            function logActivity(name, points) {
+                let recentActivities = JSON.parse(localStorage.getItem('recentActivities')) || [];
+                recentActivities.push({ name, points });
+                localStorage.setItem('recentActivities', JSON.stringify(recentActivities));
+            }
+            
+            // *** NEW FUNCTION: Log Game/Quiz Completion to Backend ***
+            async function logGameCompletion(gameId, isQuiz = false) {
+                try {
+                    const response = await fetch('/api/complete-game', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: userEmail, gameId: gameId, isQuiz: isQuiz }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Update local storage with the new list from the server
+                        const storageKey = isQuiz ? 'completedQuizzes' : 'completedGames';
+                        localStorage.setItem(storageKey, JSON.stringify(data.completedList));
+                        console.log(`Completion logged for ${gameId}. List updated.`);
+                    } else {
+                        console.error('Failed to log completion on server.');
+                    }
+                } catch (error) {
+                    console.error('Error logging completion:', error);
+                }
+            }
+            // *******************************************************
+
+
+            // Fetch and display user's current score from the server
+            async function fetchAndDisplayUserScore() {
+                try {
+                    const response = await fetch(`/api/user-data?email=${userEmail}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('eduquest_token')}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("totalScore", data.user.points);
+                        totalScoreDisplay.textContent = data.user.points;
+                        totalScoreDiv.style.display = 'flex';
+                    } else {
+                        console.error("Failed to fetch user data.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+            
+            // Function to update score on the server (kept as is)
+            async function updateScoreOnServer(pointsToAdd, activityName) {
+                try {
+                    const token = localStorage.getItem('eduquest_token');
+                    const response = await fetch('/api/update-score', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ email: userEmail, points: pointsToAdd }),
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem('totalScore', data.newScore);
+                        totalScoreDisplay.textContent = data.newScore;
+                        logActivity(activityName, pointsToAdd);
+                        // broadcast to other tabs
+                        localStorage.setItem('scoreUpdate', JSON.stringify({ added: pointsToAdd, newScore: data.newScore }));
+                        console.log('Score updated on server and activity logged!');
+                    } else {
+                        console.error('Failed to update score on the server.');
+                    }
+                } catch (error) {
+                    console.error('Error updating score:', error);
+                }
+            }
+
+            // Check if a game was just completed
+            const gameCompletedFlag = localStorage.getItem('gameCompleted');
+            const quizCompletedFlag = localStorage.getItem('quizCompleted');
+
+            // --- UPDATED GAME LOGIC ---
+            if (gameCompletedFlag === 'true') {
+                const gameName = localStorage.getItem('completedGameName') || "Game";
+                const gameId = localStorage.getItem('completedGameId'); // Must be saved by game HTML file
+                const pointsToAdd = parseInt(localStorage.getItem('gameScore'), 10) || 0;
+
+                if (pointsToAdd > 0) {
+                    await updateScoreOnServer(pointsToAdd, gameName);
+                }
+                if (gameId) {
+                    await logGameCompletion(gameId, false); // Log game completion
+                }
+
+                localStorage.removeItem('gameCompleted');
+                localStorage.removeItem('completedGameName');
+                localStorage.removeItem('gameScore');
+                localStorage.removeItem('completedGameId'); // Added this to ensure clean state
+            }
+            
+            // --- UPDATED QUIZ LOGIC ---
+            if (quizCompletedFlag === 'true') {
+                const quizScore = parseInt(localStorage.getItem('quizScore'), 10);
+                const quizName = localStorage.getItem('completedQuizName') || "Quiz";
+                const quizId = localStorage.getItem('completedQuizId'); // Must be saved by quiz HTML file
+                
+                if (quizScore > 0) {
+                     await updateScoreOnServer(quizScore, quizName);
+                }
+                if (quizId) {
+                    await logGameCompletion(quizId, true); // Log quiz completion
+                }
+                
+                localStorage.removeItem('quizCompleted');
+                localStorage.removeItem('quizScore');
+                localStorage.removeItem('completedQuizName');
+                localStorage.removeItem('completedQuizId'); // Added this to ensure clean state
+            }
+            // --- END UPDATED LOGIC ---
+
+
+            // Always fetch the latest score from the server on page load
+            await fetchAndDisplayUserScore();
+
+            // --- SUBJECTS DATA (Indian Board Aligned) ---
+            const classSubjects = {
+                '1': [{ name: "English", desc: "Reading, Rhymes, & Grammar Basics" }, { name: "Maths", desc: "Numbers, Counting, & Basic Shapes" }, { name: "EVS", desc: "Our Body, Family, & Surroundings" }, { name: "Hindi", desc: "वर्णमाला, शब्द, और आसान वाक्य" }],
+                '2': [{ name: "English", desc: "Building Vocabulary & Simple Sentences" }, { name: "Mathematics", desc: "Addition, Subtraction, & Measurement" }, { name: "EVS", desc: "Plants, Animals, & Weather" }, { name: "Hindi", desc: "मात्राओं का ज्ञान और कहानी लेखन" }],
+                '3': [{ name: "English", desc: "Advanced Grammar & Comprehension" }, { name: "Mathematics", desc: "Multiplication, Division, & Fractions" }, { name: "Science", desc: "Living, Non-living, & Earth's Resources" }, { name: "Social Studies", desc: "Local Governance & Historical Events" }, { name: "Hindi", desc: "व्याकरण और रचनात्मक लेखन" }],
+                '4': [{ name: "English", desc: "Literary Texts & Creative Writing" }, { name: "Mathematics", desc: "Decimals, Geometry, & Data Handling" }, { name: "Science", desc: "Force, Energy, & Human Body Systems" }, { name: "Social Studies", desc: "Indian States, Culture, & Geography" }, { name: "Hindi", desc: "कविताएँ और मुहावरे" }],
+                '5': [{ name: "English", desc: "Literature, Formal Writing, & Editing" }, { name: "Mathematics", desc: "Ratio, Percentage, & Advanced Geometry" }, { name: "Science", desc: "Space, Technology, & Environmental Science" }, { name: "Social Studies", desc: "Ancient History, Civics, & World Geography" }, { name: "Hindi", desc: "साहित्य, आलोचना, और निबंध लेखन" }]
+            };
+
+            // ============================================================
+            // GAMES DATA STRUCTURE - ADD YOUR CUSTOM GAMES HERE
+            // ============================================================
+            // Games are now loaded from GAME_MAP.json automatically
+            // To add individual games, you can either:
+            // 1. Update games/GAME_MAP.json directly, OR
+            // 2. Support for direct HTML game links (coming soon)
+            //
+            // Example structure for future reference:
+            // const customGames = {
+            //     '1': {
+            //         'english': [
+            //             { id: 'ENG1_1', title: 'Game Name', file: 'games/your-game.html' }
+            //         ]
+            //     }
+            // };
+            // ============================================================
+            // --- LOAD GAMES FROM GAME_MAP.json ---
+            let gameMapData = {};
+            async function loadGameMap() {
+                try {
+                    const response = await fetch('games/GAME_MAP.json');
+                    if (!response.ok) {
+                        throw new Error('Failed to load GAME_MAP.json');
+                    }
+                    gameMapData = await response.json();
+                    console.log('Game map loaded successfully:', gameMapData);
+                } catch (error) {
+                    console.warn('Could not load GAME_MAP.json, using fallback', error);
+                    gameMapData = { gameMapping: {} };
+                }
+            }
+            
+            // Call loadGameMap before the rest of the code runs
+            await loadGameMap();
+
+            // ============================================================
+            // QUIZZES DATA - READY FOR YOUR CUSTOM QUIZZES
+            // ============================================================
+            const subjectsAndQuizzes = {
+                // Add your quizzes here in the future
+                // Example structure:
+                // '1': {
+                //     'english': [ { id: 'c1e1', title: 'Quiz Title', file: 'quest.html' } ]
+                // }
+            };
+
+            // ============================================================
+            // QUIZZES DATA STRUCTURE - ADD YOUR CUSTOM QUIZZES HERE
+            // ============================================================
+            // To add quizzes, update this structure by adding entries
+            // Example:
+            // const subjectsAndQuizzes = {
+            //     '1': {
+            //         'english': [
+            //             { id: 'c1e1', title: 'Alphabet & Phonics Quiz', file: 'quest.html' }
+            //         ]
+            //     }
+            // };
+            // ============================================================
+
+            // ... (findGameById, findQuizById, renderCompletedGames functions remain the same) ...
+
+
+            const classButtons = document.querySelectorAll(".class-btn");
+            const contentDisplay = document.getElementById("content-display");
+            
+            classButtons.forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const selectedClass = event.target.dataset.class;
+                    classButtons.forEach((btn) => btn.classList.remove("active"));
+                    event.target.classList.add("active");
+                    const subjects = classSubjects[selectedClass];
+                    if (subjects) {
+                        const subjectsHTML = subjects.map(subject => `<div class="subject-card" data-subject="${subject.name}" data-class="${selectedClass}"><h3>${subject.name}</h3><p>${subject.desc}</p><div style=\"display:flex;gap:0.5rem;margin-top:0.75rem;\"><button class=\"start-learning-btn\">Play</button><button class=\"play-10q-btn start-quiz-btn\" data-subject=\"${subject.name}\">PYQ</button></div></div>`).join('');
+                        contentDisplay.innerHTML = `<div class="subject-list">${subjectsHTML}</div>`;
+                    } else {
+                        contentDisplay.innerHTML = `<p class="placeholder-text">No subjects found for this class.</p>`;
+                    }
+                });
+            });
+            
+            contentDisplay.addEventListener("click", (event) => {
+                const playBtn = event.target.closest('.play-10q-btn');
+                if (playBtn) {
+                    const subjectCard = playBtn.closest('.subject-card');
+                    const selectedClass = subjectCard.dataset.class;
+                    let selectedSubject = subjectCard.dataset.subject || '';
+                    const originalSubject = selectedSubject;
+                    selectedSubject = selectedSubject.toLowerCase();
+                    // Normalization for quiz keys
+                    if (selectedSubject.includes('math')) selectedSubject = 'math';
+                    else if (selectedSubject.includes('english')) selectedSubject = 'english';
+                    else if (selectedSubject.includes('hindi')) selectedSubject = 'hindi';
+                    else if (selectedSubject.includes('evs')) selectedSubject = 'evs';
+                    else if (selectedSubject.includes('science')) selectedSubject = 'science';
+                    else if (selectedSubject.includes('history') || selectedSubject.includes('social')) selectedSubject = 'history';
+
+                    // queue the quiz start and navigate to quiz page
+                    try {
+                        const payload = { cls: selectedClass, subject: selectedSubject, chunk: 10, title: originalSubject };
+                        localStorage.setItem('quiz_start', JSON.stringify(payload));
+                        window.location.href = 'quiz.html';
+                    } catch (e) { console.error(e); }
+                    return;
+                }
+                const button = event.target.closest(".start-learning-btn");
+                if (button) {
+                    const subjectCard = event.target.closest(".subject-card");
+                    let selectedClass = subjectCard.dataset.class;
+                    let selectedSubject = subjectCard.dataset.subject.toLowerCase();
+                    
+                    // Convert selectedClass to match GAME_MAP keys (class1, class2, etc.)
+                    selectedClass = 'class' + selectedClass;
+                    
+                    // Normalize subject names to match GAME_MAP keys
+                    if (selectedSubject.includes('math')) {
+                        selectedSubject = 'maths';
+                    } else if (selectedSubject === 'science') {
+                        selectedSubject = 'science';
+                    } else if (selectedSubject.includes('social')) {
+                        selectedSubject = 'socialstudies';
+                    } else if (selectedSubject === 'english') {
+                        selectedSubject = 'english';
+                    } else if (selectedSubject === 'evs') {
+                        selectedSubject = 'evs';
+                    } else if (selectedSubject === 'hindi') {
+                        selectedSubject = 'hindi';
+                    }
+
+                    // Get games from loaded GAME_MAP
+                    const games = gameMapData.gameMapping?.[selectedClass]?.[selectedSubject] || [];
+                    const quizzes = subjectsAndQuizzes[selectedClass]?.[selectedSubject] || [];
+                    let contentHTML = '';
+                    
+                    if (games && games.length > 0) {
+                        const completedGames = JSON.parse(localStorage.getItem('completedGames')) || [];
+                        const gamesHTML = games.map(game => {
+                            const isCompleted = completedGames.includes(game.id);
+                            const completedBadge = isCompleted ? `<div class="completed-badge">✓ Done!</div>` : '';
+                            const startButtonText = isCompleted ? '🔄 Play Again' : '▶ Start Quest';
+                            const gameFile = `games/${game.file}`;
+                            const gameImage = `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000000000000)}?w=400&h=250&fit=crop`;
+                            return `<div class="game-card">
+                                ${completedBadge}
+                                <div class="game-card-image-container">
+                                    <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-size:3rem;">🎮</div>
+                                    <div class="game-difficulty-badge">${game.type}</div>
+                                </div>
+                                <div class="card-content">
+                                    <div>
+                                        <h3>${game.name}</h3>
+                                        <p>${game.desc}</p>
+                                        <p style="font-size:0.8rem;color:#999;">Tech: ${game.tech}</p>
+                                    </div>
+                                    <a href="${gameFile}" class="start-btn">${startButtonText}</a>
+                                </div>
+                            </div>`;
+                        }).join('');
+                        contentHTML += `<div class="games-section"><h2>🎮 Interactive Quests & Games (${games.length} Games)</h2><div class="games-grid">${gamesHTML}</div></div>`;
+                    }
+                    
+                    if (quizzes && quizzes.length > 0) {
+                        const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes')) || [];
+                        const quizzesHTML = quizzes.map(quiz => {
+                            const isCompleted = completedQuizzes.includes(quiz.id);
+                            const completedBadge = isCompleted ? `<div class="completed-badge">✓ Done!</div>` : '';
+                            return `<div class="quiz-card">
+                                ${completedBadge}
+                                <div class="quiz-text-content">
+                                    <h2>📝 ${quiz.title}</h2>
+                                    <p>Test your knowledge! Challenge yourself now! ⚡</p>
+                                </div>
+                                <button class="start-quiz-btn" data-quiz-id="${quiz.id}">Start ➜</button>
+                            </div>`;
+                        }).join('');
+                        contentHTML += `<div class="games-section"><h2>📚 Knowledge Challenges</h2><div class="quizzes-list">${quizzesHTML}</div></div>`;
+                    }
+                    
+                    if (contentHTML) {
+                        contentDisplay.innerHTML = contentHTML;
+                    } else {
+                         contentDisplay.innerHTML = `<p class="placeholder-text">No games available for this subject yet. Come back soon! 🚀</p>`;
+                    }
+                } else if (event.target.classList.contains('start-quiz-btn')) {
+                    const quizId = event.target.dataset.quizId;
+                    window.location.href = `quest.html?quizId=${quizId}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

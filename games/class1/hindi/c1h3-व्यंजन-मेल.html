@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>व्यंजन मेल</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 25px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
+        .title { font-size: 2rem; color: #667eea; margin-bottom: 30px; }
+        .carousel-content { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; padding: 60px 40px; margin: 30px 0; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .content-main { font-size: 3rem; font-weight: bold; margin: 20px 0; }
+        .content-sub { font-size: 1.2rem; margin: 10px 0; opacity: 0.9; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin: 30px 0; }
+        button { padding: 12px 30px; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; }
+        .btn-prev { background: #ff9800; color: white; }
+        .btn-next { background: #4caf50; color: white; }
+        .btn-home { background: #f5f5f5; }
+        .counter { color: #999; font-size: 0.9rem; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">व्यंजन मेल</h1>
+        <div class="carousel-content">
+            <div class="content-main" id="main">Item</div>
+            <div class="content-sub" id="sub">Description</div>
+        </div>
+        <div class="controls">
+            <button class="btn-prev" onclick="prevItem()">← Back</button>
+            <button class="btn-next" onclick="nextItem()">Next →</button>
+            <button class="btn-home" onclick="goHome()">Back Home</button>
+        </div>
+        <div class="counter">Item <span id="current">1</span> of <span id="total">5</span></div>
+    </div>
+    
+    <script>
+        const items = [{"consonant": "\u0915"}, {"consonant": "\u0916"}, {"consonant": "\u0917"}, {"consonant": "\u0918"}];
+        let currentIndex = 0;
+        
+        function displayItem() {
+            const item = items[currentIndex];
+            const mainKey = Object.keys(item)[0];
+            const main = item[mainKey];
+            const subKey = Object.keys(item)[1] || Object.keys(item)[0];
+            const sub = item[subKey];
+            
+            document.getElementById('main').textContent = main;
+            document.getElementById('sub').textContent = sub || 'Great!';
+            document.getElementById('current').textContent = currentIndex + 1;
+            document.getElementById('total').textContent = items.length;
+        }
+        
+        function nextItem() {
+            if (currentIndex < items.length - 1) {
+                currentIndex++;
+                displayItem();
+            } else {
+                alert('🎉 You reached the end!');
+                goHome();
+            }
+        }
+        
+        function prevItem() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayItem();
+            }
+        }
+        
+        function goHome() {
+            saveScore();
+            window.location.href = '/subjects.html';
+        }
+        
+        displayItem();
+    
+        
+        // Save score to localStorage
+        function saveScore() {
+            const gameId = 'class1-game';
+            const score = Math.floor(Math.random() * 100); // Placeholder
+            const timestamp = new Date().toISOString();
+            
+            // Store individual game score
+            localStorage.setItem('lastGameScore', score);
+            localStorage.setItem('lastGameTime', timestamp);
+            localStorage.setItem('lastGameId', gameId);
+            
+            // Add to total
+            let totalScore = parseInt(localStorage.getItem('totalGameScore') || '0');
+            totalScore += score;
+            localStorage.setItem('totalGameScore', totalScore);
+            
+            console.log(`Score saved: ${score}`);
+        }
+        
+        
+        // Timer functionality
+        let gameStartTime;
+        function startTimer() {
+            gameStartTime = Date.now();
+        }
+        
+        function getElapsedTime() {
+            return Math.floor((Date.now() - gameStartTime) / 1000); // seconds
+        }
+        </script>
+</body>
+</html>
