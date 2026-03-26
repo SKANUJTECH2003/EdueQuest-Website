@@ -20,8 +20,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_prod
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/eduquest'; 
 
 mongoose.connect(DB_URI)
-    .then(() => {
+    .then(async () => {
         console.log('MongoDB successfully connected! 🟢');
+        
+        // Run migrations after connection
+        try {
+            await migrateTeacherClasses();
+        } catch (migrationErr) {
+            console.error('Migration setup error:', migrationErr);
+        }
         
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server is running on port ${PORT}`);
@@ -392,8 +399,6 @@ async function migrateTeacherClasses() {
         console.error('Migration error:', err);
     }
 }
-
-migrateTeacherClasses();
 
 const TeacherSchema = new mongoose.Schema({
     name: { type: String, required: true },
