@@ -10,7 +10,7 @@ const compression = require('compression');
 require('dotenv').config(); // Load .env variables
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production';
 
 // ===================================================
@@ -23,8 +23,8 @@ mongoose.connect(DB_URI)
     .then(() => {
         console.log('MongoDB successfully connected! 🟢');
         
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Server is running on port ${PORT}`);
             console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
         });
 
