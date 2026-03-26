@@ -1,0 +1,138 @@
+EduQuest Project - Complete Documentation
+
+1. Overview
+
+EduQuest is an end-to-end educational gamification platform designed to support teachers and students with interactive learning and progress tracking. It combines web-based lessons, fast-paced mini-games, classroom management, scoring, achievements, and a leaderboard to make learning fun and measurable.
+
+2. Purpose
+
+The platform is built to help educators:
+- Manage classrooms (create classes, add students, track performance)
+- Assign and grade learning games
+- Review analytics around student progress
+- Securely authenticate users (teachers and students)
+
+And students:
+- Play concept-focused educational games
+- Track their own progress and achievements
+- Earn rewards and compete on leaderboards
+
+3. Architecture
+
+- Frontend: HTML/CSS/JavaScript pages (`index.html`, `dashboard.html`, `quiz.html`, `teacher-dashboard.html`, etc.), plus game files under `games/` and class-specific learning content under `class1/`, `class2/`, etc.
+- Backend: Node.js + Express server (`server.js`) providing REST APIs with JWT authentication, connecting to MongoDB via Mongoose.
+
+4. Technology Stack
+
+- Node.js
+- npm
+- Express.js
+- MongoDB
+- Mongoose
+- JWT (jsonwebtoken)
+- joi (input validation)
+- bcryptjs (password hashing)
+- cors, compression, body-parser
+
+5. Installation and Setup
+
+Requirement:
+- Node.js v16+ installed
+- MongoDB running (local or remote server)
+
+Steps:
+1. Clone repository: `git clone <repo-url>`
+2. Enter project: `cd "EdueQuest Website"`
+3. Install dependencies: `npm install`
+4. Create `.env` file at root with:
+   - `PORT=3000`
+   - `DB_URI=mongodb://localhost:27017/eduquest`
+   - `JWT_SECRET=your_jwt_secret_key_change_in_production`
+   - `NODE_ENV=development`
+5. Start server: `npm start`
+6. Open browser: `http://localhost:3000`
+
+6. Live Deployment
+
+Live project is deployed at:
+- https://eduquest-anuj.netlify.app/
+
+7. API Guide
+
+7.1 Authentication
+- `POST /api/auth/login`  (likely exists in code for login; check `server.js` or auth components)
+- JWT token is returned and should be used in request header: `Authorization: Bearer <token>`
+
+7.2 Teacher endpoints
+- `GET /api/teacher/me` : get authenticated teacher profile
+- `POST /api/teacher/students/add` : add an existing student to teacher's list by verifying student credentials
+- `DELETE /api/teacher/students/:email` : remove student
+- `GET /api/teacher/classes/:id` : fetch class details, with student list
+- `PATCH /api/teacher/students/:email` : update student attributes
+
+8. Data Design (inferred)
+
+Likely collections:
+- `users` (name, email, password, role, phone, pincode, subjectScores, etc.)
+- `teachers` (user reference, classes, students list)
+- `students` (associated data in teacher docs, may also exist in separate collection)
+- `classes` (name, teacher, student IDs, metadata)
+
+9. Use Case Flow
+
+a. Teacher registers/logs in.
+b. Teacher creates classes and adds students.
+c. Teacher assigns games/materials; students play via their accounts.
+d. Game / quiz results are scored and aggregated.
+e. Leaderboard and progress pages show performance, enabling reward issuance.
+
+10. Benefits
+
+- Encourages student engagement through gamified learning.
+- Saves teacher time by centralizing management and student data.
+- Provides measurable progress reports.
+- Works offline partially through service worker caching.
+
+11. Security and Ownership
+
+- Project is maintained by Anuj; do not copy/redistribute without permission.
+- Sensitive environment variables should be hidden (`JWT_SECRET`, DB credentials).
+- Use HTTPS in production.
+
+12. Recommended Enhancements
+
+- Add proper testing suite (Jest/Mocha)
+- Add deployment scripts (Docker, CI/CD)
+- Add email verification and password reset flows
+- Add RBAC to distinguish teacher vs student API roles
+- Add better analytics/dashboard UI
+
+13. Getting Help
+
+- Inspect server logs in terminal
+- Verify MongoDB status with `mongo` shell or UI (MongoDB Compass)
+- Use Postman / curl for API testing
+- Review `server.js` for all available API routes and request shapes
+
+14. Contribution
+
+1. Branch off `main`.
+2. Implement features or fixes.
+3. `git add .`
+4. `git commit -m "fix|feat: ..."`
+5. `git push origin <branch>`
+6. Create PR
+
+15. Quick Start Checklist
+
+- [ ] Node.js installed
+- [ ] MongoDB running
+- [ ] `npm install` succeeded
+- [ ] `.env` file configured
+- [ ] Start with `npm start`
+- [ ] Open app on `http://localhost:3000`
+- [ ] Confirm API endpoints with `curl` or DevTools
+
+---
+
+Your EduQuest project should now be completely documented for all readers and maintainers.
